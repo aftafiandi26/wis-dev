@@ -1,0 +1,1 @@
+<a class="btn btn-xs btn-default" data-toggle="modal" data-target="#modalDelete" data-role="{{ route('dev/user/freelance/username', $id) }}" title="username" id="username">Username</a>

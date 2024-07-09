@@ -1,0 +1,878 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App;
+use App\Dept_Category;
+use App\Http\Controllers\Controller;
+use App\Initial_Leave;
+use App\Leave;
+use App\Leave_Category;
+use App\NewUser;
+use App\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Redirect;
+use Illuminate\Support\Facades\Session;
+use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\View;
+use Yajra\Datatables\Facades\Datatables;
+
+/**
+* 
+*/
+class LeaveController extends Controller
+{
+	
+	public function __construct()
+    {
+        $this->middleware(['auth', 'active']);
+    }
+    
+    public function indexLeaveApply()
+    {
+        $ent_exdo = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        ->select([
+            DB::raw('
+            (
+                (
+                    select COALESCE(sum(initial), 0) from initial_leave where user_id='.Auth::user()->id.' and leave_category_id=2
+                ) 
+            ) as entitle_exdo')
+        ])
+        ->first();
+        
+        $select = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        // ->select([
+        //     DB::raw('
+        //     (
+        //         select (
+        //             select COALESCE(sum(initial), 0) from initial_leave where user_id='.Auth::user()->id.' and leave_category_id=1 and exp_date >= CURRENT_DATE
+        //         ) - (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id='.Auth::user()->id.' and leave_category_id=1
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //         )
+        //     ) as remainannual')
+        // ])
+        ->select([
+            DB::raw('
+            (
+                select (
+                    select initial_annual from users where id='.Auth::user()->id.' 
+                ) - (
+                    select COALESCE(sum(total_day), 0) from leave_transaction where user_id='.Auth::user()->id.' and leave_category_id=1
+                    and ap_hd  = 1
+                    and ap_gm  = 1
+                    and ver_hr = 1
+                )
+            ) as remainannual')
+        ])
+        ->first();
+
+        $selectexdo = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        ->select([
+            DB::raw('
+            (
+                select (
+                    select COALESCE(sum(initial), 0) from initial_leave where user_id='.Auth::user()->id.' and leave_category_id=2 and exp_date >= CURRENT_DATE
+                ) - (
+                    select COALESCE(sum(total_day), 0) from leave_transaction where user_id='.Auth::user()->id.' and leave_category_id=2
+                    and ap_hd  = 1
+                    and ap_gm  = 1
+                    and ver_hr = 1
+                )
+            ) as remainexdo')
+        ])
+        ->first();
+		
+	
+ 
+	$exp_exdo = DB::table('initial_leave')
+	
+	->whereRaw('initial_leave.exp_date >= current_date')
+	->orderByRaw('initial_leave.exp_date asc')
+	->first();
+		
+        return View::make('leave.indexApply')->with(['select' => $select, 'selectexdo' => $selectexdo, 'ent_exdo' => $ent_exdo, 'exp_exdo' => $exp_exdo]);
+    }
+
+    public function createLeave()
+    {
+    	$department = dept_category::where(['id' => Auth::user()->dept_category_id])->value('dept_category_name');
+
+    	$init_annual = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+    	// ->select([
+     //        DB::raw('
+     //        (
+     //            select (
+     //                select COALESCE(sum(initial), 0) from initial_leave where user_id='.Auth::user()->id.' and leave_category_id=1
+     //            ) - (
+     //                select COALESCE(sum(total_day), 0) from leave_transaction where user_id='.Auth::user()->id.' and leave_category_id=1
+     //                and ap_hd  = 1
+     //                and ap_gm  = 1
+     //                and ver_hr = 1
+     //            )
+     //        ) as remainannual')
+     //    ])
+        ->select([
+            DB::raw('
+            (
+                select (
+                    select initial_annual from users where id='.Auth::user()->id.' 
+                ) - (
+                    select COALESCE(sum(total_day), 0) from leave_transaction where user_id='.Auth::user()->id.' and leave_category_id=1
+                    and ap_hd  = 1
+                    and ap_gm  = 1
+                    and ver_hr = 1
+                )
+            ) as remainannual')
+        ])
+        ->first();
+
+        $taken = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        ->select([
+            DB::raw('
+            (
+                (
+                    select COALESCE(sum(total_day), 0) from leave_transaction where user_id='.Auth::user()->id.' and leave_category_id=1
+                    and ap_hd  = 1
+                    and ap_gm  = 1
+                    and ver_hr = 1
+                )
+            ) as leavetaken')
+        ])
+        ->first();
+
+        $ent_annual = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        ->select([
+            DB::raw('
+            (
+                (
+                    select COALESCE(sum(initial), 0) from initial_leave where user_id='.Auth::user()->id.' and leave_category_id=1
+                ) 
+            ) as entitle_ann')
+        ])
+        ->first();
+
+        //return ($init_annual);
+
+        // if ($init_annual->remainannual['0']>0)
+        if ($init_annual->remainannual)
+        {
+            return View::make('leave.create')->with(['leave' => $init_annual->remainannual, 'department' => $department, 'taken' => $taken->leavetaken, 'ent_annual' => $ent_annual->entitle_ann]);
+        } else {
+            return Redirect::route('leave/apply');
+        }
+    	
+    }
+
+    public function createExdo()
+    {
+        $department  = dept_category::where(['id' => Auth::user()->dept_category_id])->value('dept_category_name');
+        
+        $init_annual = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        ->select([
+            DB::raw('
+            (
+                select (
+                    select COALESCE(sum(initial), 0) from initial_leave where user_id='.Auth::user()->id.' and leave_category_id=2 and exp_date >= CURRENT_DATE
+                ) - (
+                    select COALESCE(sum(total_day), 0) from leave_transaction where user_id='.Auth::user()->id.' and leave_category_id=2
+                    and ap_hd  = 1
+                    and ap_gm  = 1
+                    and ver_hr = 1
+                )
+            ) as remainexdo')
+        ])
+        ->first();
+
+        $taken = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        ->select([
+            DB::raw('
+            (
+                (
+                    select COALESCE(sum(total_day), 0) from leave_transaction where user_id='.Auth::user()->id.' and leave_category_id=2
+                    and ap_hd  = 1
+                    and ap_gm  = 1
+                    and ver_hr = 1
+                )
+            ) as leavetaken')
+        ])
+        ->first();
+
+        $ent_exdo = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        ->select([
+            DB::raw('
+            (
+                (
+                    select COALESCE(sum(initial), 0) from initial_leave where user_id='.Auth::user()->id.' and leave_category_id=2
+                ) 
+            ) as entitle_exdo')
+        ])
+        ->first();
+
+        //return ($init_annual);
+
+        // if ($init_annual->remainexdo['0']>0)
+        if ($init_annual->remainexdo)
+        {
+            return View::make('leave.createExdo')->with(['leave' => $init_annual->remainexdo, 'department' => $department, 'taken' => $taken->leavetaken, 'ent_exdo' => $ent_exdo->entitle_exdo]);
+        } else {
+            return Redirect::route('leave/apply');
+        }
+        
+    }
+
+    public function createEtc()
+    {
+        $department = dept_category::where(['id' => Auth::user()->dept_category_id])->value('dept_category_name');
+        $leave      = [];
+        $list_leave = leave_Category::where('id', '>', '2')->orderBy('id','asc')->get();
+            foreach ($list_leave as $value)
+                $leave[$value->leave_category_name] = $value->leave_category_name;
+
+        return View::make('leave.createEtc')->with(['leave' => $leave, 'department' => $department]);
+    }
+
+
+    public function storeLeave(Request $request)
+    {
+        $init_annual = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        // ->select([
+        //     DB::raw('
+        //     (
+        //         select (
+        //             select COALESCE(sum(initial), 0) from initial_leave where user_id='.Auth::user()->id.' and leave_category_id=1
+        //         ) - (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id='.Auth::user()->id.' and leave_category_id=1
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //         )
+        //     ) as remainannual')
+        // ])
+        ->select([
+            DB::raw('
+            (
+                select (
+                    select initial_annual from users where id='.Auth::user()->id.' 
+                ) - (
+                    select COALESCE(sum(total_day), 0) from leave_transaction where user_id='.Auth::user()->id.' and leave_category_id=1
+                    and ap_hd  = 1
+                    and ap_gm  = 1
+                    and ver_hr = 1
+                )
+            ) as remainannual')
+        ])
+        ->first();
+
+        $taken = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        ->select([
+            DB::raw('
+            (
+                (
+                    select COALESCE(sum(total_day), 0) from leave_transaction where user_id='.Auth::user()->id.' and leave_category_id=1
+                    and ap_hd  = 1
+                    and ap_gm  = 1
+                    and ver_hr = 1
+                )
+            ) as leavetaken')
+        ])
+        ->first();
+
+        $ent_annual = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        // ->select([
+        //     DB::raw('
+        //     (
+        //         (
+        //             select COALESCE(sum(initial), 0) from initial_leave where user_id='.Auth::user()->id.' and leave_category_id=1
+        //         ) 
+        //     ) as entitle_ann')
+        // ])
+        ->select([
+            DB::raw('
+            (
+                (
+                    select initial_annual from users where id='.Auth::user()->id.'
+                ) 
+            ) as entitle_ann')
+        ])
+        ->first();
+
+        $ap_hd      = 0;
+        $ap_gm      = 0;
+        $date_ap_hd = null;
+        $date_ap_gm = null;
+
+        if(Auth::user()->gm === 1 or Auth::user()->hd === 1) {
+                $ap_hd = 1;
+                $date_ap_hd  = date("Y-m-d");
+            } else { $ap_hd = 0;}
+
+        if(Auth::user()->gm === 1) {
+                $ap_gm = 1;
+                $date_ap_gm  = date("Y-m-d");
+            } else { $ap_gm;}
+
+        if(Auth::user()->sp === 0) {
+                $ap_gm = 1;
+                $date_ap_gm  = date("Y-m-d");
+            } else { $ap_gm = 0;}
+
+		$rules = [
+			'leave_date'        => 'required',
+			'end_leave_date'    => 'required',
+			'back_work'         => 'required',
+			'total_day'         => 'required|numeric',
+			'remain'            => 'required|numeric|min:0'
+			];
+
+		$data = [
+            'user_id'                    => Auth::user()->id,
+            'leave_category_id'          => '1',
+            'request_by'                 => Auth::user()->first_name.' '.Auth::user()->last_name,
+            'request_nik'                => Auth::user()->nik,
+            'request_position'           => Auth::user()->position,
+            'request_join_date'          => Auth::user()->join_date,
+            'request_dept_category_name' => dept_category::where(['id' => Auth::user()->dept_category_id])->value('dept_category_name'),
+            'period'                     => date('Y'),
+            'leave_date'                 => $request->input('leave_date'),
+            'end_leave_date'             => $request->input('end_leave_date'),
+            'back_work'                  => $request->input('back_work'),
+            'total_day'                  => $request->input('total_day'),
+            'taken'                      => $taken->leavetaken,
+            'entitlement'                => $ent_annual->entitle_ann,
+            'pending'                    => $init_annual->remainannual,
+            'remain'                     => $request->input('remain'),
+            'ap_hd'                      => $ap_hd,
+            'ap_gm'                      => $ap_gm,
+            'date_ap_hd'                 => $date_ap_hd,
+            'date_ap_gm'                 => $date_ap_gm,
+            'ver_hr'                     => '0'
+			];
+			$validator = Validator::make($request->all(), $rules);
+
+		    if ($validator->fails()) {
+		        return Redirect::route('leave/create')
+		            ->withErrors($validator)
+		            ->withInput();
+		    } else {
+		    	Leave::insert($data);
+		        Session::flash('message', Lang::get('messages.data_inserted', ['data' => 'Data Leave Transaction']));
+		        $this->sendEmail();
+                // return Redirect::route('email/send');
+                return Redirect::route('leave/transaction');
+		    }
+    }
+
+    public function storeLeaveExdo(Request $request)
+    {
+        $init_annual = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        ->select([
+            DB::raw('
+            (
+                select (
+                    select COALESCE(sum(initial), 0) from initial_leave where user_id='.Auth::user()->id.' and leave_category_id=2 and exp_date >= CURRENT_DATE
+                ) - (
+                    select COALESCE(sum(total_day), 0) from leave_transaction where user_id='.Auth::user()->id.' and leave_category_id=2
+                    and ap_hd  = 1
+                    and ap_gm  = 1
+                    and ver_hr = 1
+                )
+            ) as remainexdo')
+        ])
+        ->first();
+
+        $taken = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        ->select([
+            DB::raw('
+            (
+                (
+                    select COALESCE(sum(total_day), 0) from leave_transaction where user_id='.Auth::user()->id.' and leave_category_id=2
+                    and ap_hd  = 1
+                    and ap_gm  = 1
+                    and ver_hr = 1
+                )
+            ) as leavetaken')
+        ])
+        ->first();
+
+        $ent_exdo = DB::table('users')
+        ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        ->select([
+            DB::raw('
+            (
+                (
+                    select COALESCE(sum(initial), 0) from initial_leave where user_id='.Auth::user()->id.' and leave_category_id=2
+                ) 
+            ) as entitle_exdo')
+        ])
+        ->first();
+
+        $ap_hd      = 0;
+        $ap_gm      = 0;
+        $date_ap_hd = null;
+        $date_ap_gm = null;
+
+        if(Auth::user()->gm === 1 or Auth::user()->hd === 1) {
+                $ap_hd = 1;
+                $date_ap_hd  = date("Y-m-d");
+            } else { $ap_hd = 0;}
+
+        if(Auth::user()->gm === 1) {
+                $ap_gm = 1;
+                $date_ap_gm  = date("Y-m-d");
+            } else { $ap_gm;}
+
+        if(Auth::user()->sp === 0) {
+                $ap_gm = 1;
+                $date_ap_gm  = date("Y-m-d");
+            } else { $ap_gm = 0;}
+
+        $rules = [
+            'leave_date'        => 'required',
+            'end_leave_date'    => 'required',
+            'back_work'         => 'required',
+            'total_day'         => 'required|numeric',
+            'remain'            => 'required|numeric|min:0'
+            ];
+
+        $data = [
+            'user_id'                    => Auth::user()->id,
+            'leave_category_id'          => '2',
+            'request_by'                 => Auth::user()->first_name.' '.Auth::user()->last_name,
+            'request_nik'                => Auth::user()->nik,
+            'request_position'           => Auth::user()->position,
+            'request_join_date'          => Auth::user()->join_date,
+            'request_dept_category_name' => dept_category::where(['id' => Auth::user()->dept_category_id])->value('dept_category_name'),
+            'period'                     => date('Y'),
+            'leave_date'                 => $request->input('leave_date'),
+            'end_leave_date'             => $request->input('end_leave_date'),
+            'back_work'                  => $request->input('back_work'),
+            'total_day'                  => $request->input('total_day'),
+            'taken'                      => null,
+            // 'taken'                   => $taken->leavetaken,
+            // 'entitlement'             => $ent_exdo->entitle_exdo,
+            'entitlement'                => null,
+            'pending'                    => $init_annual->remainexdo,
+            'remain'                     => $request->input('remain'),
+            'ap_hd'                      => $ap_hd,
+            'ap_gm'                      => $ap_gm,
+            'date_ap_hd'                 => $date_ap_hd,
+            'date_ap_gm'                 => $date_ap_gm,
+            'ver_hr'                     => '0'
+            ];
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return Redirect::route('leave/createExdo')
+                    ->withErrors($validator)
+                    ->withInput();
+            } else {
+                Leave::insert($data);
+                Session::flash('message', Lang::get('messages.data_inserted', ['data' => 'Data Leave Transaction']));
+                $this->sendEmail();
+                // return Redirect::route('email/send');
+                return Redirect::route('leave/transaction');
+            }
+    }
+
+    public function storeLeaveEtc(Request $request)
+    {
+        $ap_hd      = 0;
+        $ap_gm      = 0;
+        $date_ap_hd = null;
+        $date_ap_gm = null;
+
+        if(Auth::user()->gm === 1 or Auth::user()->hd === 1) {
+                $ap_hd = 1;
+                $date_ap_hd = date("Y-m-d");
+            } else { $ap_hd;}
+
+        if(Auth::user()->gm === 1) {
+                $ap_gm = 1;
+                $date_ap_gm  = date("Y-m-d");
+            } else { $ap_gm;}
+
+        if(Auth::user()->sp === 0) {
+                $ap_gm = 1;
+                $date_ap_gm = date("Y-m-d");
+            } else { $ap_gm;}
+
+        $rules = [
+            'leave_date'        => 'required',
+            'end_leave_date'    => 'required',
+            'back_work'         => 'required',
+            'total_day'         => 'required|numeric'
+            ];
+       
+        $data = [
+            'user_id'                    => Auth::user()->id,
+            // 'leave_category_id'       => $request->input('leave_category_id'),
+            'leave_category_id'          => leave_Category::where('leave_category_name', $request->input('leave_category_id'))->value('id'),
+            'request_by'                 => Auth::user()->first_name.' '.Auth::user()->last_name,
+            'request_nik'                => Auth::user()->nik,
+            'request_position'           => Auth::user()->position,
+            'request_join_date'          => Auth::user()->join_date,
+            'request_dept_category_name' => dept_category::where(['id' => Auth::user()->dept_category_id])->value('dept_category_name'),
+            'period'                     => date('Y'),
+            'leave_date'                 => $request->input('leave_date'),
+            'end_leave_date'             => $request->input('end_leave_date'),
+            'back_work'                  => $request->input('back_work'),
+            'total_day'                  => $request->input('total_day'),
+            'taken'                      => null,
+            'entitlement'                => null,
+            'pending'                    => null,
+            'ap_hd'                      => $ap_hd,
+            'ap_gm'                      => $ap_gm,
+            'date_ap_hd'                 => $date_ap_hd,
+            'date_ap_gm'                 => $date_ap_gm,
+            'ver_hr'                     => '0'
+            ];
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return Redirect::route('leave/createEtc')
+                    ->withErrors($validator)
+                    ->withInput();
+            } else {
+                Leave::insert($data);
+                Session::flash('message', Lang::get('messages.data_inserted', ['data' => 'Data Leave Transaction']));
+                $this->sendEmail();
+                // return Redirect::route('email/send');
+                return Redirect::route('leave/transaction');
+            }
+    }
+
+
+//	Start Route Leave > Transaction
+    public function indexLeaveTransaction()
+    { 
+		if (Auth::user()->hd === 1 ) {
+		return View::make('leave.indexTransactionHD');
+			}
+		if (Auth::user()->gm=== 1 ) {
+		return View::make('leave.indexTransaction');
+			}
+		if (Auth::user()->hr === 1 ) {
+		return View::make('leave.indexTransaction');
+			}
+		
+		if (Auth::user()->hd === 0 ) {
+		return View::make('leave.indexTransactionUser');
+			}
+		if (Auth::user()->gm=== 0 ) {
+		return View::make('leave.indexTransactionUser');
+			}
+		if (Auth::user()->hr === 0 ) {
+		return View::make('leave.indexTransactionUser');
+			}
+	}
+	public function indexLeaveTransactionUser()
+    {
+	return View::make('leave.indexTransactionUser');	
+	}
+	public function indexLeaveTransactionHD()
+    {
+	return View::make('leave.indexTransactionHD');	
+	}
+    public function indexLeaveAllTransaction()
+    {
+        return View::make('leave.indexAllTransaction');
+    }
+
+    public function getIndexLeaveTransaction()
+    {
+		if (Auth::user()->gm === 1) {
+			
+			$select = Leave::joinUsers()->joinDeptCategory()->joinLeaveCategory()->select([
+				'leave_transaction.id',
+				'users.nik',            
+				'leave_transaction.request_by',
+				'leave_category.leave_category_name',
+				'leave_transaction.leave_date',
+				'leave_transaction.total_day',
+				'leave_transaction.ver_hr',
+				'leave_transaction.ap_hd',
+				'leave_transaction.ap_gm'
+			])
+			->where('leave_transaction.user_id', '=', Auth::user()->id);
+
+			return Datatables::of($select)
+			->edit_column('ap_hd', '@if ($ap_hd === 1){{ "APPROVED" }} @elseif ($ap_hd === 2){{"DISAPPROVED"}} @elseif ($ver_hr === 0){{ "WAITING HR" }} @elseif ($ver_hr === 1){{ "PENDING" }}@endif')
+			->edit_column('ap_gm', '@if ($ap_gm === 1 and $ap_hd === 2){{"DISAPPROVED"}} @elseif ($ap_gm === 1){{ "APPROVED" }} @elseif ($ap_gm === 2){{"DISAPPROVED"}} @elseif ($ver_hr === 1 and $ap_hd === 0){{ "WAITING HD" }} @elseif ($ver_hr === 0 and $ap_hd === 0){{ "WAITING HD" }} @elseif ($ver_hr === 0 and $ap_hd === 1){{ "WAITING HR" }} @elseif ($ap_hd === 1){{ "PENDING" }}@endif')
+			->edit_column('ver_hr', '@if ($ver_hr === 1){{ "VERIFIED" }} @elseif ($ver_hr === 0){{ "PENDING" }} @elseif ($ver_hr === 2){{ "UNVERIFIED" }}@endif')
+			->edit_column('leave_date', '{!! date("M d, Y", strtotime($leave_date)) !!}')
+			->add_column('actions',
+				Lang::get('messages.btn_success', ['title' => 'Detail', 'url' => '{{ URL::route(\'leave/detail\', [$id]) }}', 'class' => 'file']).
+				'@if ($ap_hd === 1 && $ap_gm === 1 && $ver_hr === 1)'
+				.Lang::get('messages.btn_print', ['title' => 'Print', 'url' => '{{ URL::route(\'leave/print\', [$id]) }}', 'class' => 'print'])
+				.'@endif'
+				)
+			->make();
+		}
+		if (Auth::user()->hr === 1) {
+			
+			$select = Leave::joinUsers()->joinDeptCategory()->joinLeaveCategory()->select([
+				'leave_transaction.id',
+				'users.nik',            
+				'leave_transaction.request_by',
+				'leave_category.leave_category_name',
+				'leave_transaction.leave_date',
+				'leave_transaction.total_day',
+				'leave_transaction.ver_hr',
+				'leave_transaction.ap_hd',
+				'leave_transaction.ap_gm'
+			])
+			->where('leave_transaction.user_id', '=', Auth::user()->id);
+
+			return Datatables::of($select)
+			->edit_column('ap_hd', '@if ($ap_hd === 1){{ "APPROVED" }} @elseif ($ap_hd === 2){{"DISAPPROVED"}} @elseif ($ver_hr === 0){{ "WAITING HR" }} @elseif ($ver_hr === 1){{ "PENDING" }}@endif')
+			->edit_column('ap_gm', '@if ($ap_gm === 1 and $ap_hd === 2){{"DISAPPROVED"}} @elseif ($ap_gm === 1){{ "APPROVED" }} @elseif ($ap_gm === 2){{"DISAPPROVED"}} @elseif ($ver_hr === 1 and $ap_hd === 0){{ "WAITING HD" }} @elseif ($ver_hr === 0 and $ap_hd === 0){{ "WAITING HD" }} @elseif ($ver_hr === 0 and $ap_hd === 1){{ "WAITING HR" }} @elseif ($ap_hd === 1){{ "PENDING" }}@endif')
+			->edit_column('ver_hr', '@if ($ver_hr === 1){{ "VERIFIED" }} @elseif ($ver_hr === 0){{ "PENDING" }} @elseif ($ver_hr === 2){{ "UNVERIFIED" }}@endif')
+			->edit_column('leave_date', '{!! date("M d, Y", strtotime($leave_date)) !!}')
+			->add_column('actions',
+				Lang::get('messages.btn_success', ['title' => 'Detail', 'url' => '{{ URL::route(\'leave/detail\', [$id]) }}', 'class' => 'file']).
+				'@if ($ap_hd === 1 && $ap_gm === 1 && $ver_hr === 1)'
+				.Lang::get('messages.btn_print', ['title' => 'Print', 'url' => '{{ URL::route(\'leave/print\', [$id]) }}', 'class' => 'print'])
+				.'@endif'
+				)
+			->make();
+		}
+		if (Auth::user()->hd === 1) {
+			
+			$select = Leave::joinUsers()->joinDeptCategory()->joinLeaveCategory()->select([
+				'leave_transaction.id',
+				'users.nik',            
+				'leave_transaction.request_by',
+				'leave_category.leave_category_name',
+				'leave_transaction.leave_date',
+				'leave_transaction.total_day',
+				'leave_transaction.ver_hr',
+				'leave_transaction.ap_hd',
+				'leave_transaction.ap_gm'
+			])
+			->where('leave_transaction.user_id', '=', Auth::user()->id);
+
+			return Datatables::of($select)
+			->edit_column('ap_hd', '@if ($ap_hd === 1){{ "APPROVED" }} @elseif ($ap_hd === 2){{"DISAPPROVED"}} @elseif ($ver_hr === 0){{ "WAITING HR" }} @elseif ($ver_hr === 1){{ "PENDING" }}@endif')
+			->edit_column('ap_gm', '@if ($ap_gm === 1){{ "APPROVED" }} @elseif ($ap_gm === 2){{"DISAPPROVED"}} @elseif ($ver_hr === 1 and $ap_hd === 0){{ "WAITING HD" }} @elseif ($ver_hr === 0 and $ap_hd === 0){{ "WAITING HD" }} @elseif ($ver_hr === 0 and $ap_hd === 1){{ "WAITING HR" }} @elseif ($ap_hd === 1){{ "PENDING" }}@endif')
+			->edit_column('ver_hr', '@if ($ver_hr === 1){{ "VERIFIED" }} @elseif ($ver_hr === 0){{ "PENDING" }} @elseif ($ver_hr === 2){{ "UNVERIFIED" }}@endif')
+			->edit_column('leave_date', '{!! date("M d, Y", strtotime($leave_date)) !!}')
+			->add_column('actions',
+				Lang::get('messages.btn_success', ['title' => 'Detail', 'url' => '{{ URL::route(\'leave/detail\', [$id]) }}', 'class' => 'file']).
+				'@if ($ap_hd === 1 && $ap_gm === 1 && $ver_hr === 1)'
+				.Lang::get('messages.btn_print', ['title' => 'Print', 'url' => '{{ URL::route(\'leave/print\', [$id]) }}', 'class' => 'print'])
+				.'@endif'
+				)
+			->make();
+		}
+		if (Auth::user()->hd === 0 ) {
+			
+			$select = Leave::joinUsers()->joinDeptCategory()->joinLeaveCategory()->select([
+				'leave_transaction.id',
+				'users.nik',            
+				'leave_transaction.request_by',
+				'leave_category.leave_category_name',
+				'leave_transaction.leave_date',
+				'leave_transaction.total_day',
+				'leave_transaction.ver_hr',
+				'leave_transaction.ap_hd',
+			
+			])
+			->where('leave_transaction.user_id', '=', Auth::user()->id);
+
+			return Datatables::of($select)
+			->edit_column('ap_hd', '@if ($ap_hd === 1){{ "APPROVED" }} @elseif ($ap_hd === 2){{"DISAPPROVED"}} @elseif ($ver_hr === 0){{ "WAITING HR" }} @elseif ($ver_hr === 1){{ "PENDING" }}@endif')
+			//->edit_column('ap_gm', '@if ($ap_gm === 1 and $ap_hd === 2){{"DISAPPROVED"}} @elseif ($ap_gm === 1){{ "APPROVED" }} @elseif ($ap_gm === 2){{"DISAPPROVED"}} @elseif ($ver_hr === 1 and $ap_hd === 0){{ "WAITING HD" }} @elseif ($ver_hr === 0 and $ap_hd === 0){{ "WAITING HD" }} @elseif ($ver_hr === 0 and $ap_hd === 1){{ "WAITING HR" }} @elseif ($ap_hd === 1){{ "PENDING" }}@endif')
+			->edit_column('ver_hr', '@if ($ver_hr === 1){{ "VERIFIED" }} @elseif ($ver_hr === 0){{ "PENDING" }} @elseif ($ver_hr === 2){{ "UNVERIFIED" }}@endif')
+			->edit_column('leave_date', '{!! date("M d, Y", strtotime($leave_date)) !!}')
+			->add_column('actions',
+				Lang::get('messages.btn_success', ['title' => 'Detail', 'url' => '{{ URL::route(\'leave/detail\', [$id]) }}', 'class' => 'file']).
+				'@if ($ap_hd === 1 && $ver_hr === 1)'
+				.Lang::get('messages.btn_print', ['title' => 'Print', 'url' => '{{ URL::route(\'leave/print\', [$id]) }}', 'class' => 'print'])
+				.'@endif'
+				)
+			->make();
+		}
+		
+    }
+	
+	 
+
+    public function getIndexAllLeaveTransaction()
+    {
+        $select = Leave::joinUsers()->joinDeptCategory()->joinLeaveCategory()->select([
+            'leave_transaction.id',
+            'users.nik',
+            'leave_transaction.request_by',
+            'leave_category.leave_category_name',
+            'leave_transaction.leave_date',
+            'leave_transaction.total_day',
+            'leave_transaction.ver_hr',
+            'leave_transaction.ap_hd',
+            'leave_transaction.ap_gm'
+        ]);
+
+        return Datatables::of($select)
+        ->edit_column('ap_hd', '@if ($ap_hd === 1){{ "APPROVED" }} @elseif ($ap_hd === 2){{"DISAPPROVED"}} @elseif ($ver_hr === 0){{ "WAITING HR" }} @elseif ($ver_hr === 1){{ "PENDING" }}@endif')
+        ->edit_column('ap_gm', '@if ($ap_gm === 1){{ "APPROVED" }} @elseif ($ap_gm === 2){{"DISAPPROVED"}} @elseif ($ver_hr === 1 and $ap_hd === 0){{ "WAITING HD" }} @elseif ($ver_hr === 0 and $ap_hd === 0){{ "WAITING HD" }} @elseif ($ver_hr === 0 and $ap_hd === 1){{ "WAITING HR" }} @elseif ($ap_hd === 1){{ "PENDING" }}@endif')
+        ->edit_column('ver_hr', '@if ($ver_hr === 1){{ "VERIFIED" }} @elseif ($ver_hr === 0){{ "PENDING" }} @elseif ($ver_hr === 2){{ "UNVERIFIED" }}@endif')
+        ->edit_column('leave_date', '{!! date("M d, Y", strtotime($leave_date)) !!}')
+        ->add_column('actions',
+            Lang::get('messages.btn_success', ['title' => 'Detail', 'url' => '{{ URL::route(\'leave/detail\', [$id]) }}', 'class' => 'file']).
+            '@if ($ap_hd === 1 && $ap_gm === 1 && $ver_hr === 1)'
+            .Lang::get('messages.btn_print', ['title' => 'Print', 'url' => '{{ URL::route(\'leave/print1\', [$id]) }}', 'class' => 'print'])
+            .'@endif'
+            )
+        ->make();
+    }
+
+    public function detailLeave($id)
+    {
+    	$leave = Leave::joinUsers()->joinDeptCategory()->joinLeaveCategory()->find($id);
+    	$return   = "
+            <div class='modal-header'>
+                <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                <h4 class='modal-title' id='showModalLabel'>Detail	</h4>
+            </div>
+            <div class='modal-body'>
+                <div class='well'>
+                    <h4><strong><u>Leave Transaction	</u></strong></h4>
+                    <strong>Request by :</strong> $leave->first_name $leave->last_name<br>
+                    <strong>Period :</strong> $leave->period <br>
+                    <strong>Join Date :</strong> $leave->join_date <br>
+                    <strong>NIK :</strong> $leave->nik <br>
+                    <strong>Position :</strong> $leave->position <br>
+                    <strong>Department :</strong> $leave->dept_category_name <br>
+                    <strong>Contact Address :</strong> $leave->address <br>
+                    <strong>Leave Category :</strong> $leave->leave_category_name <br>
+                    <strong>Start Leave :</strong> $leave->leave_date <br>
+                    <strong>End Leave :</strong> $leave->end_leave_date <br>
+                    <strong>Back to Work:</strong> $leave->back_work <br>
+                    <strong>Total Day :</strong> $leave->total_day <br>
+                    <strong>Remain :</strong> $leave->remain <br>
+                </div>
+            </div>
+            <div class='modal-footer'>
+                <button type='button' class='btn btn-default' data-dismiss='modal'>Close</button>
+            </div>
+        ";
+
+		return $return;
+    }
+
+    public function printLeave($id)
+    {
+    	$select = Leave::joinUsers()->joinDeptCategory()->joinLeaveCategory()->joinInitialLeave()
+        ->select([
+    		'*'
+    	])
+        ->where('leave_transaction.user_id', '=', Auth::user()->id)
+        ->where('leave_transaction.ap_hd', '=', 1)
+        ->where('leave_transaction.ap_gm', '=', 1)
+    	->where('leave_transaction.ver_hr', '=', 1)
+        ->find($id);
+    	view()->share('select', $select);
+
+		$pdf = App::make('dompdf.wrapper');
+		$pdf->loadview('leave.print');
+		return $pdf->stream();
+    }
+
+    public function print1Leave($id)
+    {
+        $select = Leave::joinUsers()->joinDeptCategory()->joinLeaveCategory()->joinInitialLeave()
+        ->select([
+            '*'
+        ])
+        ->where('leave_transaction.ap_hd', '=', 1)
+        ->where('leave_transaction.ap_gm', '=', 1)
+        ->where('leave_transaction.ver_hr', '=', 1)
+        ->find($id);
+        view()->share('select', $select);
+
+        $pdf = App::make('dompdf.wrapper');
+        $pdf->loadview('leave.print');
+        return $pdf->stream();
+    }
+
+    public function sendEmail()
+    {
+        $select = Leave::joinUsers()->joinDeptCategory()->joinLeaveCategory()
+                        ->orderBy('leave_transaction.id','des')
+                        ->first();
+
+        $subject = 'Verify Request Leave Application - '.$select->request_by.'';
+
+        $email = DB::table('users')
+                            ->select(DB::raw('email'))
+                            ->where('hr', '=', 1)
+                            ->get();
+
+        //return dd($email);
+                
+        Mail::send('email.verMail', ['select' => $select], function($message) use ($email, $subject)
+        {
+            foreach ($email as $e){
+            $message->to($e->email)->subject($subject);
+            }
+            
+            $message->from('wis_system@frameworks-studios.com', 'WIS');
+        });
+    }
+
+}
+
+/*

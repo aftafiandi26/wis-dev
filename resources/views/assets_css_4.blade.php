@@ -1,0 +1,1 @@
+<link href="{!! URL::route('assets/vendor/Buttons/css/buttons.dataTables.min.css') !!}" rel="stylesheet">

@@ -1,0 +1,1 @@
+<a data-role="{{ route('workstations/availability/noted', $id) }}" class="btn btn-info btn-xs" id="noted" title="view notes workstation" data-toggle="modal" data-target="#showModalNotes"><i class="fa fa-file"></i></a>

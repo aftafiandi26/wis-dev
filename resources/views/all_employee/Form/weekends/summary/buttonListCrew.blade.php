@@ -1,0 +1,1 @@
+<a class="btn-xs btn btn-default" id="buttonListCrew" data-role="{{ route('working-on-weekends/summary/list', $id) }}" data-toggle="modal" data-target="#modalCrew"><i>List Crew</i></a>

@@ -1,0 +1,1 @@
+<a class="btn-xs btn btn-danger" id="table1Danger" data-role="{{ route('hrd/weekend-crew/summary/delete', $id) }}" data-toggle="modal" data-target="#modalTable1Danger"><i class="fa fa-trash"></i></a>

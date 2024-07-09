@@ -1,0 +1,2 @@
+<a href="{{ route('freelance/edit', $id) }}" class="btn btn-xs btn-default" id="edit"><i class="fa fa-pencil"></i></a>
+<a class="btn btn-xs btn-default" data-toggle="modal" data-target="#modalDelete" data-role="{{ route('freelance/modalDestroy', $id) }}" title="delete" id="delete"><i class="fa fa-trash"></i></a>

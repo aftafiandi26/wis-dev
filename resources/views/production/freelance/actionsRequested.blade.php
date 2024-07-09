@@ -1,0 +1,1 @@
+<a class="btn btn-xs btn-default" data-toggle="modal" data-target="#modalRequest" data-role="{{ route('freelance/modalEmail', $id) }}" title="request username" id="request">Username</a>

@@ -1,0 +1,1 @@
+<a data-role="{{ route('leave/summary/employes/modal', $id) }}" class="btn btn-xs btn-default" data-toggle="modal" data-target="#showModal" id="info" title="info"><i class="fa fa-info"></i></a>

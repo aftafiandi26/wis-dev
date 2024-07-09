@@ -1,0 +1,1 @@
+<a data-role="{{ route('pipeline/workstations/availability/idle/notes', $id) }}" class="btn btn-info btn-xs" id="noted" title="view notes workstation" data-toggle="modal" data-target="#showModalNotes"><i class="fa fa-file"></i></a>

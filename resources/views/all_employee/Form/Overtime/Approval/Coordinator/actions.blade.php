@@ -1,0 +1,1 @@
+<a class="btn btn-xs btn-success" data-toggle="modal" data-target="#modalProject" data-role="{{ route('form/approval/coordinator/approved', $form->id) }}" title="modalApproved"><i class="fa fa-file"></i></a>

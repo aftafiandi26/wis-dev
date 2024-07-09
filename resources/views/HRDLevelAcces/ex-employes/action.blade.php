@@ -1,0 +1,1 @@
+<a href="#" class="btn btn-success btn-xs" data-toggle="modal" data-target="#showModal" data-role="{{ route('hr/ex-employes/data/modal', $id) }}" title="Detail"><i class="fa fa-file" aria-hidden="true"></i></a>

@@ -1,0 +1,43 @@
+table {
+  table-layout: fixed;
+  border-spacing: 0px;
+}
+
+td, th {
+  padding-left: 5px;
+  padding-right: 5px;
+}
+
+.tr_shaded:nth-child(even) {
+  background: #e0e0e0;
+}
+
+.tr_shaded:nth-child(odd) {
+  background: #ffffff;
+}
+
+.scrolly_table {
+  white-space: nowrap;
+  overflow: auto;
+}
+
+/* The frozen cells will each get two class names,
+   making it easier for me to select all of them or
+   only a subset.  All frozen cells will be "fixed",
+   the corner will also be in class "freeze", and the
+   row and column headers will be "horizontal" and
+   "vertical" respectively. */
+.fixed.freeze {
+  z-index: 10;
+  position: relative;
+}
+
+.fixed.freeze_vertical {
+  z-index: 5;
+  position: scroll;
+}
+
+.fixed.freeze_horizontal {
+  z-index: 1;
+  position: scroll;
+}

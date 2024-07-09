@@ -1,0 +1,1 @@
+<a class="btn btn-xs btn-default" data-toggle="modal" data-target="#showModal" data-role="{{ route('forfeited/form/modalformleave', $id) }}" title="form leave transactions" id="formLeave"><i class="fa fa-eye"></i></a>

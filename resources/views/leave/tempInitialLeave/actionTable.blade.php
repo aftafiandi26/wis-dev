@@ -1,0 +1,1 @@
+<a data-role="{{ route('hr_mgmt-data/leave/tempCreateInitialLeave/detail', $id) }}" data-toggle="modal" data-target="#showModalTables" class="btn btn-xs btn-success" id="detail" title="detail of annual"><i class="fa fa-eye"></i></a>

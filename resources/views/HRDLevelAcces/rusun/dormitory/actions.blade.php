@@ -1,0 +1,2 @@
+<a data-role="{{ route('hr/management/dorm/edit', [$dormitories->id]) }}" class="btn btn-xs btn-warning" data-toggle="modal" data-target="#showModal" id="edit" title="edit"><span class="fa fa-pencil"></span></a>
+<a data-role="{{ route('hr/management/dorm/delete', [$dormitories->id]) }}" class="btn btn-xs btn-danger" data-toggle="modal" data-target="#showModalDelete" id="delete"><span class="fa fa-trash"></span></a>

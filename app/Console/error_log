@@ -1,0 +1,2 @@
+[25-Feb-2020 03:26:01 UTC] PHP Fatal error:  Class 'Illuminate\Foundation\Console\Kernel' not found in /home/kinema/public_html/wis/app/Console/Kernel.php on line 9
+[25-Feb-2020 03:28:01 UTC] PHP Fatal error:  Class 'Illuminate\Foundation\Console\Kernel' not found in /home/kinema/public_html/wis/app/Console/Kernel.php on line 9
