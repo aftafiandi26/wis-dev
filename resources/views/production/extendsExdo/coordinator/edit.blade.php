@@ -41,13 +41,14 @@
                             @endforeach
                         </select>
                     </div>
+                    <input type="hidden" name="limitless" value="{{ 4 - $init->limiter }}">
                 </form>
             </div>
         </div>
         <div class="row">
             <div class="col-lg-12">
                 <h5>
-                    <b>You have a chance <span style="color:red;">{{ 4 - $init->limiter . 'x' }}</span></b>
+                    <b>You have a chance <span style="color:red; font-size: 20px;">{{ 4 - $init->limiter . 'x' }}</span></b>
                 </h5>
             </div>
         </div>
@@ -56,19 +57,29 @@
                 <table class="table table-condensed table-boredred table-striped" id="tableRecored" width="100%">
                     <thead>
                         <tr>
+                            <th>#</th>
                             <th>Record Expired</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        <tr>
-                            <td>1</td>
-                        </tr>
-                        <tr>
-                            <td>2</td>
-                        </tr>
-                        <tr>
-                            <td>3</td>
-                        </tr>
+                        @foreach ($record as $key => $item)
+                            <tr>
+                                <td>{{ ++$key }}</td>
+                                <td>{{ $item->expired }}</td>
+                                <td>
+                                    @if ($item->ver_hr == 0)
+                                        Pending
+                                    @endif
+                                    @if ($item->ver_hr == 1)
+                                        Successed
+                                    @endif
+                                    @if ($item->ver_hr == 2)
+                                        Unsuccessed
+                                    @endif
+                                </td>
+                            </tr>
+                        @endforeach
                     </tbody>
                 </table>
             </div>

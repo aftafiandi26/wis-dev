@@ -8,6 +8,7 @@ use App\Ws_Availability;
 use App\Ws_Map;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\URL;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Redirect;
@@ -153,6 +154,78 @@ class ITWSAvailability extends Controller
             ->addColumn('actions', 'IT.Availability.newDashboard.actions')
             ->rawColumns(['actions', 'noted'])
             ->make(true);
+    }
+
+    public function add()
+    {
+        $users = User::where('active', 1)->whereNotIn('nik', ["", 123456789])->orderBy('first_name', 'asc')->get();
+
+        // $workstations = Ws_Availability::find($id);
+        $gateway = $this->Gateway();
+
+        $wsType = $this->wsType();
+
+        $windows = $this->operationSytemsWindows();
+        $linux = $this->operationSytemsLinux();
+        $mapArea = $this->mapArea();
+        $usedWS = $this->usedWorkstations();
+
+        // $firstWS = Ws_Map::where('workstation', '=', $workstations->hostname)->first();
+        // $secondWS = WS_MAP::where('secondary_workstation', '=', $workstations->hostname)->first();
+
+        return view('IT.Availability.newDashboard.add', compact(['wsType', 'windows', 'linux', 'mapArea', 'usedWS', 'users', 'gateway']));
+    }
+
+    public function store(Request $request)
+    {
+        $rules = [
+            'type'      => 'required',
+            'hostname'  =>  ["required", "unique:ws_Availability,hostname"],
+            'os'        => 'required',
+            'memory'    => 'required',
+            'vga'       => 'required',
+            'status'    => 'required',
+            'gateway'   => 'required',
+            'usb'       => 'required',
+        ];
+
+        $findUser = $request->input('findUser');
+
+        $fullName = $request->input('user');
+
+        if ($findUser) {
+            $user = User::find($findUser);
+            $fullName = $user->getFullName();
+        }
+
+        $data = [
+            'type'     => $request->input('type'),
+            'user_id' => $findUser,
+            'user'     => $fullName,
+            'hostname'  => Str::upper($request->input('hostname')),
+            'os'       => $request->input('os'),
+            'memory'   => $request->input('memory'),
+            'vga'      => $request->input('vga'),
+            'notes'    => $request->input('notes'),
+            'location' => $request->input('area'),
+            'status'   => $request->input('status'),
+            'gateway'   => $request->input('gateway'),
+            'antivirus' => $request->input('antivirus'),
+            'usb'       => $request->input('usb'),
+            'update_by' => auth()->user()->getFullName()
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            return Redirect::route('workstations/availability/add')
+                ->withErrors($validator)
+                ->withInput();
+        }
+
+        Ws_Availability::insert($data);
+        Session::flash('success', Lang::get('messages.data_custom', ['data' => 'Data ' . $request->input('hostname') . ' has been recorded']));
+        return Redirect::route('workstations/availability/index');
     }
 
     public function edit($id)

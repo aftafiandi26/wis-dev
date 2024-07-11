@@ -33,7 +33,7 @@ class CoordinatorWorkingWeekendsController extends Controller
 
     public function form()
     {
-        $users = User::where('active', 1)->where('dept_category_id', 6)->orderBy('first_name', 'asc')->get();
+        $users = User::where('active', 1)->where('dept_category_id', 6)->where('gm', false)->where('hd', false)->orderBy('first_name', 'asc')->get();
 
         $tableWorkings = Log_WorkingWeekends::where('coor_id', auth()->user()->id)->get();
 
@@ -69,10 +69,16 @@ class CoordinatorWorkingWeekendsController extends Controller
         foreach ($users as $key => $user) {
             $eoc = $user->end_date;
 
+            if (empty($user->end_date)) {
+                $eoc = Carbon::now()->addMonth();
+            }
+
             if ($eoc <= $limitEoc) {
                 $eocUser[] = $user->getFullName();
             }
         }
+
+        // dd($eocUser, $ape = Carbon::now()->addMonth());
 
         $eocUser = json_encode($eocUser);
 
@@ -110,12 +116,17 @@ class CoordinatorWorkingWeekendsController extends Controller
         $now = Carbon::now();
         $limitEoc = $now->addMonth();
 
-        if ($user->end_date <= $limitEoc) {
+        if (empty($user->end_date)) {
+            $eoc = Carbon::now()->addYear();
+        } else {
+            $eoc = $user->end_date;
+        }
+
+        if ($eoc <= $limitEoc) {
             Session::flash('getError', Lang::get('messages.data_custom', ['data' => $user->getFullName() . ' contract period will end soon, please note this ']));
             Session::flash('message', Lang::get('messages.data_custom', ['data' => "Sorry, this employee can not to inserted"]));
             return response()->json(['message' => "Can not inserted"]);
         }
-
 
         $timeStart = new DateTime($request->input('local1'));
         $timeEnd = new DateTime($request->input('local2'));

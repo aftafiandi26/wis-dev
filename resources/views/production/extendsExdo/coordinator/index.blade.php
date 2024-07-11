@@ -59,14 +59,15 @@
 <hr>
 <div class="row">
     <div class="col-lg-12">
-        <table class="table table-hover table-stripped table-condensed table-bordered" width="100%">
+        <table class="table table-hover table-stripped table-condensed table-bordered" width="100%" id="tableExtends">
             <thead>
                 <tr>
                     <th>No</th>                    
                     <th>Employes</th>
                     <th>Exdo</th>
                     <th>Expired</th>
-                    <th>Created</th>
+                    <th>Changed</th>
+                    <th>Status</th>
                 </tr>
             </thead>
         </table>
@@ -118,5 +119,22 @@ $("select#emp").select2({
     if (redNames.includes(selectedText)) {
         window.alert($container + " contract period will end soon, please note this");
     }
+});
+
+$('#tableExtends').DataTable({
+    processing: true,
+    responsive: true,
+    ajax: {
+        "url": "{{ route('coordinator/exdo-extends/data') }}",
+        "type": "GET",
+    },
+    columns: [
+        { data: 'DT_Row_Index', orderable: false, searchable : false},   
+        { data: 'employee'},
+        { data: 'amount'},
+        { data: 'init_expired'},
+        { data: 'expired'},
+        { data: 'status'},
+    ],
 });
 @stop

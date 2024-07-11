@@ -103,7 +103,7 @@ class ITController extends Controller
 
         return view::make('IT.Availability.add', ['wstype' => $wstype, 'OSS' => $OSS, 'map_area' => $map_area, 'stat_ws' => $stat_ws]);
     }
-
+	
     public function storeAddWS(Request $request)
     {
         $mainws = 'Main Workstation';

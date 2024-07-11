@@ -1053,6 +1053,9 @@ Route::prefix('Information-IT')->group(function () {
         Route::post('fails/update/{id}', 'ITWSAvailability@updateFails')->name('workstations/availability/fails/update');
         Route::get('fails/delete/{id}', 'ITWSAvailability@deleteFails')->name('workstations/availability/fails/delete');
         Route::get('fails/delete/post/{id}', 'ITWSAvailability@postDeleteFails')->name('workstations/availability/fails/delete/post');
+
+        Route::get('add-workstation', 'ITWSAvailability@add')->name('workstations/availability/add');
+        Route::post('store-workstation', 'ITWSAvailability@store')->name('workstations/availability/store');
     });
 
     Route::prefix('Workstatios-Idle')->group(function () {
@@ -1712,6 +1715,7 @@ Route::prefix('freelance')->group(function () {
 
 Route::prefix('coordinator')->group(function () {
     Route::get('exdo-extends', 'CoordinatorExtendsExdoController@index')->name('coordinator/exdo-extends/index');
+    Route::get('exdo-extends/datatables', 'CoordinatorExtendsExdoController@data')->name('coordinator/exdo-extends/data');
     Route::get('exdo-extends/data', 'CoordinatorExtendsExdoController@datatables')->name('coordinator/exdo-extends/datatables');
     Route::post('exdo-extends/set-cookies', 'CoordinatorExtendsExdoController@setCookie')->name('coordinator/exdo-extends/cookies');
 

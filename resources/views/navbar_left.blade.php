@@ -212,6 +212,9 @@
             <a class="{!! $c3 or '' !!}" href="#"><i class="fa fa-fw fa-home"></i> WS Availability<span class="fa arrow"></span></a>
             <ul class="nav nav-second-level {!! $c1u or '' !!}">
                  <li>
+                    <a class="{!! $c16 or '' !!}" href="{!! URL::route('workstations/availability/add') !!}"><i class="fa fa-fw fa fa-genderless"></i> Add Workstation</a>
+                </li>
+                 <li>
                     <a class="{!! $c16 or '' !!}" href="{!! URL::route('workstations/availability/index') !!}"><i class="fa fa-fw fa fa-genderless"></i> List Workstation</a>
                 </li>
                 <li>

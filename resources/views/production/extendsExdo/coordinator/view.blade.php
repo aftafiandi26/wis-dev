@@ -15,7 +15,7 @@
 @push('style')
 <style>
     .text-red {
-        color: red;
+        color: black;
     }
 </style>
 @endpush

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Log_Attempt;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -33,6 +34,7 @@ class HomeController extends Controller
 
     public function doLogin(Request $request)
     {
+
         function getClientIP()
         {
 
@@ -57,6 +59,7 @@ class HomeController extends Controller
         }
         /////////////////////////////////////////////////////////////////////////
         if (Auth::user()) {
+
             return Redirect::route('index')->with('getError', Lang::get('messages.yes_login'));
         } else {
             $rules = [
@@ -85,7 +88,17 @@ class HomeController extends Controller
                             'block_stat' => $block,
                             'online' => $online
                         ];
+
+                        $attemptLogin = [
+                            'user_id'       => auth()->user()->id,
+                            'ip_address'    => $request->ip(),
+                            'hostname'      => gethostbyaddr($request->ip())
+                        ];
+
+                        Log_Attempt::create($attemptLogin);
+
                         User::where('username', $request->input('username'))->update($b);
+
                         return Redirect::route('index')->with('message', Lang::get('messages.welcome', ['name' => Auth::user()->first_name . ' ' . Auth::user()->last_name]))->with('messagee', Lang::get('messages.security_first'));
                     } elseif (Auth::user()->active === 1 && Auth::user()->block_stat >= 5) {
                         Auth::logout();
