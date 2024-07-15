@@ -16,6 +16,13 @@
 'c3' => 'active'
 ])
 @stop
+
+@push('css')
+    <style>
+
+    </style>
+@endpush
+
 @section('body')
 <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/uikit/3.0.2/css/uikit.min.css">
 <link rel="stylesheet" type="text/css" href="https://cdn.datatables.net/1.10.19/css/dataTables.uikit.min.css">
@@ -109,8 +116,10 @@
                     <th>Exdo</th>
                     <th>Status</th>
                     <th>Address</th>
-                    <th>Area</th>
-                    <th>City</th>
+                    <th>BPJS Kesehatan</th>
+                    <th>BPJS Ketenagakerjaan</th>
+                    <th>ID Card</th>
+                    <th>NPWP</th>
                     <th>Action</th>
                 </tr>
             </thead>          
@@ -151,56 +160,14 @@
     }
 </script>
 @section('script')
-$('[data-toggle="tooltip"]').tooltip();
+    $('[data-toggle="tooltip"]').tooltip();
 
-$.fn.dataTableExt.afnFiltering.push(
-function( oSettings, aData, iDataIndex ) {
-var iFini = document.getElementById('min').value;
-var iFfin = document.getElementById('max').value;
-var iStartDateCol = 1;
-var iEndDateCol = 1;
-
-iFini=iFini.substring(0,4) + iFini.substring(4,5)+ iFini.substring(5,10);
-iFfin=iFfin.substring(0,4) + iFfin.substring(4,5)+ iFfin.substring(5,10);
-
-var datofini=aData[iStartDateCol].substring(0,4) + aData[iStartDateCol].substring(4,5)+ aData[iStartDateCol].substring(5,10);
-var datoffin=aData[iEndDateCol].substring(0,4) + aData[iEndDateCol].substring(4,5)+ aData[iEndDateCol].substring(5,10);
-
-<!-- console.log(iFini); -->
-
-if ( iFini === "" && iFfin === "" )
-{
-return true;
-}
-else if ( iFini <= datofini && iFfin==="" ) { return true; } else if ( iFfin>= datoffin && iFini === "")
-    {
-    return true;
-    }
-    else if (iFini <= datofini && iFfin>= datoffin)
-        {
-        return true;
-        }
-        return false;
-        }
-        );
-
-
-        $(document).ready(function() {
-        var table = $('#tables').DataTable();
-
-
-        $('#min, #max').keyup( function() {
-        table.draw();
-        } );
-        } );
-
-
-        $.fn.dataTableExt.afnFiltering.push(
+    $.fn.dataTableExt.afnFiltering.push(
         function( oSettings, aData, iDataIndex ) {
-        var iFini = document.getElementById('minn').value;
-        var iFfin = document.getElementById('maxx').value;
-        var iStartDateCol = 2;
-        var iEndDateCol = 2;
+        var iFini = document.getElementById('min').value;
+        var iFfin = document.getElementById('max').value;
+        var iStartDateCol = 1;
+        var iEndDateCol = 1;
 
         iFini=iFini.substring(0,4) + iFini.substring(4,5)+ iFini.substring(5,10);
         iFfin=iFfin.substring(0,4) + iFfin.substring(4,5)+ iFfin.substring(5,10);
@@ -212,60 +179,82 @@ else if ( iFini <= datofini && iFfin==="" ) { return true; } else if ( iFfin>= d
 
         if ( iFini === "" && iFfin === "" )
         {
-        return true;
-        }
-        else if ( iFini <= datofini && iFfin==="" ) { return true; } else if ( iFfin>= datoffin && iFini === "")
-            {
             return true;
-            }
-            else if (iFini <= datofini && iFfin>= datoffin)
-                {
-                return true;
-                }
-                return false;
-                }
-                );
+        } else if ( iFini <= datofini && iFfin==="" ) { return true; } else if ( iFfin>= datoffin && iFini === "") {
+            return true;
+        } else if (iFini <= datofini && iFfin>= datoffin) {
+            return true;
+        }  
+            return false;
+        }
+    );
 
-                $(document).ready(function() {
-                var table = $('#tables').DataTable();
+    $(document).ready(function() {
+        var table = $('#tables').DataTable();
+        
+        $('#min, #max').keyup( function() {
+            table.draw();
+        } );
+    } );
 
+    $.fn.dataTableExt.afnFiltering.push(function( oSettings, aData, iDataIndex ) {
+        var iFini = document.getElementById('minn').value;
+        var iFfin = document.getElementById('maxx').value;
+        var iStartDateCol = 2;
+        var iEndDateCol = 2;
 
-                $('#minn, #maxx').keyup( function() {
-                table.draw();
-                } );
-                } );
+        iFini=iFini.substring(0,4) + iFini.substring(4,5)+ iFini.substring(5,10);
+        iFfin=iFfin.substring(0,4) + iFfin.substring(4,5)+ iFfin.substring(5,10);
 
+        var datofini=aData[iStartDateCol].substring(0,4) + aData[iStartDateCol].substring(4,5)+ aData[iStartDateCol].substring(5,10);
+        var datoffin=aData[iEndDateCol].substring(0,4) + aData[iEndDateCol].substring(4,5)+ aData[iEndDateCol].substring(5,10);
 
+        if ( iFini === "" && iFfin === "" )  {
+            return true;
+        }  else if ( iFini <= datofini && iFfin==="" ) { return true; } else if ( iFfin>= datoffin && iFini === "") {
+            return true;
+        } else if (iFini <= datofini && iFfin>= datoffin) {
+            return true;
+        } 
+        
+        return false;
+        }
+    );
 
-                $('#tables').DataTable({
-
-
-                "columnDefs": [
-                { className: "never", "searchable": false, "orderable": false, "visible": false, "targets": [0] }
-                ],
-                "order": [
-                [4, "asc" ]
-                ],
-                processing: true,
-                responsive: true,
-                "dom": 'Blfrtip',
-                "buttons": [{
+    $(document).ready(function() {
+        var table = $('#tables').DataTable();
+        $('#minn, #maxx').keyup( function() {
+            table.draw();
+        } );
+    } );
+    
+    $('#tables').DataTable({
+        "columnDefs": [
+            { className: "never", "searchable": false, "orderable": false, "visible": false, "targets": [0] }
+        ],
+        "order": [
+            [4, "asc" ]
+        ],
+        processing: true,
+        responsive: true,
+        "dom": 'Blfrtip',
+            "buttons": [{
                 extend: 'excelHtml5',
                 text: '<i class="glyphicon glyphicon-download-alt" style="font-size: 18px;"></i>',
                 titleAttr: 'Generate Data Employee',
-                }],
-                ajax: '{!! URL::route("getEmployee") !!}' ,
+            }],
+        ajax: '{!! URL::route("getEmployee") !!}' ,
+    });
 
-                });
+    $('#tables').css('font-size', '14px');
 
-                $(document).on('click','#tables tr td a[title="Detail"]',function(e) {
-                var id = $(this).attr('data-role');
-
-                $.ajax({
-                url: id,
-                success: function(e) {
+    $(document).on('click','#tables tr td a[title="Detail"]',function(e) {
+        var id = $(this).attr('data-role');
+        $.ajax({
+            url: id,
+            success: function(e) {
                 $("#modal-content").html(e);
-                }
-                });
-                });
-                @stop
+            }
+        });
+    });
+@stop

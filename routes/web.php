@@ -1724,6 +1724,14 @@ Route::prefix('coordinator')->group(function () {
     Route::post('exdo-extends/store/{id}', 'CoordinatorExtendsExdoController@storeExtends')->name('coordinator/exdo-extends/store');
 });
 
+Route::prefix('producer')->group(function () {
+    Route::get('exdo-extends', 'ProducerExtendsExdoController@index')->name('producer/exdo-exntend/index');
+    Route::get('exdo-extends/data', 'ProducerExtendsExdoController@datatables')->name('producer/exdo-exntend/data');
+    Route::get('exdo-extends/show-modal/approval/{id}', 'ProducerExtendsExdoController@showModalApproval')->name('producer/exdo-exntend/showModal/approval');
+    Route::get('exdo-extends/approval/{id}', 'ProducerExtendsExdoController@approval')->name('producer/exdo-extend/approval');
+    Route::get('exdo-extends/disapproval/{id}', 'ProducerExtendsExdoController@disapproval')->name('producer/exdo-extend/disapproval');
+});
+
 Route::prefix('dev')->group(function () {
     Route::get('freelance', 'programmer\\User_FreelanceController@index')->name('dev/user/freelance/index');
     Route::get('freelance/datatables', 'programmer\\User_FreelanceController@datatables')->name('dev/user/freelance/datatables');

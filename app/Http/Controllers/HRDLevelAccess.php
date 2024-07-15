@@ -30,6 +30,7 @@ use Illuminate\Support\Facades\View;
 use Maatwebsite\Excel\Facades\Excel;
 use Mail;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\DB as FacadesDB;
 use Illuminate\Support\Facades\Storage;
 use Yajra\Datatables\Facades\Datatables;
 
@@ -104,26 +105,37 @@ class HRDLevelAccess extends Controller
 
     public function getStaff(Request $request)
     {
-        $select = NewUser::joinDeptCategory()->JoinLeaveView()->select(['users.id', 'users.join_date', 'users.end_date', 'users.nik', 'users.first_name', 'users.last_name', 'users.gender', 'dept_category.dept_category_name', 'users.pob', 'users.dob', 'users.position', 'users.education', 'users.education_institution', 'users.emp_status', 'users.id_card', 'users.phone', 'users.religion', 'all_leave_entitled.annual_leave_balance', 'all_leave_entitled.day_off_balance', 'users.active', 'users.address', 'users.area', 'users.city'])
-            ->where('users.username', '!=', 'admin')
-            ->where('users.username', '!=', 'hr')
-            ->where('users.username', '!=', 'wis_system')
-            ->where('users.nik', '!=', null)
-            ->where('users.nik', '!=', 12345678)
+        $select = NewUser::joinDeptCategory()->JoinLeaveView()->select(['users.id', 'users.join_date', 'users.end_date', 'users.nik', 'users.first_name', 'users.last_name', 'users.gender', 'dept_category.dept_category_name', 'users.pob', 'users.dob', 'users.position', 'users.education', 'users.education_institution', 'users.emp_status', 'users.phone', 'users.religion', 'all_leave_entitled.annual_leave_balance', 'all_leave_entitled.day_off_balance', 'users.active', 'users.address', 'users.bpjs_kesehatan', 'users.bpjs_ketenagakerjaan'])
+            ->whereNotIn('users.username', ['admin', 'hr', 'wis_system'])
+            ->whereNotIn('users.nik', ["", "123456789"])
             ->where('users.active', 1)
+            ->where('users.id', 226)
             ->get();
 
         return Datatables::of($select)
             ->edit_column('dob', '{!! date("M d, Y", strtotime($dob)) !!}')
             ->edit_column('active', '@if ($active === 1){{ "Active" }}@else{{ "Suspend" }}@endif')
-            // ->edit_column('education_institution', '@if (empty($education_insitution)) {{ "--" }} @else {{ $education_insitution }} @endif')
+            ->edit_column('address', function (NewUser $new) {
+                $user = User::find($new->id);
+
+                return $user->address . " - " . $user->area . " - " . $user->city;
+            })
+            ->add_column('ktp', function (NewUser $new) {
+                $user = User::find($new->id);
+
+                return $user->id_card;
+            })
+            ->add_column('npwped', function (NewUser $new) {
+                $user = User::find($new->id);
+
+                return $user->npwp;
+            })
             ->add_column(
                 'actions',
                 Lang::get('messages.btn_warning', ['title' => 'Change Data', 'url' => '{{ URL::route(\'editEmployee\', [$id]) }}', 'class' => 'pencil'])
                     . Lang::get('messages.btn_success', ['title' => 'Detail', 'url' => '{{ URL::route(\'detail/Employee\', [$id]) }}', 'class' => 'file'])
             )
             ->setRowClass('@if ($active === 0){{ "danger" }}@endif')
-
             ->make();
     }
 

@@ -882,6 +882,12 @@
                 </li>
                 @endif
 
+                @if(auth()->user()->producer == true)               
+                <li>
+                    <a class="{!! $cs34 or '' !!}" href="{{ route('producer/exdo-exntend/index') }}"><i class="fa fa-fw fa fa-genderless"></i> Extends Exdo</a>                    
+                </li>
+                @endif
+
             </ul>
         </li>
 

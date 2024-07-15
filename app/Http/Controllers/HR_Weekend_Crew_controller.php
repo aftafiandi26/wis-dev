@@ -140,9 +140,9 @@ class HR_Weekend_Crew_controller extends Controller
 
     public function historical()
     {
-        $prods = User::where('active', true)->where('dept_category_id', 6)->orderBy('first_name', 'asc')->get();
+        $prods = User::where('active', true)->where('dept_category_id', 6)->where('koor', true)->orderBy('first_name', 'asc')->get();
 
-        return view('HRDLevelAcces.weekend_crew.historical', compact(['prods']));
+        return view('HRDLevelAcces.weekend_crew.historical', compact(['prods', 'coors']));
     }
 
     public function dataHistorical()
@@ -256,14 +256,14 @@ class HR_Weekend_Crew_controller extends Controller
 
     public function findEmployee(Request $request)
     {
-        $prods = User::where('active', true)->where('dept_category_id', 6)->orderBy('first_name', 'asc')->get();
+        $prods = User::where('active', true)->where('dept_category_id', 6)->where('koor', true)->orderBy('first_name', 'asc')->get();
 
         return view('HRDLevelAcces.weekend_crew.detailEmpHistorical', compact(['prods']));
     }
 
     public function datatablesFindEmployee(Request $request)
     {
-        $query = WorkingOnWeekends::where('approved', '!=', 2)->where('user_id', $request->input('employee'))->whereDATE('start', '>=', $request->input('started'))->whereDATE('start', '<=', $request->input('ended'))->orderBy('start', 'desc')->get();
+        $query = WorkingOnWeekends::where('approved', '!=', 2)->where('coor_id', $request->input('employee'))->whereDATE('start', '>=', $request->input('started'))->whereDATE('start', '<=', $request->input('ended'))->orderBy('start', 'desc')->get();
 
         return Datatables::of($query)
             ->addIndexColumn()
@@ -289,7 +289,7 @@ class HR_Weekend_Crew_controller extends Controller
                 $return  = "Err!!";
 
                 if ($work->ap_producer === 1 and $work->approved === 1) {
-                    $return = "Approved";
+                    $return = "Approved (GM)";
                 }
 
                 if ($work->ap_producer === 1 and $work->approved === 0) {
