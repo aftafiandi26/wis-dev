@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('title')
-    Producer - Extended of Exdo
+    General Manager - Extended of Exdo
 @stop
 
 @section('top')
@@ -42,7 +42,6 @@
                     <th colspan="7" class="text-center">Approval Extended</th>
                 </tr>
                 <tr>
-                    <th>No</th> 
                     <th>Form ID</th>                     
                     <th>Requestor</th>
                     <th>Employes</th>
@@ -99,12 +98,11 @@ $('#tableExtends').DataTable({
     processing: true,
     responsive: true,
     ajax: {
-        "url": "{{ route('producer/exdo-exntend/data') }}",
+        "url": "{{ route('gm/exdo-extended/datatables') }}",
         "type": "GET",
     },
-    columns: [
-        { data: 'DT_Row_Index', orderable: false, searchable : false},   
-        { data: 'initial_leave_id'},
+    columns: [       
+        { data: 'initial_leave_id', orderable: false},
         { data: 'coor'},
         { data: 'employee'},
         { data: 'amount'},
@@ -119,7 +117,7 @@ $('#tableSummary').DataTable({
     processing: true,
     responsive: true,
     ajax: {
-        "url": "{{ route('producer/exdo-exntend/summary') }}",
+        "url": "{{ route('gm/exdo-extended/datasummary') }}",
         "type": "GET",
     },
     columns: [

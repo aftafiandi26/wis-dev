@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Mail\Production;
+namespace App\Mail\Production\ExtendsExdo;
 
 use App\Initial_Leave;
 use App\User;
@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class ExdoExtendedMail extends Mailable
+class DisapprovalProducerMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -18,6 +18,9 @@ class ExdoExtendedMail extends Mailable
      *
      * @return void
      */
+
+    protected $data;
+
     public function __construct($data)
     {
         $this->data = $data;
@@ -30,6 +33,7 @@ class ExdoExtendedMail extends Mailable
      */
     public function build()
     {
+
         $data = $this->data;
 
         $init = Initial_Leave::find($this->data['initial_leave_id']);
@@ -38,6 +42,6 @@ class ExdoExtendedMail extends Mailable
         $user = User::find($this->data['user_id']);
         $coor = User::find($this->data['create_by']);
 
-        return $this->view('production.extendsExdo.coordinator.mail', compact(['data', 'init', 'producer', 'user', 'coor']));
+        return $this->to('dede.aftafiandi@infinitestudios.id')->subject('Extended of Exdo')->view('production.extendsExdo.producers.mailDisapproved', compact(['data', 'init', 'producer', 'user', 'coor']));
     }
 }

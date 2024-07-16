@@ -95,7 +95,7 @@ class HomeController extends Controller
                             'hostname'      => gethostbyaddr($request->ip())
                         ];
 
-                        Log_Attempt::create($attemptLogin);
+                        // Log_Attempt::create($attemptLogin);
 
                         User::where('username', $request->input('username'))->update($b);
 

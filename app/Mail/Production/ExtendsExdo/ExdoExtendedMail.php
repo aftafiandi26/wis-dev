@@ -9,7 +9,7 @@ use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class ApprovalProducerMail extends Mailable
+class ExdoExtendedMail extends Mailable
 {
     use Queueable, SerializesModels;
 
@@ -18,8 +18,6 @@ class ApprovalProducerMail extends Mailable
      *
      * @return void
      */
-    protected $data;
-
     public function __construct($data)
     {
         $this->data = $data;
@@ -32,9 +30,7 @@ class ApprovalProducerMail extends Mailable
      */
     public function build()
     {
-
         $data = $this->data;
-        $gm = User::find($data['gm_id']);
 
         $init = Initial_Leave::find($this->data['initial_leave_id']);
 
@@ -42,6 +38,6 @@ class ApprovalProducerMail extends Mailable
         $user = User::find($this->data['user_id']);
         $coor = User::find($this->data['create_by']);
 
-        return $this->to('dede.aftafiandi@infinitestudios.id')->subject('Extended of Exdo')->view('production.extendsExdo.producers.mailApproval', compact(['gm', 'data', 'init', 'user', 'coor', 'producer']));
+        return $this->subject('Extended of Exdo')->view('production.extendsExdo.coordinator.mail', compact(['data', 'init', 'producer', 'user', 'coor']));
     }
 }

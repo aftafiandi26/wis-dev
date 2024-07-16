@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Initial_Extends;
 use App\Initial_Leave;
-use App\Mail\Production\ExdoExtendedMail;
+use App\Mail\Production\ExtendsExdo\ExdoExtendedMail;
 use App\User;
 use Carbon\Carbon;
 use Illuminate\Http\Request;

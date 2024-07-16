@@ -888,6 +888,18 @@
                 </li>
                 @endif
 
+                @if(auth()->user()->gm == true)
+                <li>
+                    <a class="{!! $cs34 or '' !!}" href="{{ route('gm/exdo-extended/index') }}"><i class="fa fa-fw fa fa-genderless"></i> Extends Exdo</a>                    
+                </li>
+                @endif
+
+                @if(auth()->user()->hr == true)
+                <li>
+                    <a class="{!! $cs34 or '' !!}" href="{{ route('hrd/exdo-extended/index') }}"><i class="fa fa-fw fa fa-genderless"></i> Extends Exdo</a>                    
+                </li>
+                @endif
+
             </ul>
         </li>
 

@@ -4,8 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Initial_Extends;
 use App\Initial_Leave;
-use App\Mail\Production\ExtendsExdo\ApprovalProducerMail;
-use App\Mail\Production\ExtendsExdo\DisapprovalProducerMail;
+use App\Mail\GeneralManager\ExtendExdo\ApprovalMail;
+use App\Mail\GeneralManager\ExtendExdo\DisapprovalMail;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Lang;
@@ -13,21 +13,21 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Yajra\Datatables\Facades\Datatables;
 
-class ProducerExtendsExdoController extends Controller
+class GM_ExtendsExdoController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'active', 'producer']);
+        $this->middleware(['auth', 'active', 'gm']);
     }
 
     public function index()
     {
-        return view('production.extendsExdo.producers.index');
+        return view('GenaralManager.extend_exdo.index');
     }
 
-    public function datatables()
+    public function datatablesExtended()
     {
-        $query = Initial_Extends::where('producer_id', auth()->user()->id)->where('ap_producer', false)->get();
+        $query = Initial_Extends::where('ap_producer', true)->where('ap_gm', false)->get();
 
         return Datatables::of($query)
             ->addIndexColumn()
@@ -61,14 +61,14 @@ class ProducerExtendsExdoController extends Controller
 
                 return $status;
             })
-            ->addColumn('actions', 'production.extendsExdo.producers.actions')
+            ->addColumn('actions', 'GenaralManager.extend_exdo.actions')
             ->rawColumns(['actions'])
             ->make(true);
     }
 
     public function datatablesSummary()
     {
-        $query = Initial_Extends::where('producer_id', auth()->user()->id)->whereNotIn('ap_producer', [false])->get();
+        $query = Initial_Extends::whereNotIn('ap_producer', [false])->whereIn('ap_gm', [1, 2])->get();
 
         return Datatables::of($query)
             ->addIndexColumn()
@@ -102,47 +102,48 @@ class ProducerExtendsExdoController extends Controller
 
                 return $status;
             })
-            ->addColumn('actions', 'production.extendsExdo.producers.actions')
+            ->addColumn('actions', 'GenaralManager.extend_exdo.actions')
             ->rawColumns(['actions'])
             ->make(true);
     }
 
-    public function showModalApproval($id)
+    public function showModal($id)
     {
         $data = Initial_Extends::find($id);
 
-        return view('production.extendsExdo.producers.approval', compact(['data']));
+        $coutless = Initial_Extends::where('initial_leave_id', $data->initial_leave_id)->get();
+
+        return view('GenaralManager.extend_exdo.modal', compact(['data', 'coutless']));
     }
 
     public function approval($id)
     {
         $data = Initial_Extends::find($id);
 
-        Mail::send(new ApprovalProducerMail($data));
+        Mail::send(new ApprovalMail($id));
 
         $data->update([
-            'ap_producer'       => true,
-            'date_producer'     => Carbon::now()
+            'ap_gm'       => true,
+            'date_gm'     => Carbon::now()
         ]);
 
         Session::flash('success', Lang::get('messages.data_custom', ['data' =>  $data->getUser($data->user_id)->getFullName() . '  extended of exdo has been successfully approved.']));
-        return redirect()->route('producer/exdo-exntend/index');
+        return redirect()->route('gm/exdo-extended/index');
     }
 
     public function disapproval($id)
     {
         $data = Initial_Extends::find($id);
 
-        Mail::send(new DisapprovalProducerMail($data));
+        Mail::send(new DisapprovalMail($id));
 
         $data->update([
-            'ap_producer'       => 2,
-            'ap_gm'             => 2,
-            'ver_hr'            => 2,
-            'date_producer'     => Carbon::now()
+            'ap_gm'       => 2,
+            'ver_hr'       => 2,
+            'date_gm'     => Carbon::now()
         ]);
 
-        Session::flash('success', Lang::get('messages.data_custom', ['data' =>  $data->getUser($data->user_id)->getFullName() . '  extended of exdo has been rejected.']));
-        return redirect()->route('producer/exdo-exntend/index');
+        Session::flash('success', Lang::get('messages.data_custom', ['data' =>  $data->getUser($data->user_id)->getFullName() . '  extended of exdo has been successfully disapproved.']));
+        return redirect()->route('gm/exdo-extended/index');
     }
 }

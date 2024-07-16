@@ -1727,9 +1727,27 @@ Route::prefix('coordinator')->group(function () {
 Route::prefix('producer')->group(function () {
     Route::get('exdo-extends', 'ProducerExtendsExdoController@index')->name('producer/exdo-exntend/index');
     Route::get('exdo-extends/data', 'ProducerExtendsExdoController@datatables')->name('producer/exdo-exntend/data');
+    Route::get('exdo-extends/summary', 'ProducerExtendsExdoController@datatablesSummary')->name('producer/exdo-exntend/summary');
     Route::get('exdo-extends/show-modal/approval/{id}', 'ProducerExtendsExdoController@showModalApproval')->name('producer/exdo-exntend/showModal/approval');
     Route::get('exdo-extends/approval/{id}', 'ProducerExtendsExdoController@approval')->name('producer/exdo-extend/approval');
     Route::get('exdo-extends/disapproval/{id}', 'ProducerExtendsExdoController@disapproval')->name('producer/exdo-extend/disapproval');
+});
+
+Route::prefix('general=manager')->group(function () {
+    Route::get('exdo-extends', 'GM_ExtendsExdoController@index')->name('gm/exdo-extended/index');
+    Route::get('exdo-extends/data', 'GM_ExtendsExdoController@datatablesExtended')->name('gm/exdo-extended/datatables');
+    Route::get('exdo-extends/datasummary', 'GM_ExtendsExdoController@datatablesSummary')->name('gm/exdo-extended/datasummary');
+    Route::get('exdo-extends/{id}', 'GM_ExtendsExdoController@showModal')->name('gm/exdo-extended/showModal');
+    Route::get('exdo-extends/approval/{id}', 'GM_ExtendsExdoController@approval')->name('gm/exdo-extended/approval');
+    Route::get('exdo-extends/disapproval/{id}', 'GM_ExtendsExdoController@disapproval')->name('gm/exdo-extended/disapproval');
+});
+
+Route::prefix('hr-admin')->group(function () {
+    Route::get('exdo-extends', 'HR_ExtendsExdoController@index')->name('hrd/exdo-extended/index');
+    Route::get('exdo-extends/data', 'HR_ExtendsExdoController@datatablesExtended')->name('hrd/exdo-extended/data');
+    Route::get('exdo-extends/{id}', 'HR_ExtendsExdoController@showModal')->name('hrd/exdo-extended/modal');
+    Route::get('exdo-extends/verified/{id}', 'HR_ExtendsExdoController@verified')->name('hrd/exdo-extended/verified');
+    Route::post('exdo-extends/disapproved', 'HR_ExtendsExdoController@disapproved')->name('hrd/exdo-extended/disapproved');
 });
 
 Route::prefix('dev')->group(function () {

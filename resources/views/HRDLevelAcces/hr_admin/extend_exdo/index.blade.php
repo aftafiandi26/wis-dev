@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('title')
-    Producer - Extended of Exdo
+    HR - Extended of Exdo
 @stop
 
 @section('top')
@@ -16,6 +16,19 @@
 <style>
     .text-center {
         text-align: center;
+    }
+    .btn-excel {
+        background-color: #4CAF50; /* Warna latar belakang hijau */
+        color: white; /* Warna teks putih */
+        border: none; /* Hapus border */
+        padding: 10px 20px; /* Padding */
+        text-align: center; /* Rata tengah teks */
+        text-decoration: none; /* Hapus garis bawah teks */
+        display: inline-block; /* Tampilkan sebagai blok sebaris */
+        font-size: 16px; /* Ukuran font */
+        margin: 4px 2px; /* Margin */
+        cursor: pointer; /* Ganti kursor menjadi pointer */
+        border-radius: 8px; /* Sudut membulat */
     }
 </style>
 @endpush
@@ -42,7 +55,6 @@
                     <th colspan="7" class="text-center">Approval Extended</th>
                 </tr>
                 <tr>
-                    <th>No</th> 
                     <th>Form ID</th>                     
                     <th>Requestor</th>
                     <th>Employes</th>
@@ -56,7 +68,7 @@
         </table>        
     </div>
     <div class="col-lg-6">
-        <table class="table table-hover table-stripped table-condensed table-bordered" width="100%" id="tableSummary">
+        <table class="table table-hover table-stripped table-condensed table-bordered" width="100%" id="tableSummaryss">
             <thead>
                 <tr>
                     <th colspan="7" class="text-center">Summary Extended</th>
@@ -70,6 +82,7 @@
                     <th>Expired</th>
                     <th>Changed</th>
                     <th>Status</th>
+                    <th>Action</th>
                 </tr>
             </thead>
         </table>
@@ -78,7 +91,7 @@
 </div>
 
 <div class="modal fade" id="showModalApproval" tabindex="-1" role="dialog" aria-labelledby="showModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content" id="modal-content-approval">
             <!--  -->
         </div>
@@ -98,13 +111,23 @@
 $('#tableExtends').DataTable({
     processing: true,
     responsive: true,
+    dom: 'Bftip',
+    buttons: [
+        {
+            extend: 'excel',
+            className: 'btn-excel'
+        },
+        {
+            extend: 'pdf',
+            className: 'btn-pdf'
+        }
+    ],
     ajax: {
-        "url": "{{ route('producer/exdo-exntend/data') }}",
+        "url": "{{ route('hrd/exdo-extended/data') }}",
         "type": "GET",
     },
-    columns: [
-        { data: 'DT_Row_Index', orderable: false, searchable : false},   
-        { data: 'initial_leave_id'},
+    columns: [       
+        { data: 'initial_leave_id', orderable: false},
         { data: 'coor'},
         { data: 'employee'},
         { data: 'amount'},

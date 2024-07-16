@@ -1,0 +1,1 @@
+<a class="btn btn-xs btn-default" data-toggle="modal" data-target="#showModalApproval" data-role="{{ route('gm/exdo-extended/showModal', $id) }}" id="approval">approval</a>
