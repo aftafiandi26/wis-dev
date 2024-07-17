@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Initial_Extends;
 use App\Initial_Leave;
+use App\Mail\HRD\ExtendExdo\Reminders;
 use App\Mail\HRD\ExtendExdo\UnverifiedMails;
 use App\Mail\HRD\ExtendExdo\VerifiedMails;
 use Carbon\Carbon;
@@ -120,6 +121,128 @@ class HR_ExtendsExdoController extends Controller
         ]);
 
         Session::flash('success', Lang::get('messages.data_custom', ['data' => $extend->getUser($extend->user_id)->getFullName() . ' extended of exdo has been successfully verified.']));
+        return redirect()->route('hrd/exdo-extended/index');
+    }
+
+    public function datatablesProgress()
+    {
+        $query = Initial_Extends::where('ver_hr', false)->get();
+
+        return Datatables::of($query)
+            ->addIndexColumn()
+            ->addColumn('employee', function (Initial_Extends $init) {
+                return  $init->user()->getFullName();
+            })
+            ->addColumn('coor', function (Initial_Extends $init) {
+                return $init->getUser($init->create_by)->getFullName();
+            })
+            ->addColumn('amount', function (Initial_Extends $init) {
+                return $init->initial_leave()->initial;
+            })
+            ->addColumn('init_expired', function (Initial_Extends $init) {
+                return $init->initial_leave()->expired;
+            })
+            ->addColumn('status', function (Initial_Extends $init) {
+                $status = "Disapproved";
+
+                if ($init->ap_producer == 0 and $init->ap_gm == 0 and $init->ver_hr == 0) {
+                    $status =   $init->getUser($init->producer_id)->getFullName() . " | Pending";
+                }
+                if ($init->ap_producer == 1 and $init->ap_gm == 0 and $init->ver_hr == 0) {
+                    $status =   "GM Pending";
+                }
+                if ($init->ap_producer == 1 and $init->ap_gm == 1 and $init->ver_hr == 0) {
+                    $status =   "HR Verifying";
+                }
+                if ($init->ap_producer == 1 and $init->ap_gm == 1 and $init->ver_hr == 1) {
+                    $status =   "Successed";
+                }
+
+                return $status;
+            })
+            ->addColumn('actions', 'HRDLevelAcces.hr_admin.extend_exdo.actionsProgress')
+            ->rawColumns(['actions'])
+            ->make(true);
+    }
+
+    public function showModalProgress($id)
+    {
+        $data = Initial_Extends::find($id);
+
+        $coutless = Initial_Extends::where('initial_leave_id', $data->initial_leave_id)->get();
+
+
+        return view('HRDLevelAcces.hr_admin.extend_exdo.modalProgress', compact(['data', 'coutless']));
+    }
+
+    public function datatablesSummary()
+    {
+        $query = Initial_Extends::whereIn('ver_hr', [1, 2])->get();
+
+        return Datatables::of($query)
+            ->addIndexColumn()
+            ->addColumn('employee', function (Initial_Extends $init) {
+                return  $init->user()->getFullName();
+            })
+            ->addColumn('coor', function (Initial_Extends $init) {
+                return $init->getUser($init->create_by)->getFullName();
+            })
+            ->addColumn('amount', function (Initial_Extends $init) {
+                return $init->initial_leave()->initial;
+            })
+            ->addColumn('init_expired', function (Initial_Extends $init) {
+                return $init->initial_leave()->expired;
+            })
+            ->addColumn('status', function (Initial_Extends $init) {
+                $status = "Disapproved";
+
+                if ($init->ap_producer == 0 and $init->ap_gm == 0 and $init->ver_hr == 0) {
+                    $status =   $init->getUser($init->producer_id)->getFullName() . " | Pending";
+                }
+                if ($init->ap_producer == 1 and $init->ap_gm == 0 and $init->ver_hr == 0) {
+                    $status =   "GM Pending";
+                }
+                if ($init->ap_producer == 1 and $init->ap_gm == 1 and $init->ver_hr == 0) {
+                    $status =   "HR Verifying";
+                }
+                if ($init->ap_producer == 1 and $init->ap_gm == 1 and $init->ver_hr == 1) {
+                    $status =   "Successed";
+                }
+
+                return $status;
+            })
+            ->addColumn('actions', 'HRDLevelAcces.hr_admin.extend_exdo.actionsSummary')
+            ->rawColumns(['actions'])
+            ->make(true);
+    }
+
+    public function showModalSummary($id)
+    {
+        $data = Initial_Extends::find($id);
+
+        $coutless = Initial_Extends::where('initial_leave_id', $data->initial_leave_id)->get();
+
+
+        return view('HRDLevelAcces.hr_admin.extend_exdo.modalSummary', compact(['data', 'coutless']));
+    }
+
+    public function reminders(Request $request)
+    {
+        $rules = [
+            'message' => ['required']
+        ];
+
+        $validator = Validator::make($request->all(), $rules);
+
+        if ($validator->fails()) {
+            Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Your message-note is empty!.']));
+            return redirect()->route('hrd/exdo-extended/index');
+        }
+        $extends = Initial_Extends::find($request->input('id'));
+
+        Mail::send(new Reminders($request->all()));
+
+        Session::flash('message', Lang::get('messages.data_custom', ['data' => $extends->getUser($extends->user_id)->getFullName() . ' extended of exdo form was successfully reminded']));
         return redirect()->route('hrd/exdo-extended/index');
     }
 }

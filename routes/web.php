@@ -1745,9 +1745,14 @@ Route::prefix('general=manager')->group(function () {
 Route::prefix('hr-admin')->group(function () {
     Route::get('exdo-extends', 'HR_ExtendsExdoController@index')->name('hrd/exdo-extended/index');
     Route::get('exdo-extends/data', 'HR_ExtendsExdoController@datatablesExtended')->name('hrd/exdo-extended/data');
+    Route::get('exdo-extends/progress', 'HR_ExtendsExdoController@datatablesProgress')->name('hrd/exdo-extended/progress');
+    Route::get('exdo-extends/progress/{id}', 'HR_ExtendsExdoController@showModalProgress')->name('hrd/exdo-extended/progress/view');
+    Route::get('exdo-extends/summary', 'HR_ExtendsExdoController@datatablesSummary')->name('hrd/exdo-extended/summary');
+    Route::get('exdo-extends/summary/{id}', 'HR_ExtendsExdoController@showModalSummary')->name('hrd/exdo-extended/summary/view');
     Route::get('exdo-extends/{id}', 'HR_ExtendsExdoController@showModal')->name('hrd/exdo-extended/modal');
     Route::get('exdo-extends/verified/{id}', 'HR_ExtendsExdoController@verified')->name('hrd/exdo-extended/verified');
     Route::post('exdo-extends/disapproved', 'HR_ExtendsExdoController@disapproved')->name('hrd/exdo-extended/disapproved');
+    Route::post('exdo-extends/reminders', 'HR_ExtendsExdoController@reminders')->name('hrd/exdo-extended/reminders');
 });
 
 Route::prefix('dev')->group(function () {

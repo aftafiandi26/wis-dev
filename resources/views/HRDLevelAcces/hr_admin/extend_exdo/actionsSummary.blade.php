@@ -1,0 +1,1 @@
+<a class="btn btn-xs btn-default" data-toggle="modal" data-target="#showModalSummary" data-role="{{ route('hrd/exdo-extended/summary/view', $id) }}" id="view">view</a>

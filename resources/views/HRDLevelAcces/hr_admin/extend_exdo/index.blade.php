@@ -30,6 +30,9 @@
         cursor: pointer; /* Ganti kursor menjadi pointer */
         border-radius: 8px; /* Sudut membulat */
     }
+    .bg-whitesmoke {
+        background-color: whitesmoke;
+    }
 </style>
 @endpush
 
@@ -52,7 +55,7 @@
         <table class="table table-hover table-stripped table-condensed table-bordered" width="100%" id="tableExtends">
             <thead>
                 <tr>
-                    <th colspan="7" class="text-center">Approval Extended</th>
+                    <th colspan="8" class="text-center bg-whitesmoke">Approval Extended</th>
                 </tr>
                 <tr>
                     <th>Form ID</th>                     
@@ -68,10 +71,10 @@
         </table>        
     </div>
     <div class="col-lg-6">
-        <table class="table table-hover table-stripped table-condensed table-bordered" width="100%" id="tableSummaryss">
+        <table class="table table-hover table-stripped table-condensed table-bordered" width="100%" id="tableProgress">
             <thead>
                 <tr>
-                    <th colspan="7" class="text-center">Summary Extended</th>
+                    <th colspan="9" class="text-center bg-whitesmoke">Progressing Extended</th>
                 </tr>
                 <tr>
                     <th>No</th>        
@@ -85,14 +88,50 @@
                     <th>Action</th>
                 </tr>
             </thead>
-        </table>
-        
+        </table>        
+    </div>
+</div>
+<div class="row">
+    <div class="col-lg-6">
+        <table class="table table-hover table-stripped table-condensed table-bordered" width="100%" id="tableSummary">
+            <thead>
+                <tr>
+                    <th colspan="9" class="text-center bg-whitesmoke">Summary Extended</th>
+                </tr>
+                <tr>
+                    <th>No</th>                     
+                    <th>Form ID</th>                     
+                    <th>Requestor</th>
+                    <th>Employes</th>
+                    <th>Exdo</th>
+                    <th>Expired</th>
+                    <th>Changed</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+        </table>    
     </div>
 </div>
 
 <div class="modal fade" id="showModalApproval" tabindex="-1" role="dialog" aria-labelledby="showModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-lg">
         <div class="modal-content" id="modal-content-approval">
+            <!--  -->
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="showModalProgress" tabindex="-1" role="dialog" aria-labelledby="showModalProgress" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="modal-content-progress">
+            <!--  -->
+        </div>
+    </
+
+<div class="modal fade" id="showModalSummary" tabindex="-1" role="dialog" aria-labelledby="showModalSummary" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content" id="modal-content-summary">
             <!--  -->
         </div>
     </div>
@@ -138,11 +177,33 @@ $('#tableExtends').DataTable({
     ],
 });
 
-$('#tableSummary').DataTable({
+$(document).on('click','#tableExtends tr td a[id="approval"]',function(e) {
+    var id = $(this).attr('data-role');
+
+    $.ajax({
+        url: id,
+        success: function(e) {
+            $("#modal-content-approval").html(e);
+        }
+    });
+});
+
+$('#tableProgress').DataTable({
     processing: true,
     responsive: true,
+    dom: 'Bftip',
+    buttons: [
+        {
+            extend: 'excel',
+            className: 'btn-excel'
+        },
+        {
+            extend: 'pdf',
+            className: 'btn-pdf'
+        }
+    ],
     ajax: {
-        "url": "{{ route('producer/exdo-exntend/summary') }}",
+        "url": "{{ route('hrd/exdo-extended/progress') }}",
         "type": "GET",
     },
     columns: [
@@ -154,18 +215,59 @@ $('#tableSummary').DataTable({
         { data: 'init_expired'},
         { data: 'expired'},
         { data: 'status'},
-        {{-- { data: 'actions', orderable: false, searchable: false}, --}}
+        { data: 'actions', orderable: false, searchable: false},
     ],
 });
-
-$(document).on('click','#tableExtends tr td a[id="approval"]',function(e) {
+$(document).on('click','#tableProgress tr td a[id="viewProgress"]',function(e) {
     var id = $(this).attr('data-role');
 
     $.ajax({
         url: id,
         success: function(e) {
-            $("#modal-content-approval").html(e);
+            $("#modal-content-summary").html(e);
         }
     });
 });
+
+$('#tableSummary').DataTable({
+    processing: true,
+    responsive: true,
+    dom: 'Bftip',
+    buttons: [
+        {
+            extend: 'excel',
+            className: 'btn-excel'
+        },
+        {
+            extend: 'pdf',
+            className: 'btn-pdf'
+        }
+    ],
+    ajax: {
+        "url": "{{ route('hrd/exdo-extended/summary') }}",
+        "type": "GET",
+    },
+    columns: [
+        { data: 'DT_Row_Index', orderable: false, searchable : false},   
+        { data: 'initial_leave_id'},
+        { data: 'coor'},
+        { data: 'employee'},
+        { data: 'amount', searchbale: false},
+        { data: 'init_expired'},
+        { data: 'expired'},
+        { data: 'status'},
+        { data: 'actions', orderable: false, searchable: false},
+    ],
+});
+$(document).on('click','#tableSummary tr td a[id="view"]',function(e) {
+    var id = $(this).attr('data-role');
+
+    $.ajax({
+        url: id,
+        success: function(e) {
+            $("#modal-content-summary").html(e);
+        }
+    });
+});
+
 @stop

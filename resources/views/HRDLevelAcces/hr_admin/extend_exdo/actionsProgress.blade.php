@@ -1,0 +1,1 @@
+<a class="btn btn-xs btn-default" data-toggle="modal" data-target="#showModalProgress" data-role="{{ route('hrd/exdo-extended/progress/view', $id) }}" id="viewProgress" title="view">view</a>
