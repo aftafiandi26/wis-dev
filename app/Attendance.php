@@ -19,4 +19,16 @@ class Attendance extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function relationsQuest()
+    {
+        return $this->hasOne(Attendance_Questions::class, 'id', 'quest_id');
+    }
+
+    public function quest()
+    {
+        $return = Attendance_Questions::find($this->quest_id);
+
+        return $return;
+    }
 }

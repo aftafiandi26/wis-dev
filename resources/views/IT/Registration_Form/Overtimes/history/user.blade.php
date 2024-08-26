@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('title')
-User of Duration Access ({{ date('M', strtotime("-1 month")) }})
+User of Duration Access ({{ date('M') }})
 @stop
 
 @section('top')
@@ -20,7 +20,7 @@ User of Duration Access ({{ date('M', strtotime("-1 month")) }})
 @section('body')
 <div class="row">
     <div class="col-lg-12">
-        <h1 class="page-header">User of Duration Access ({{ date('M', strtotime("-1 month")) }})</h1>
+        <h1 class="page-header">User of Duration Access ({{ date('M') }})</h1>
     </div>
 </div>
 <div class="row">
@@ -34,6 +34,7 @@ User of Duration Access ({{ date('M', strtotime("-1 month")) }})
                     <th>Position</th>
                     <th>Department</th>
                     <th>of Duration (hours)</th>
+                    <th>Actions</th>
                 </tr>
             </thead>
         </table>
@@ -74,6 +75,7 @@ $('#tables').DataTable({
         { data: 'position'},
         { data: 'department'},
         { data: 'duration'},
+        { data: 'actions', orderable: false, searchable : false},
     ],
     });
 

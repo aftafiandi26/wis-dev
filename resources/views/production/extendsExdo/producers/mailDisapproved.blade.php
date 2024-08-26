@@ -1,8 +1,8 @@
 <div class="row">
     <div class="col-lg-12">
-        Dear <b>{{ $coor->getFullName() }}</b>, <br><br>
+        Dear <b>{{ $extended->getUser($extended->create_by)->getFullName() }}</b>, <br><br>
         There is extended of exdo expired application has been <b>disapproved</b>.<br>
-        <br>
+        <br>  
         <table class="table table-bordered table-condensed" border="1" style="text-align: center;">
             <thead>
                 <tr>
@@ -16,15 +16,16 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>{{ $user->getFullName() }}</td>
-                    <td>{{ $init->initial }}</td>
-                    <td>{{ $init->expired }}</td>
-                    <td>{{ $data['expired'] }}</td>
-                    <td>{{ $producer->getFullName() }}</td>
-                    <td>{{ $coor->getFullName() }}</td>
+                    <td>{{ $extended->getUser($extended->user_id)->getFullName() }}</td>
+                    <td>{{ $extended->initial_leave()->initial }}</td>
+                    <td>{{ $extended->expired }}</td>
+                    <td>{{ $extended->change_to }}</td>
+                    <td>{{ $extended->getUser($extended->producer_id)->getFullName() }}</td>
+                    <td>{{ $extended->getUser($extended->create_by)->getFullName() }}</td>
                 </tr>
             </tbody>
         </table>
+        <br>
         <br>
         <br>
         <br>
@@ -32,7 +33,7 @@
         <i>production form -> extend of exdo</i>
         <br>
         <br>
-        <a href="{!! route('coordinator/exdo-extends/index') !!}">click here to login</a><br><br>
+        <a href="{{ route('coordinator/exdo-extends/index') }}">click here to login</a><br><br>
         Regard's,<br>
         - WIS -<br><br>
     </div>

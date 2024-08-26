@@ -124,6 +124,22 @@ class AllEmployesOverTimerController extends Controller
         $endOvertime = new DateTime($request->input('endOvertime'));
         $count_time = $endOvertime->diff($startOvertime);
 
+        // dd($startOvertime->format('D'));
+
+        if ($startOvertime->format('D') != 'Sat' && $startOvertime->format('D') != "Sun") {
+            if ($startOvertime->format('H') < 23 && $startOvertime->format('H') > 7) {
+                Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, you could only apply at 11:00 PM']));
+                return redirect()->route('form/overtime/index');
+            }
+
+            if ($endOvertime->format('H') > 8) {
+                Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, this will end on 08:00 AM']));
+                return redirect()->route('form/overtime/index');
+            }
+        }
+
+        dd($startOvertime->format('D'));
+
         if ($count_time->invert === 0) {
             Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, Please check your time and date !!']));
             return redirect()->route('form/overtime/index');

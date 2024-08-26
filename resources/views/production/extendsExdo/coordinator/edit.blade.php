@@ -58,7 +58,8 @@
                     <thead>
                         <tr>
                             <th>#</th>
-                            <th>Record Expired</th>
+                            <th>Expired</th>
+                            <th>Changed</th>
                             <th>Status</th>
                         </tr>
                     </thead>
@@ -67,6 +68,7 @@
                             <tr>
                                 <td>{{ ++$key }}</td>
                                 <td>{{ $item->expired }}</td>
+                                <td>{{ $item->change_to }}</td>
                                 <td>
                                     @if ($item->ver_hr == 0)
                                         Pending

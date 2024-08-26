@@ -1,0 +1,1 @@
+<a href="{{ route('it/form/history/user/index/check', $id) }}" class="btn btn-xs btn-default" target="_blank">check</a>

@@ -75,6 +75,35 @@
     .mb-10 {
         margin-bottom: 10px;
     }
+    .ml-3 {
+        margin-right: 5px;
+    }
+
+    a#chart {
+        border-radius: 10px;
+        background-color: darkgoldenrod;
+        color: white;
+    }
+
+    a#chart:hover {
+        border-radius: 10px;
+        background-color:rgb(241, 177, 17);
+        color: black;
+    }
+    button.submitFormChart {
+        border-radius: 10px;
+        background-color: greenyellow;
+        color: black;
+    }
+
+    button.submitFormChart:hover {
+        border-radius: 10px;
+        background-color:rgb(241, 177, 17);
+        color: black;
+    }
+    .btn-dafault {
+        border-radius: 10px;
+    }
 </style>
 @endpush
 @section('body')
@@ -101,6 +130,7 @@
         </div>
         <div class="col-lg-6">
             <a class="btn btn-sm btn-default pull-right" id="add"  data-toggle="modal" data-target="#modalAdd" title="Insert attendance" >Add</a>        
+            <a class="btn btn-sm btn-default pull-right ml-3" id="chart"  data-toggle="modal" data-target="#modalChart" title="chart attendance" >Chart</a>        
         </div>
     </div>
 </div>
@@ -212,6 +242,36 @@
                         <button type='button' class='btn btn-sm btn-default' data-dismiss='modal'>Close</button>
                     </div>    
                 </form>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="modalChart" tabindex="-1" role="dialog" aria-labelledby="showModalLabelChart" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="modal-content-modals">
+                <div class='modal-header'>
+                    <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
+                    <h4 class='modal-title text-center' id='showModalLabelChart'>Chart Attendance</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form action="{{ route('hr/summary/attendance/chart/get') }}" method="post" class="form-inline" id="formChart">
+                                {{ csrf_field() }}
+                                <div class="form-grop">
+                                    <label for="date">date:</label>
+                                    <input type="date" name="start" id="" class="form-control">
+                                    -
+                                    <input type="date" name="end" id="" class="form-control">
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-sm btn-default submitFormChart" id="submitFormChart">Submit</button>
+                    <button type="button" class="btn btn-sm btn-dafault" data-dismiss="modal">Close</button>
+                </div>
             </div>
         </div>
     </div>
@@ -340,5 +400,9 @@ function deleteCookie(cookieName) {
 document.getElementById('dateStarted').value = getCookie('date-time-start');
 document.getElementById('dateEnded').value = getCookie('date-time-end');
 
+
+document.getElementById('submitFormChart').addEventListener('click', function() {
+    $('form#formChart').submit();
+});
 
 @stop

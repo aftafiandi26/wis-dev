@@ -8,6 +8,7 @@
         <table class="table table-bordered table-condensed" border="1" style="text-align: center;">
             <thead>
                 <tr>
+                    <th>Form ID</th>
                     <th>Employee</th>
                     <th>Amount</th>
                     <th>Expired</th>
@@ -17,6 +18,7 @@
             </thead>
             <tbody>
                 <tr>
+                    <td>{{ $init->initial_leave_id }}</td>
                     <td>{{ $user->getFullName() }}</td>
                     <td>{{ $init->initial }}</td>
                     <td>{{ $init->expired }}</td>
@@ -31,7 +33,7 @@
         <i>production form -> extend of exdo</i>
         <br>
         <br>
-        <a href="{!! route('coordinator/exdo-extends/inde') !!}">click here to login</a><br><br>
+        <a href="{!! route('coordinator/exdo-extends/index') !!}">click here to login</a><br><br>
         Regard's,<br>
         - WIS -<br><br>
     </div>

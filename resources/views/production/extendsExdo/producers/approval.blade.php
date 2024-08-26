@@ -19,9 +19,9 @@
                         <tbody>
                             <tr>
                                 <td>{{ $data->getUser($data->create_by)->getFullName() }}</td>
-                                <td>{{ $data->initial_leave()->expired }}</td>
-                                <td>{{ $data->initial_leave()->initial }}</td>
                                 <td>{{ $data->expired }}</td>
+                                <td>{{ $data->initial_leave()->initial }}</td>
+                                <td>{{ $data->change_to }}</td>
                             </tr>
                         </tbody>
                     </table>

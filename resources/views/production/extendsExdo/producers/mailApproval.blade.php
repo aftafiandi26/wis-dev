@@ -1,6 +1,6 @@
 <div class="row">
     <div class="col-lg-12">
-        Dear <b>{{ $gm->getFullName() }}</b>, <br><br>
+        Dear <b>{{ $extended->getUser($extended->gm_id)->getFullName() }}</b>, <br><br>
         There is extended of exdo expired application need requires your approval.<br>
         <br>
         <table class="table table-bordered table-condensed" border="1" style="text-align: center;">
@@ -16,12 +16,12 @@
             </thead>
             <tbody>
                 <tr>
-                    <td>{{ $user->getFullName() }}</td>
-                    <td>{{ $init->initial }}</td>
-                    <td>{{ $init->expired }}</td>
-                    <td>{{ $data['expired'] }}</td>
-                    <td>{{ $producer->getFullName() }}</td>
-                    <td>{{ $coor->getFullName() }}</td>
+                    <td>{{ $extended->getUser($extended->user_id)->getFullName() }}</td>
+                    <td>{{ $extended->initial_leave()->initial }}</td>
+                    <td>{{ $extended->expired }}</td>
+                    <td>{{ $extended->change_to }}</td>
+                    <td>{{ $extended->getUser($extended->producer_id)->getFullName() }}</td>
+                    <td>{{ $extended->getUser($extended->create_by)->getFullName() }}</td>
                 </tr>
             </tbody>
         </table>

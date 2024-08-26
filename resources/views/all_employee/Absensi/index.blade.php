@@ -1,19 +1,19 @@
 @extends('layout')
 
 @section('title')
-Attendance
+    Attendance
 @stop
 
 @section('top')
-@include('assets_css_1')
-@include('assets_css_2')
+    @include('assets_css_1')
+    @include('assets_css_2')
 @stop
 
 @section('navbar')
-@include('navbar_top')
-@include('navbar_left', [
-'c30001' => 'active'
-])
+    @include('navbar_top')
+    @include('navbar_left', [
+    'c30001' => 'active'
+    ])
 @stop
 @section('body')
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>

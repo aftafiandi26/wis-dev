@@ -191,6 +191,182 @@ class HRForfeitedNew extends Controller
     {
         return view('HRDLevelAcces.forfeited.logs.index');
     }
+    // public function dataObjectIndex()
+    // {
+    //     $data = User::with(['entitled_leave', 'department'])->select([
+    //         'id',
+    //         'first_name',
+    //         'last_name',
+    //         'nik',
+    //         'dept_category_id',
+    //         'position',
+    //         'emp_status',
+    //         'initial_annual',
+    //         'join_date',
+    //         'end_date',
+    //         'forfeitcase'
+    //     ])
+    //         ->where('active', 1)
+    //         ->whereNotIn('nik', ["", "123456789", "D0002"])
+    //         ->whereNotIn('emp_status', ["Outsource"])
+    //         ->whereIn('id', [84])
+    //         ->orderBy('first_name', 'asc')
+    //         ->get();
+
+    //     return Datatables::of($data)
+    //         ->addIndexColumn()
+    //         ->addColumn('fullname', function (User $user) {
+    //             return $user->getFullName();
+    //         })
+    //         ->addColumn('availableAL', function (User $user) {
+    //             $data = $this->indexApply($user->id);
+
+    //             $return = "Err!!";
+
+    //             if ($user->emp_status === "Permanent") {
+    //                 if ($user->forfeitcase == 1) {
+    //                     $return = $data['totalAnnualPermanent1'];
+    //                 } else {
+    //                     $return = $data['renewPermanet'];
+    //                 }
+    //             } elseif ($user->emp_status === "PKL") {
+    //                 $return = 0;
+    //             } else {
+    //                 if ($user->forfeitcase == 1) {
+    //                     $return = $data['totalAnnual'];
+    //                 } else {
+    //                     $return = $data['renewContract'];
+    //                 }
+    //             }
+
+    //             return $return;
+    //         })
+    //         ->addColumn('advanceAL1', function (User $user) {
+    //             $data = $this->indexApply($user->id);
+
+    //             $return = "Err!!";
+
+    //             if ($user->emp_status === "Permanent") {
+    //                 if ($user->forfeitcase === 1) {
+    //                     $return = $user->initial_annual - $data['annual'] - $data['totalAnnualPermanent1'];
+    //                 } else {
+    //                     $return = $user->initial_annual - $data['annual'] - $data['renewPermanet'];;
+    //                 }
+    //             } elseif ($user->emp_status === "PKL") {
+    //                 $return = 0;
+    //             } else {
+    //                 if ($user->forfeitcase === 1) {
+    //                     $return = $user->initial_annual - $data['annual'] - $data['totalAnnual'];
+    //                 } else {
+    //                     $return = $user->initial_annual - $data['annual'] - $data['renewContract'];;
+    //                 }
+    //             }
+
+
+    //             return $return;
+    //         })
+    //         ->addColumn('advanceAL2', function (User $user) {
+    //             $avail = $this->availableLeave($user);
+
+    //             $totalAnnual = $avail['newAnnual'] - $avail['annual'];
+
+    //             $totalAnnualPermanent = $user['initial_annual'] - $avail['annual'];
+
+    //             $totalAnnualPermanent1 = $totalAnnualPermanent - $avail['daffPermanent1'];
+
+    //             $permanent = $user['initial_annual'] - $avail['annual'] - $totalAnnualPermanent1;
+
+    //             $interval = date_diff(date_create($user['join_date']),  date_create($user['end_date']));
+
+    //             $pass = $interval->y * 12;
+
+    //             $passs = $pass + $interval->m;
+
+    //             if ($passs <= $avail['annual']) {
+    //                 $newAnnual =  $avail['annual'];
+    //             } else {
+    //                 $newAnnual = $passs;
+    //             }
+
+    //             $totalAnnual = $avail['newAnnual'] - $avail['annual'];
+
+    //             $contract = $user['initial_annual'] -  $avail['annual'] - $totalAnnual;
+
+    //             if ($user['emp_status'] === "Permanent") {
+    //                 $return = $permanent;
+    //             } else {
+    //                 $return = $contract;
+    //             }
+
+    //             if ($return >= 12) {
+    //                 $return = $return - 12;
+    //             } else {
+    //                 $return = 0;
+    //             }
+
+    //             return $return;
+    //         })
+    //         ->addColumn('totalAdvance', '{{ $advanceAL1 }}')
+    //         ->addColumn('remainsAL', '{{ $availableAL + $advanceAL1 }}')
+
+    //         // ->addColumn('DEDE', function (User $user) {
+
+    //         //     $totalMonth = $this->totalMonth();
+
+    //         //     $continueMonth = $this->continueMonth() - 1;
+
+    //         //     $avail = $this->availableLeave($user);
+
+    //         //     $totalAnnual = $avail['newAnnual'] - $avail['annual'];
+
+    //         //     $totalAnnualPermanent = $user['initial_annual'] - $avail['annual'];
+
+    //         //     $totalAnnualPermanent1 = $totalAnnualPermanent - $avail['daffPermanent1'];
+
+    //         //     if ($user['emp_status'] === "Permanent") {
+    //         //         $available = $totalAnnualPermanent1;
+    //         //     } else {
+    //         //         $available = $totalAnnual;
+    //         //     }
+
+    //         //     //end available AL
+
+    //         //     $forfeited = $available - $continueMonth; // nilai dari forfeited
+
+    //         //     if ($forfeited < 0) {
+    //         //         $forfeited = 0;
+    //         //     }
+
+    //         //     return $forfeited;
+    //         // })
+    //         ->addColumn('DEDE', function (User $user) {
+    //             $forfeited = Forfeited::where('user_id', $user->id)->pluck('countAnnual');
+    //             $forfeitedCounts = ForfeitedCounts::where('user_id', $user->id)->where('status', 1)->pluck('amount');
+    //             $countAmount = $forfeited->sum() - $forfeitedCounts->sum();
+
+    //             if ($countAmount >= 0) {
+    //                 $return = $countAmount;
+    //             } else {
+    //                 $return = 0;
+    //             }
+
+    //             return $return;
+    //         })
+    //         ->addColumn('exdo', function (User $user) {
+    //             $data = $this->indexApply($user->id);
+
+    //             return $data['remainExdo'];
+    //         })
+    //         ->addColumn('AL_Exdo', '{{ $remainsAL + $exdo }}')
+    //         ->addColumn(
+    //             'actions',
+    //             Lang::get('messages.btn_viewForfeited', ['class' => 'eye', 'title' => 'View forfeited', 'url' => '{{ URL::route(\'forfeited/detail\', [$id]) }}']) .
+    //                 Lang::get('messages.btn_primary', ['title' => 'Add forfeited', 'url' => '{{ URL::route(\'forfeited/add\', [$id]) }}']) .
+    //                 Lang::get('messages.btn_viewExdo', ['class' => 'eye', 'title' => 'View Exdo', 'url' => '{{ URL::route(\'hr/exdo/view/index\', [$id]) }}', 'target' => '_blank'])
+    //         )
+    //         ->rawColumns(['actions'])
+    //         ->make(true);
+    // }
 
     public function dataObjectIndex()
     {
@@ -210,7 +386,7 @@ class HRForfeitedNew extends Controller
             ->where('active', 1)
             ->whereNotIn('nik', ["", "123456789", "D0002"])
             ->whereNotIn('emp_status', ["Outsource"])
-            ->whereIn('id', [84])
+            ->whereIn('id', [41])
             ->orderBy('first_name', 'asc')
             ->get();
 
@@ -245,6 +421,8 @@ class HRForfeitedNew extends Controller
             ->addColumn('advanceAL1', function (User $user) {
                 $data = $this->indexApply($user->id);
 
+                // dd($data, $user->initial_annual);
+
                 $return = "Err!!";
 
                 if ($user->emp_status === "Permanent") {
@@ -266,47 +444,7 @@ class HRForfeitedNew extends Controller
 
                 return $return;
             })
-            ->addColumn('advanceAL2', function (User $user) {
-                $avail = $this->availableLeave($user);
-
-                $totalAnnual = $avail['newAnnual'] - $avail['annual'];
-
-                $totalAnnualPermanent = $user['initial_annual'] - $avail['annual'];
-
-                $totalAnnualPermanent1 = $totalAnnualPermanent - $avail['daffPermanent1'];
-
-                $permanent = $user['initial_annual'] - $avail['annual'] - $totalAnnualPermanent1;
-
-                $interval = date_diff(date_create($user['join_date']),  date_create($user['end_date']));
-
-                $pass = $interval->y * 12;
-
-                $passs = $pass + $interval->m;
-
-                if ($passs <= $avail['annual']) {
-                    $newAnnual =  $avail['annual'];
-                } else {
-                    $newAnnual = $passs;
-                }
-
-                $totalAnnual = $avail['newAnnual'] - $avail['annual'];
-
-                $contract = $user['initial_annual'] -  $avail['annual'] - $totalAnnual;
-
-                if ($user['emp_status'] === "Permanent") {
-                    $return = $permanent;
-                } else {
-                    $return = $contract;
-                }
-
-                if ($return >= 12) {
-                    $return = $return - 12;
-                } else {
-                    $return = 0;
-                }
-
-                return $return;
-            })
+            ->addColumn('advanceAL2', function (User $user) { })
             ->addColumn('totalAdvance', '{{ $advanceAL1 }}')
             ->addColumn('remainsAL', '{{ $availableAL + $advanceAL1 }}')
 

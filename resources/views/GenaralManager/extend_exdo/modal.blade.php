@@ -21,9 +21,9 @@
                             <tr>
                                 <td>{{ $data->getUser($data->create_by)->getFullName() }}</td>
                                 <td>{{ $data->getUser($data->producer_id)->getFullName() }} - <small><i style="color: green;" >Approved</i></small></td>
-                                <td>{{ $data->initial_leave()->expired }}</td>
-                                <td>{{ $data->initial_leave()->initial }}</td>
                                 <td>{{ $data->expired }}</td>
+                                <td>{{ $data->initial_leave()->initial }}</td>
+                                <td>{{ $data->change_to }}</td>
                             </tr>
                         </tbody>
                     </table>

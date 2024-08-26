@@ -123,10 +123,10 @@ class CoordinatorExtendsExdoController extends Controller
         $now = Carbon::now();
         $eocNow = $now->addMonth();
 
-        if ($eocNow > $selectUser->end_date) {
-            Session::flash('getError', Lang::get('messages.data_custom', ['data' => $selectUser->getFullName() . ' will be end of contract']));
-            return redirect()->back();
-        }
+        // if ($eocNow > $selectUser->end_date) {
+        //     Session::flash('getError', Lang::get('messages.data_custom', ['data' => $selectUser->getFullName() . ' will be end of contract']));
+        //     return redirect()->back();
+        // }
 
         $users = User::where('emp_status', '!=', 'Permanent')->where('active', 1)->where('dept_category_id', auth()->user()->dept_category_id)->orderBy('first_name', 'asc')->get();
 
@@ -183,7 +183,8 @@ class CoordinatorExtendsExdoController extends Controller
         $data = [
             'initial_leave_id'      => $init->id,
             'user_id'               => $init->user_id,
-            'expired'               => $request->input('expired'),
+            'expired'               => $init->expired,
+            'change_to'             => $request->input('expired'),
             'producer_id'           => $request->input('approved'),
             'gm_id'                 => 69,
             'create_by'             => auth()->user()->id,

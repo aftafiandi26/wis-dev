@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Attendance;
+use App\Attendance_Questions;
 use App\Dept_Category;
+use App\Project_Category;
 use App\User;
 use Carbon\Carbon;
 use DateTime;
@@ -366,5 +368,222 @@ class HR_Attendance_Controller extends Controller
 
         Session::flash('message', Lang::get('messages.data_custom', ['data' => $attendance->user()->getFullName() . ' attendance has been reset.']));
         return redirect()->route('hr/summary/attendance/index');
+    }
+
+    public function getChart(Request $request)
+    {
+        if (empty($request->input('start'))) {
+            Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, please check date inputed']));
+            return redirect()->route('hr/summary/attendance/index');
+        }
+
+        if (empty($request->input('end'))) {
+            Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, please check date inputed']));
+            return redirect()->route('hr/summary/attendance/index');
+        }
+
+        $start = $request->input('start');
+        $end = $request->input('end');
+
+        return redirect()->route('hr/summary/attendance/chart', compact(['start', 'end']));
+    }
+
+    public function chart($start, $end)
+    {
+        $attendances = Attendance::with('relationsQuest')->where('quest_id', '!=', null)->whereDate('start', '>=', $start)->whereDate('start', '<=', $end)->where('in', true)->get();
+        $getProjects = Project_Category::whereIn('actived', [1, 2])->orderBy('project_name', 'asc')->get();
+
+        // dd($attendances);
+
+        $arrayProject = [];
+
+        foreach ($getProjects as $a) {
+            $arrayProject[] = $a->project_name;
+        }
+
+        $Q1_ver_unpleasent = [];
+        $Q1_unpleasent = [];
+        $Q1_neutral = [];
+        $Q1_pleasent = [];
+        $Q1_ver_pleasent = [];
+
+        $Q2_ver_poor = [];
+        $Q2_good = [];
+        $Q2_ver_good = [];
+        $Q2_excellent = [];
+
+        $proj = [];
+
+        foreach ($attendances as $att) {
+            $questioner = Attendance_Questions::where('user_id', $att->user_id)->get();
+
+            $projectIds = json_decode($att->relationsQuest->projects, true);
+            // dd($att->relationsQuest->projects, $projectIds);
+
+            $projects = Project_Category::whereIn('id', $projectIds)->get();
+
+            foreach ($projects as $project) {
+                $proj[] = $project->project_name;
+            }
+
+            if ($att->relationsQuest->Q1 === 1) {
+                $Q1_ver_unpleasent[] = [$att->relationsQuest->Q1];
+            }
+            if ($att->relationsQuest->Q1 === 2) {
+                $Q1_unpleasent[] = [$att->relationsQuest->Q1];
+            }
+            if ($att->relationsQuest->Q1 === 3) {
+                $Q1_neutral[] = [$att->relationsQuest->Q1];
+            }
+            if ($att->relationsQuest->Q1 === 4) {
+                $Q1_pleasent[] = [$att->relationsQuest->Q1];
+            }
+            if ($att->relationsQuest->Q1 === 5) {
+                $Q1_ver_pleasent[] = [$att->relationsQuest->Q1];
+            }
+
+            if ($att->relationsQuest->Q2 === 4) {
+                $Q2_excellent[] = [$att->relationsQuest->Q2];
+            }
+            if ($att->relationsQuest->Q2 === 3) {
+                $Q2_ver_good[] = [$att->relationsQuest->Q2];
+            }
+            if ($att->relationsQuest->Q2 === 2) {
+                $Q2_good[] = [$att->relationsQuest->Q2];
+            }
+            if ($att->relationsQuest->Q2 === 1) {
+                $Q2_ver_poor[] = [$att->relationsQuest->Q2];
+            }
+        }
+
+        $Q1_Total = count($Q1_ver_unpleasent) + count($Q1_unpleasent) + count($Q1_neutral) + count($Q1_pleasent) + count($Q1_ver_pleasent);
+
+        $Q2_Total = count($Q2_excellent) + count($Q2_ver_good) + count($Q2_good) + count($Q2_ver_poor);
+
+        $ver_unpleasent_percent = number_format(count($Q1_ver_unpleasent) / $Q1_Total * 100, 1);
+        $unpleasent_percent = number_format(count($Q1_unpleasent) / $Q1_Total * 100, 1);
+        $neutral_percent = number_format(count($Q1_neutral) / $Q1_Total * 100, 1);
+        $pleasent_percent = number_format(count($Q1_pleasent) / $Q1_Total * 100, 1);
+        $ver_pleasent_percent = number_format(count($Q1_ver_pleasent) / $Q1_Total * 100, 1);
+
+        $excellent_percent = number_format(count($Q2_excellent) / $Q2_Total * 100, 1);
+        $ver_good_percent = number_format(count($Q2_ver_good) / $Q2_Total * 100, 1);
+        $good_percent = number_format(count($Q2_good) / $Q2_Total * 100, 1);
+        $ver_poor_percent = number_format(count($Q2_ver_poor) / $Q2_Total * 100, 1);
+
+        $percentages = [
+            $ver_unpleasent_percent,
+            $unpleasent_percent,
+            $neutral_percent,
+            $pleasent_percent,
+            $ver_pleasent_percent
+        ];
+
+        $percent_Q2 = [
+            $ver_poor_percent,
+            $good_percent,
+            $ver_good_percent,
+            $excellent_percent
+        ];
+
+        $name_counts = array_count_values($proj);
+
+        $counted = [];
+        foreach ($name_counts as $name => $count) {
+            $counted[] = ['name' => $name, 'count' => $count];
+        }
+
+        $result = [];
+
+        foreach ($arrayProject as $sd) {
+            $count = 0;
+            foreach ($counted as $val) {
+                if ($val['name'] === $sd) {
+                    $count = $val['count'];
+                    break; // Exit the inner loop once a match is found
+                }
+            }
+            $result[] = $count;
+        }
+
+        $jsonProject = json_encode($arrayProject, true);
+        $jsonResult = json_encode($result, true);
+
+        return view('HRDLevelAcces.attendances.summary.chart', compact(['percentages', 'percent_Q2', 'start', 'end', 'jsonProject', 'jsonResult']));
+    }
+
+    public function chartDatatables($start, $end)
+    {
+        $attendances = Attendance::where('quest_id', '!=', null)->whereDate('start', '>=', $start)->whereDate('start', '<=', $end)->where('in', true)->orderBy('start', 'desc')->get();
+
+        return Datatables::of($attendances)
+            ->addIndexColumn()
+            ->addColumn('condition', function (Attendance $att) {
+                $quest = Attendance_Questions::find($att->quest_id);
+                $return = null;
+
+                if ($quest->Q1 === 1) {
+                    $return = "Very Unpleasent";
+                }
+                if ($quest->Q1 === 2) {
+                    $return = "Unpleasent";
+                }
+                if ($quest->Q1 === 3) {
+                    $return = "Neutral";
+                }
+                if ($quest->Q1 === 4) {
+                    $return = "Pleasent";
+                }
+                if ($quest->Q1 === 5) {
+                    $return = "Very Pleasent";
+                }
+
+                return $return;
+            })
+            ->addColumn('health', function (Attendance $att) {
+                $quest = Attendance_Questions::find($att->quest_id);
+                $return = null;
+
+                if ($quest->Q2 === 1) {
+                    $return = "Very Poor";
+                }
+                if ($quest->Q2 === 2) {
+                    $return = "Good";
+                }
+                if ($quest->Q2 === 3) {
+                    $return = "Very Good";
+                }
+                if ($quest->Q2 === 4) {
+                    $return = "Excellent";
+                }
+
+                return $return;
+            })
+            ->addColumn('nik', function (Attendance $att) {
+                $user = User::find($att->user_id);
+
+                return $user->nik;
+            })
+            ->addColumn('employes', function (Attendance $att) {
+                $user = User::find($att->user_id);
+                return $user->getFullName();
+            })
+            ->addColumn('projects', function (Attendance $att) {
+                $idProjects = Attendance_Questions::find($att->quest_id);
+                $array = json_decode($idProjects->projects, true);
+
+                $return = [];
+
+                foreach ($array as $arr) {
+                    $get = Project_Category::find($arr);
+
+                    $return[] = ' ' . $get->project_name;
+                }
+
+                $return = json_encode($return, true);
+
+                return $return;
+            })
+            ->make(true);
     }
 }

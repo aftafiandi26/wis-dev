@@ -11,6 +11,7 @@
                     <th>Expired</th>
                     <th>Change Expired</th>
                     <th>Producer</th>
+                    <th>General Manager</th>
                     <th>Create By Coordinator</th>
                 </tr>
             </thead>
@@ -18,9 +19,10 @@
                 <tr>
                     <td>{{ $extended->getUser($extended->user_id)->getFullName() }}</td>
                     <td>{{ $extended->initial_leave()->initial }}</td>
-                    <td>{{ $extended->initial_leave()->expired }}</td>
-                    <td>{{ $extended->expired }}</td>
+                    <td>{{ $extended->expired}}</td>
+                    <td>{{ $extended->change_to }}</td>
                     <td>{{ $extended->getUser($extended->producer_id)->getFullName() }}</td>
+                    <td>{{ $extended->getUser($extended->gm_id)->getFullName() }}</td>
                     <td>{{ $extended->getUser($extended->create_by)->getFullName() }}</td>
                 </tr>
             </tbody>

@@ -5,9 +5,8 @@ namespace App\Http\Controllers;
 use App\FormOvertimes;
 use App\User;
 use Illuminate\Http\Request;
-
-use Datatables;
 use DateTime;
+use Yajra\Datatables\Facades\Datatables;
 
 class ITDataOvertimeMonth extends Controller
 {
@@ -79,6 +78,50 @@ class ITDataOvertimeMonth extends Controller
                 $hours = $form->pluck('hours')->sum();
 
                 $minute = $form->pluck('seconds')->sum();
+
+                $minute = $minute / 60;
+
+                $hours = $hours + $minute;
+
+                return round($hours);
+                // return $minute;
+            })
+            ->addColumn('actions', 'IT.Registration_Form.Overtimes.history.actions')
+            ->rawColumns(['actions'])
+            ->make(true);
+    }
+
+    public function checkDetail($id)
+    {
+        return view('IT.Registration_Form.Overtimes.history.check', compact(['id']));
+    }
+
+    public function chectData($id)
+    {
+        $form = FormOvertimes::where('user_id', $id)->whereYear('startovertime', date('Y'))->whereMonth('startovertime', date('m'))->where('verify_it', true)->get();
+
+        return Datatables::of($form)
+            ->addIndexColumn()
+            ->addColumn('nik', function (FormOvertimes $form) {
+                $user = User::find($form->user_id);
+
+                return $user->nik;
+            })
+            ->addColumn('fullname', function (FormOvertimes $form) {
+                $user = User::find($form->user_id);
+
+                return $user->getFullName();
+            })
+            ->addColumn('deprtment', function (FormOvertimes $form) {
+                $user = User::find($form->user_id);
+
+                return $user->position;
+            })
+            ->addColumn('duration', function (FormOvertimes $form) {
+
+                $hours = $form->hours;
+
+                $minute = $form->seconds;
 
                 $minute = $minute / 60;
 

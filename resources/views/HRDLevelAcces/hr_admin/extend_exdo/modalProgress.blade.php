@@ -1,3 +1,12 @@
+<style>
+    .color-green {
+        color: green;
+    }
+    .color-red {
+        color: red;
+    }
+</style>
+
 <div class="modal-content" >
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal">&times;</button>
@@ -24,8 +33,8 @@
                         <tbody>
                             <tr>
                                 <td>{{ $data->getUser($data->create_by)->getFullName() }}</td>
-                                <td>{{ $data->getUser($data->producer_id)->getFullName() }} - <small><i style="color: green;" >Approved</i></small></td>
-                                <td>{{ $data->getUser($data->gm_id)->getFullName() }} - <small><i style="color: green;" >Approved</i></small></td>
+                                <td>{{ $data->getUser($data->producer_id)->getFullName() }} - <small><i class="{{ $styleProducer }}" >{{ $ketProducer }}</i></small></td>
+                                <td>{{ $data->getUser($data->gm_id)->getFullName() }} - <small><i class="{{ $styleGM }}">{{ $ketGM }}</i></small></td>
                                 <td>{{ $data->expired }}</td>
                                 <td>{{ $data->initial_leave()->initial }}</td>
                                 <td>{{ $data->change_to }}</td>
@@ -56,18 +65,21 @@
                                     <td>{{ $cout->expired }}</td>
                                     <td>{{ $cout->change_to }}</td>
                                     <td>
+                                        @if ($cout->ap_producer == 2 or $cout->ap_gm == 2 or $cout->ver_hr == 2)
+                                            Disapproved
+                                        @endif
                                         @if ($cout->ap_producer == 0 and $cout->ap_gm == 0 and $cout->ver_hr == 0)
                                             {{ $cout->getUser($cout->producer_id)->getFullName() }} | Pending
                                         @endif
-                                        @if ($cout->ap_producer == 1and $cout->ap_gm == 0 and $cout->ver_hr == 0)
-                                            {{ $cout->getUser($cout->ap_gm)->getFullName() }} | Pending
+                                        @if ($cout->ap_producer == 1 and $cout->ap_gm == 0 and $cout->ver_hr == 0)
+                                            {{ $cout->getUser($cout->gm_id)->getFullName() }} | Pending
                                         @endif
-                                        @if ($cout->ap_producer == 1and $cout->ap_gm == 1 and $cout->ver_hr == 0)
+                                        @if ($cout->ap_producer == 1 and $cout->ap_gm == 1 and $cout->ver_hr == 0)
                                             HR Verifying
                                         @endif
-                                        @if ($cout->ap_producer == 1and $cout->ap_gm == 1 and $cout->ver_hr == 1)
-                                            Successed
-                                        @endif
+                                        @if ($cout->ap_producer == 1 and $cout->ap_gm == 1 and $cout->ver_hr == 1)
+                                            Approved
+                                        @endif                                       
                                     </td>
                                     <td>{{ $cout->initial_leave()->note }}</td>
                                 </tr>

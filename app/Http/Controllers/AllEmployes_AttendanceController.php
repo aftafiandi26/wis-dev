@@ -3,8 +3,10 @@
 namespace App\Http\Controllers;
 
 use App\Attendance;
+use App\Attendance_Questions;
 use App\ForfeitedCounts;
 use App\Leave;
+use App\Project_Category;
 use Carbon\Carbon;
 use DateTime;
 use Greggilbert\Recaptcha\Recaptcha;
@@ -19,7 +21,7 @@ class AllEmployes_AttendanceController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'active', 'attendance']);
+        $this->middleware(['auth', 'active']);
     }
 
     private function getCookies()
@@ -101,16 +103,6 @@ class AllEmployes_AttendanceController extends Controller
 
     public function index()
     {
-
-        if (auth()->user()->dept_category_id !== 6) {
-            if (auth()->user()->hd == false) {
-                if (auth()->user()->id !== 226) {
-                    Session::flash('getError', Lang::get('messages.no_access'));
-                    return redirect()->route('index');
-                }
-            }
-        }
-
         $header = $this->header();
         $date = Carbon::now();
         $endOfDay = Carbon::today()->endOfDay();
@@ -126,11 +118,19 @@ class AllEmployes_AttendanceController extends Controller
     {
         $date = Carbon::now();
 
-        return view('all_employee.Absensi.modalCheckIn', compact(['date']));
+        $projects = Project_Category::where('actived', 1)->get();
+
+        if (auth()->user()->dept_category_id != 6) {
+            $projects = Project_Category::where('actived', 2)->get();
+        }
+
+        return view('all_employee.Absensi.modalCheckIn', compact(['date', 'projects']));
     }
 
     public function postCheckIn(Request $request)
     {
+        $projectJSON = json_encode($request->input('project'));
+
         $datetime = Carbon::now();
         $attendance = Attendance::whereDATE('start', date('Y-m-d'))->where('user_id', auth()->user()->id)->first();
 
@@ -145,16 +145,44 @@ class AllEmployes_AttendanceController extends Controller
             return redirect()->route('attendance/index');
         }
 
+        if (empty($request->input('feel'))) {
+            Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, Choose how you are feeling right now !!']));
+            return redirect()->route('attendance/index');
+        }
+
+        if (empty($request->input('health'))) {
+            Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, choose your current health status !!']));
+            return redirect()->route('attendance/index');
+        }
+
+        $qeu = [
+            'user_id'   => auth()->user()->id,
+            'Q1'        => $request->input('feel'),
+            'Q2'        => $request->input('health'),
+            'projects'  => $projectJSON,
+            'will_do'   => $request->input('being')
+        ];
+
+        Attendance_Questions::create($qeu);
+
+        $question = Attendance_Questions::where('user_id', auth()->user()->id)->latest()->first();
+
         $data = [
             'user_id'   => auth()->user()->id,
             'in'        => true,
             'start'     => $datetime,
-            'status_in'    => $request->input('value_work')
+            'status_in'    => $request->input('value_work'),
+            'quest_id'  => $question->id,
         ];
 
         Attendance::create($data);
         Session::flash('message', lang::get('messages.data_custom', ['data' => "Attendance data has been recorded."]));
         return redirect()->route('attendance/index');
+    }
+
+    public function formQuestions(Request $request)
+    {
+        dd($request->all());
     }
 
     public function checkOut()
@@ -227,6 +255,33 @@ class AllEmployes_AttendanceController extends Controller
 
 
                 return $timeString;
+            })
+            ->addColumn('nameQ1', function (Attendance $att) {
+                return $att->quest()->nameQ1();
+            })
+            ->addColumn('nameQ2', function (Attendance $att) {
+                return $att->quest()->nameQ2();
+            })
+            ->addColumn('projects', function (Attendance $att) {
+                $object = $att->quest()->projects;
+
+                // Decode JSON, return empty array if decoding fails
+                $object = json_decode($object, true);
+                if (!is_array($object)) {
+                    $object = array();
+                }
+
+                $array = array();
+
+                foreach ($object as $value) {
+                    // Find project, continue if found
+                    $project = Project_Category::find($value);
+                    if ($project) {
+                        $array[] = " $project->project_name";
+                    }
+                }
+
+                return $array;
             })
             ->make(true);
     }

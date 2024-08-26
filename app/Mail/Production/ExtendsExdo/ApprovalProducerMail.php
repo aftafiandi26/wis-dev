@@ -2,6 +2,7 @@
 
 namespace App\Mail\Production\ExtendsExdo;
 
+use App\Initial_Extends;
 use App\Initial_Leave;
 use App\User;
 use Illuminate\Bus\Queueable;
@@ -33,15 +34,8 @@ class ApprovalProducerMail extends Mailable
     public function build()
     {
 
-        $data = $this->data;
-        $gm = User::find($data['gm_id']);
+        $extended = Initial_Extends::find($this->data['id']);
 
-        $init = Initial_Leave::find($this->data['initial_leave_id']);
-
-        $producer = User::find($this->data['producer_id']);
-        $user = User::find($this->data['user_id']);
-        $coor = User::find($this->data['create_by']);
-
-        return $this->to('dede.aftafiandi@infinitestudios.id')->subject('Extended of Exdo')->view('production.extendsExdo.producers.mailApproval', compact(['gm', 'data', 'init', 'user', 'coor', 'producer']));
+        return $this->to('dede.aftafiandi@infinitestudios.id')->subject('Extended of Exdo')->view('production.extendsExdo.producers.mailApproval', compact(['extended']));
     }
 }

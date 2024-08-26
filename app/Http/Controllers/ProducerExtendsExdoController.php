@@ -142,7 +142,7 @@ class ProducerExtendsExdoController extends Controller
             'date_producer'     => Carbon::now()
         ]);
 
-        Session::flash('success', Lang::get('messages.data_custom', ['data' =>  $data->getUser($data->user_id)->getFullName() . '  extended of exdo has been rejected.']));
+        Session::flash('success', Lang::get('messages.data_custom', ['data' =>  $data->getUser($data->user_id)->getFullName() . '  extended of exdo has been disapprved.']));
         return redirect()->route('producer/exdo-exntend/index');
     }
 }

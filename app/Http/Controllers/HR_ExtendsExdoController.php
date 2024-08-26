@@ -171,8 +171,36 @@ class HR_ExtendsExdoController extends Controller
 
         $coutless = Initial_Extends::where('initial_leave_id', $data->initial_leave_id)->get();
 
+        $ketProducer = "Disapproved";
+        $styleProducer = "color-red";
+        $ketGM = "Disapproved";
+        $styleGM = "color-red";
 
-        return view('HRDLevelAcces.hr_admin.extend_exdo.modalProgress', compact(['data', 'coutless']));
+        if ($data->ap_producer == 0) {
+            $ketProducer = "Pending";
+            $styleProducer = null;
+        }
+        if ($data->ap_producer == 1) {
+            $ketProducer = "Approved";
+            $styleProducer = "color-green";
+        }
+
+        if ($data->ap_producer == 0 && $data->ap_gm == 0) {
+            $ketGM = "Waiting";
+            $styleGM = null;
+        }
+        if ($data->ap_producer == 1 && $data->ap_gm == 0) {
+            $ketGM = "Pending";
+            $styleGM = null;
+        }
+        if ($data->ap_producer == 1 && $data->ap_gm == 1) {
+            $ketGM = "Approved";
+            $styleGM = "color-green";
+        }
+
+
+
+        return view('HRDLevelAcces.hr_admin.extend_exdo.modalProgress', compact(['data', 'coutless', 'ketProducer', 'ketGM', 'styleProducer', 'styleGM']));
     }
 
     public function datatablesSummary()

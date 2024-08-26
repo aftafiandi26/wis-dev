@@ -27,7 +27,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $hidden = [
-        'password', 'remember_token', 'kk', 'npwp', 'id_card'
+        'password', 'remember_token',
     ];
 
     public function getFullName()

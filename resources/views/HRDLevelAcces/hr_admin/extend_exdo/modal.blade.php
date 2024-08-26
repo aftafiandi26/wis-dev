@@ -83,6 +83,7 @@
     </div>
 </div>
 
+
 <div id="showModalUnverified" class="modal fade" role="dialog">
     <div class="modal-dialog modal-sm">
         <div class="modal-content">
@@ -91,7 +92,7 @@
                     {{ csrf_field() }}
                     <div class="form-group">
                         <label for="email">To:</label>
-                        <input type="email" name="email" id="email" class="form-control" readonly value="dede.aftafiandi@infinitestudios.id">
+                        <input type="email" name="email" id="email" class="form-control" readonly value="dede.aftafiandi@inifinitestudios.id">
                         <input type="hidden" name="id" value="{{ $data->id }}">
                     </div>
                     <div class="form-group">

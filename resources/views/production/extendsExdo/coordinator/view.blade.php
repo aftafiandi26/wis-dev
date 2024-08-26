@@ -91,32 +91,10 @@
 @stop
 
 @section('script')
-var redNames = '{{ $eoc }}';
 
 $("select#emp").select2({
     placeholder: "Select a employee",
     theme: "classic",
-    templateResult: function (data) {
-        if (!data.id) {
-            return data.text;
-        }
-
-        var $result = $('<span></span>');
-        $result.text(data.text);
-        if (redNames.includes(data.text)) {
-            $result.addClass('text-red');
-        }
-        console.log($result);
-
-        return $result;
-    }
-}).on('select2:select', function (e) {
-    var selectedText = e.params.data.text;
-    var $container = $('#select2-emp-container').text();
-
-    if (redNames.includes(selectedText)) {
-        window.alert($container + " contract period will end soon, please note this");
-    }
 });
 
 $('#tableExdo').DataTable({

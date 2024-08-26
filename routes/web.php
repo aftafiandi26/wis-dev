@@ -530,6 +530,10 @@ Route::prefix('HRD')->group(function () {
         Route::get('edit/{id}', 'HRDLevelAccess@editRusun')->name('edit');
         Route::post('post/{id}', 'HRDLevelAccess@postRusun')->name('post');
     });
+
+    Route::get('emp12', 'HR_Employes_Controller@index')->name('hrd/management/employes/index');
+    Route::get('emp12/data', 'HR_Employes_Controller@datatables')->name('hrd/management/employes/data');
+
     // Management Staff
     Route::prefix('Management')->group(function () {
         Route::get('employee', 'HRDLevelAccess@indexStaff')->name('employee');
@@ -589,6 +593,10 @@ Route::prefix('HRD')->group(function () {
         Route::post('attendances/employes/push/{id}', 'HR_Attendance_Controller@SummaryEmpUpdate')->name('hr/summary/attendance/summary/employes/update');
         Route::get('attendances/employes/delete/{id}/{selectEmp}/{empDateStarted}/{empDateEnded}', 'HR_Attendance_Controller@DeleteEmp')->name('hr/summary/attendance/summary/employes/delete');
         Route::post('attendances/employes/delete/post/{id}', 'HR_Attendance_Controller@removeEmp')->name('hr/summary/attendance/summary/employes/delete/post');
+
+        Route::get('attendances/chart/{start}/{end}', 'HR_Attendance_Controller@chart')->name('hr/summary/attendance/chart');
+        Route::post('attendances/chart/get', 'HR_Attendance_Controller@getChart')->name('hr/summary/attendance/chart/get');
+        Route::get('attendances/chart/datatables/{start}/{end}', 'HR_Attendance_Controller@chartDatatables')->name('hr/summary/attendance/chart/datatables');
 
 
 
@@ -1239,6 +1247,9 @@ Route::prefix('registration')->group(function () {
     Route::get('history/overtime/user', 'ITDataOvertimeMonth@indexUser')->name('it/form/history/user/index');
     Route::get('history/overtime/user/data', 'ITDataOvertimeMonth@dataUser')->name('it/form/history/user/index/data');
 
+    Route::get('history/overtime/user/{id}', 'ITDataOvertimeMonth@checkDetail')->name('it/form/history/user/index/check');
+    Route::get('history/overtime/user/data/{id}', 'ITDataOvertimeMonth@chectData')->name('it/form/history/user/index/check/data');
+
     Route::get('pipeline/form/requested/progress', 'PipelineRemoteAccessController@indexProgress')->name('pipeline/form/overtime/progress/index');
     Route::get('pipeline/form/requested/progress/data', 'PipelineRemoteAccessController@dataProgress')->name('pipeline/form/overtime/progress/index/data');
     Route::get('pipeline/form/requested/progress/{id}', 'PipelineRemoteAccessController@modalProgressing')->name('pipeline/form/overtime/progress/modal');
@@ -1383,7 +1394,8 @@ Route::prefix('register')->group(function () {
     Route::get('form/delete/{id}', 'AllEmployesFormProgressingController@modalDeleteObject')->name('form/progressing/delete');
     Route::post('form/delete/post/{id}', 'AllEmployesFormProgressingController@postDelete')->name('form/progressing/delete/post');
 
-    Route::get('form/requested', 'AllEmployesOverTimerController@index')->name('form/overtime/index')->middleware(['AccessOvertimeRemote', 'Saturday']);
+    //
+    Route::get('form/requested', 'AllEmployesOverTimerController@index')->name('form/overtime/index');
     Route::post('form/overtime/post', 'AllEmployesOverTimerController@post')->name('form/overtime/post');
 
     // Overtimes SUmmary index
@@ -1434,6 +1446,9 @@ Route::prefix('register')->group(function () {
     Route::post('form/approval/general-manager/disapproved/{id}', 'FormOvertimesApprovalController@disapprovedGeneralManager')->name('form/approval/generalmanager/disapproved/post');
 });
 
+Route::get('hr/questioner/job', 'HR_QuestionerJOB_Controller@index');
+Route::get('hr/questioner/job/data', 'HR_QuestionerJOB_Controller@datatables')->name('hr/acakan/data');
+
 //AllEmployee Absensi
 Route::prefix('Absensi')->group(function () {
     Route::get('indexAbsensi', 'absensiController@index')->name('indexAbsensi');
@@ -1453,6 +1468,8 @@ Route::prefix('attendance')->group(function () {
     Route::get('checkOut', 'AllEmployes_AttendanceController@checkOut')->name('attendance/checkOut');
     Route::post('checkOut/post', 'AllEmployes_AttendanceController@postCheckOut')->name('attendance/checkOut/post');
     Route::get('data', 'AllEmployes_AttendanceController@dataTables')->name('attendance/datatables');
+
+    Route::post('form/questions', 'AllEmployes_AttendanceController@formQuestions')->name('attendance/form/questions');
 });
 
 
@@ -1761,3 +1778,5 @@ Route::prefix('dev')->group(function () {
     Route::get('freelance/username/{id}', 'programmer\\User_FreelanceController@modalUsername')->name('dev/user/freelance/username');
     Route::post('freelance/username/post/{id}', 'programmer\\User_FreelanceController@storeUsername')->name('dev/user/freelance/username/post');
 });
+
+Route::get('along/{id}', 'Leave_indexCountAnnulContorller@indexNewApply');
