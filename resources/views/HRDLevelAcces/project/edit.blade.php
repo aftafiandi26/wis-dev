@@ -6,23 +6,32 @@
 
 @section('top')
     @include('assets_css_1')
+    @include('asset_select2')
 @stop
 
 @section('navbar')
     @include('navbar_top')
     @include('navbar_left', [
         'c1u' => 'collape in',
-        'c1' => 'active', 'c15' => 'active'
+        'c1' => 'active',
+        'c15' => 'active',
     ])
 @stop
-
+@push('style')
+    <style>
+        #save {
+            margin-right: 5px;
+        }
+    </style>
+@endpush
 @section('body')
-   <div class="row">
+    <div class="row">
         <div class="col-lg-12">
             <h1 class="page-header">Edit Name Project</h1>
         </div>
     </div>
-<!-- 'route' => ['hr_mgmt-data/previlege/update-previlege', $users->id], -->
+    @include('asset_feedbackErrors')
+    <!-- 'route' => ['hr_mgmt-data/previlege/update-previlege', $users->id], -->
     <div class="row">
         <div class="col-lg-12">
             <div class="panel panel-default">
@@ -31,54 +40,59 @@
                         <b>Form Edit Name Project</b>
                     </h5>
                 </div>
-      <div class="panel-body">
-           {!! Form::open(['route' => ['postEditprojectHRD', $project->id], 'role' => 'form', 'autocomplete' => 'off', 'enctype' => 'multipart/form-data']) !!}
-                    {{ csrf_field() }}
-                        <div class="row">
-                            <div class="col-lg-2">
-                                @if ($errors->has('name'))
-                                    <div class="form-group has-error">
-                                @else
-                                    <div class="form-group">
-                                @endif
-                                    {!! Form::label('name', 'Project Name') !!}
-                                     {!! Form::text('name', $project->project_name, ['class' => 'form-control', 'placeholder' => 'Project Name', 'maxlength' => 100]) !!}
-                                    <p class="help-block">{!! $errors->first('name') !!}</p>
-                            </div>
+                <div class="panel-body">
+
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <form action="{{ route('postEditprojectHRD', $project->id) }}" method="post" id="formPost"
+                                class="form-inline">
+                                {{ csrf_field() }}
+                                <div class="form-group">
+                                    <label for="group">Group From:</label>
+                                    <select name="group" id="group" class="form-control" required>
+                                        <option value=""></option>
+                                        @foreach ($groups as $group)
+                                            <option value="{{ $group->id }}"
+                                                @if ($group->id == $project->group) selected @endif>{{ $group->group_name }}
+                                            </option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="name">Project Name:</label>
+                                    <input type="text" class="form-control" name="name" id="name" required
+                                        value="{{ $project->project_name }}">
+                                </div>
+                            </form>
                         </div>
                     </div>
 
-                       <button type="button" class="btn btn-sm btn-success" data-toggle="modal" data-target="#myModal">Save</button>
-                       
-                        <a class="btn btn-sm btn-warning" href="{!! URL::route('projectHRD') !!}">Back</a>
-                        <!-- Modal -->
-  <div class="modal fade" id="myModal" role="dialog">
-    <div class="modal-dialog">
-    
-      <!-- Modal content-->
-      <div class="modal-content">
-        <div class="modal-header">
-          <button type="button" class="close" data-dismiss="modal">&times;</button>         
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <a href="{{ route('projectHRD') }}" class="btn btn-sm btn-default pull-right">Back</a>
+                            <button class="btn btn-sm btn-success pull-right" id="save">Update</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-footer"></div>
+            </div>
         </div>
-        <div class="modal-body">
-          <p>Are you sure want to update data.</p>
-        </div>
-        <div class="modal-footer">
-        {!! Form::submit('Save', ['onclick' => 'myFunction', 'title' => 'Save', 'class' => 'btn btn-sm btn-success', 'data-toggle' => 'modal', 'data-target' => '#Save'])!!}
-          <button type="button" class="btn btn-default" data-dismiss="modal">No</button>
-        </div>
-      </div>
-    </div>
-  </div>  
-</div>
-</div>
-
-                    {!! Form::close() !!}
- 
     </div>
 @stop
 
 @section('bottom')
     @include('assets_script_1')
-      @include('assets_script_2')
 @stop
+
+@push('js')
+    <script>
+        $(document).ready(function() {
+            $('#group').select2({
+                placeholder: 'Select this project'
+            });
+            document.getElementById('save').addEventListener('click', function() {
+                document.getElementById('formPost').submit();
+            });
+        })
+    </script>
+@endpush

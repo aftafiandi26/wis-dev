@@ -93,6 +93,27 @@ class LeaveController extends Controller
             ])
             ->first();
 
+        // $select = DB::table('users')
+        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+
+        //     ->select([
+        //         DB::raw('
+        //     (
+        //         select (
+        //             select initial_annual from users where id=' . Auth::user()->id . '
+        //         ) - (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //             and ap_hrd = 1
+        //         )
+        //     ) as remainannual')
+        //     ])
+        //     ->first();
+
         $select = DB::table('users')
             ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
             ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
@@ -105,14 +126,31 @@ class LeaveController extends Controller
                     select initial_annual from users where id=' . Auth::user()->id . '
                 ) - (
                     select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
+                    and formStat=1
                 )
             ) as remainannual')
             ])
             ->first();
+
+        // $selectexdo = DB::table('users')
+        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        //     ->select([
+        //         DB::raw('
+        //     (
+        //         select (
+        //             select COALESCE(sum(initial), 0) from initial_leave where user_id=' . Auth::user()->id . ' and leave_category_id=2
+        //         ) - (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=2
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //             and ap_hrd = 1
+        //         )
+        //     ) as remainexdo')
+        //     ])
+        //     ->first();
 
         $selectexdo = DB::table('users')
             ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
@@ -125,10 +163,7 @@ class LeaveController extends Controller
                     select COALESCE(sum(initial), 0) from initial_leave where user_id=' . Auth::user()->id . ' and leave_category_id=2
                 ) - (
                     select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=2
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
+                    and formStat=1
                 )
             ) as remainexdo')
             ])
@@ -146,6 +181,25 @@ class LeaveController extends Controller
 
     public function indexNewApply()
     {
+        // $annual = DB::table('users')
+        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+
+        //     ->select([
+        //         DB::raw('
+        //     (
+        //         select (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //             and ap_hrd = 1
+        //         )
+        //     ) as transactionAnnual')
+        //     ])
+        //     ->first();
+
         $annual = DB::table('users')
             ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
             ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
@@ -156,10 +210,7 @@ class LeaveController extends Controller
             (
                 select (
                     select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
+                    and formStat=1
                 )
             ) as transactionAnnual')
             ])
@@ -231,7 +282,8 @@ class LeaveController extends Controller
 
         $expiredExdo = $w;
 
-        $minusExdo = Leave::where('user_id', auth::user()->id)->where('leave_category_id', 2)->where('ap_hd', 1)->where('ap_gm', 1)->where('ver_hr', 1)->where('ap_hrd', 1)->pluck('total_day');
+        // $minusExdo = Leave::where('user_id', auth::user()->id)->where('leave_category_id', 2)->where('ap_hd', 1)->where('ap_gm', 1)->where('ver_hr', 1)->where('ap_hrd', 1)->pluck('total_day');
+        $minusExdo = Leave::where('user_id', auth::user()->id)->where('leave_category_id', 2)->where('formStat', true)->pluck('total_day');
 
         $goingExdo = 0;
 
@@ -304,7 +356,7 @@ class LeaveController extends Controller
             'renewContract'     => $renewContract
         ];
 
-        // dd($countAmount);
+        // dd($try);
 
         return view('leave.NewAnnual.indexNewAnnual', [
             'annual'      => $annual,
@@ -347,10 +399,10 @@ class LeaveController extends Controller
 
     public function createLeave()
     {
-        // if (auth()->user()->id != 226) {
-        //     Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, this page under maintenance!!']));
-        //     return redirect()->back();
-        // }
+        if (auth()->user()->id !== 226) {
+            Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, this page under maintenance!!']));
+            return redirect()->route('index');
+        }
 
         $det = $this->indexNewApply()->try;
 
@@ -367,10 +419,7 @@ class LeaveController extends Controller
                     select initial_annual from users where id=' . Auth::user()->id . '
                 ) - (
                     select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
+                    and formStat=1
                 )
             ) as remainannual')
             ])
@@ -386,14 +435,50 @@ class LeaveController extends Controller
             (
                 select (
                     select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
+                    and formStat=1
                 )
             ) as transactionAnnual')
             ])
             ->first();
+
+        // $init_annual = DB::table('users')
+        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+
+        //     ->select([
+        //         DB::raw('
+        //     (
+        //         select (
+        //             select initial_annual from users where id=' . Auth::user()->id . '
+        //         ) - (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //             and ap_hrd = 1
+        //         )
+        //     ) as remainannual')
+        //     ])
+        //     ->first();
+
+        // $annual = DB::table('users')
+        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+
+        //     ->select([
+        //         DB::raw('
+        //     (
+        //         select (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //             and ap_hrd = 1
+        //         )
+        //     ) as transactionAnnual')
+        //     ])
+        //     ->first();
 
         $user = User::find(auth::user()->id);
 
@@ -482,14 +567,28 @@ class LeaveController extends Controller
             (
                 (
                     select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
+                    and formstat=1
                 )
             ) as leavetaken')
             ])
             ->first();
+        // $taken = DB::table('users')
+        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        //     ->select([
+        //         DB::raw('
+        //     (
+        //         (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //             and ap_hrd = 1
+        //         )
+        //     ) as leavetaken')
+        //     ])
+        //     ->first();
 
         $ent_annual = DB::table('users')
             ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
@@ -662,6 +761,24 @@ class LeaveController extends Controller
     {
         $department  = dept_category::where(['id' => Auth::user()->dept_category_id])->value('dept_category_name');
 
+        // $taken = DB::table('users')
+        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        //     ->select([
+        //         DB::raw('
+        //     (
+        //         (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=2
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //             and ap_hrd = 1
+        //         )
+        //     ) as leavetaken')
+        //     ])
+        //     ->first();
+
         $taken = DB::table('users')
             ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
             ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
@@ -671,10 +788,7 @@ class LeaveController extends Controller
             (
                 (
                     select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=2
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
+                    and formStat=1
                 )
             ) as leavetaken')
             ])
@@ -793,7 +907,8 @@ class LeaveController extends Controller
             ->whereDATE('expired', '<', date('Y-m-d'))
             ->pluck('initial');
 
-        $minusExdo = Leave::where('user_id', auth::user()->id)->where('leave_category_id', 2)->where('ap_hd', 1)->where('ap_gm', 1)->where('ver_hr', 1)->where('ap_hrd', 1)->pluck('total_day');
+        // $minusExdo = Leave::where('user_id', auth::user()->id)->where('leave_category_id', 2)->where('ap_hd', 1)->where('ap_gm', 1)->where('ver_hr', 1)->where('ap_hrd', 1)->pluck('total_day');
+        $minusExdo = Leave::where('user_id', auth::user()->id)->where('leave_category_id', 2)->where('formStat', true)->pluck('total_day');
 
         $goingExdo = 0;
 
@@ -983,10 +1098,7 @@ class LeaveController extends Controller
                     select initial_annual from users where id=' . Auth::user()->id . '
                 ) - (
                     select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
+                    and formStat=1
                 )
             ) as remainannual')
             ])
@@ -1002,14 +1114,49 @@ class LeaveController extends Controller
             (
                 select (
                     select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
+                    and formStat=1
                 )
             ) as transactionAnnual')
             ])
             ->first();
+        // $init_annual = DB::table('users')
+        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+
+        //     ->select([
+        //         DB::raw('
+        //     (
+        //         select (
+        //             select initial_annual from users where id=' . Auth::user()->id . '
+        //         ) - (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //             and ap_hrd = 1
+        //         )
+        //     ) as remainannual')
+        //     ])
+        //     ->first();
+
+        // $annual = DB::table('users')
+        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+
+        //     ->select([
+        //         DB::raw('
+        //     (
+        //         select (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //             and ap_hrd = 1
+        //         )
+        //     ) as transactionAnnual')
+        //     ])
+        //     ->first();
 
         // new rule
         $user = User::find(auth::user()->id);
@@ -1102,14 +1249,28 @@ class LeaveController extends Controller
             (
                 (
                     select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
+                    and formStat=1
                 )
             ) as leavetaken')
             ])
             ->first();
+        // $taken = DB::table('users')
+        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        //     ->select([
+        //         DB::raw('
+        //     (
+        //         (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //             and ap_hrd = 1
+        //         )
+        //     ) as leavetaken')
+        //     ])
+        //     ->first();
 
         $ent_annual = DB::table('users')
             ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
@@ -1824,21 +1985,36 @@ class LeaveController extends Controller
     public function storeLeave(Request $request)
     {
 
+        // $taken = DB::table('users')
+        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        //     ->select([
+        //         DB::raw('
+        //     (
+        //         (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //             and ap_hrd = 1
+        //         )
+        //     ) as leavetaken')
+        //     ])
+        //     ->first();
+
         $taken = DB::table('users')
             ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
             ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
             ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
             ->select([
                 DB::raw('
+        (
             (
-                (
-                    select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
-                )
-            ) as leavetaken')
+                select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
+                and formStat=1
+            )
+        ) as leavetaken')
             ])
             ->first();
 
@@ -1850,8 +2026,7 @@ class LeaveController extends Controller
                 DB::raw('
             (
                 (
-                    select initial_annual from users where id=' . Auth::user()->id . '
-                )
+                    select initial_annual from users where id=' . Auth::user()->id . ')
             ) as entitle_ann')
             ])
             ->first();
@@ -2202,7 +2377,7 @@ class LeaveController extends Controller
             $this->sendNotifAdminFacility($adminFacility, auth::user()->id);
         }
 
-        $this->sendEmail3();
+        // $this->sendEmail3();
 
         Cookie::queue('data', '', 1);
         Cookie::queue('url', '', 1);
@@ -2586,14 +2761,28 @@ class LeaveController extends Controller
             (
                 (
                     select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=2
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
+                    and formStat=1
                 )
             ) as leavetaken')
             ])
             ->first();
+        // $taken = DB::table('users')
+        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        //     ->select([
+        //         DB::raw('
+        //     (
+        //         (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=2
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //             and ap_hrd = 1
+        //         )
+        //     ) as leavetaken')
+        //     ])
+        //     ->first();
 
         $emailCoor = $request->input('sendto');
         $emailSPV = $request->input('sendtoSPV');
@@ -2985,14 +3174,28 @@ class LeaveController extends Controller
             (
                 (
                     select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
+                    and formStat=1
                 )
             ) as leavetaken')
             ])
             ->first();
+        // $taken = DB::table('users')
+        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
+        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
+        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
+        //     ->select([
+        //         DB::raw('
+        //     (
+        //         (
+        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
+        //             and ap_hd  = 1
+        //             and ap_gm  = 1
+        //             and ver_hr = 1
+        //             and ap_hrd = 1
+        //         )
+        //     ) as leavetaken')
+        //     ])
+        //     ->first();
 
         $ent_annual = DB::table('users')
             ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')

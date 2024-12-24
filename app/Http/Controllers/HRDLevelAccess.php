@@ -16,6 +16,7 @@ use App\Project_Category;
 use App\User;
 use App\User_project;
 use App\Exports\UserReport;
+use App\ProjectGroup;
 use App\ViewOffYears;
 use DB;
 use Illuminate\Http\Request;
@@ -1217,51 +1218,147 @@ class HRDLevelAccess extends Controller
         return view::make('HRDLevelAcces.project.index');
     }
 
+    public function groupProject()
+    {
+        $users = User::where('active', true)->whereNotIn('nik', ['123456789', ""])->orderBy('first_name', 'asc')->get();
+
+        return Datatables::of($users)
+            ->addIndexColumn()
+            ->addColumn('fullname', function (User $user) {
+                return $user->getFullName();
+            })
+            ->addColumn('department', function (User $user) {
+                return $user->getDepartment();
+            })
+            ->addColumn('project1', function (User $user) {
+                if ($user->project_category_id_1) {
+                    $project = Project_Category::find($user->project_category_id_1);
+                    $group = ProjectGroup::where('active', true)->find($project->group);
+                    if ($group) {
+                        return $group->group_name;
+                    }
+                    return '#group_failed';
+                }
+
+                return "--";
+            })
+            ->addColumn('project2', function (User $user) {
+                if ($user->project_category_id_2) {
+                    $project = Project_Category::find($user->project_category_id_2);
+                    $group = ProjectGroup::where('active', true)->find($project->group);
+                    if ($group) {
+                        return $group->group_name;
+                    }
+                    return '#group_failed';
+                }
+
+                return "--";
+            })
+            ->addColumn('project3', function (User $user) {
+                if ($user->project_category_id_3) {
+                    $project = Project_Category::find($user->project_category_id_3);
+                    $group = ProjectGroup::where('active', true)->find($project->group);
+                    if ($group) {
+                        return $group->group_name;
+                    }
+                    return '#group_failed';
+                }
+
+                return "--";
+            })
+            ->addColumn('project4', function (User $user) {
+                if ($user->project_category_id_4) {
+                    $project = Project_Category::find($user->project_category_id_4);
+                    $group = ProjectGroup::where('active', true)->find($project->group);
+                    if ($group) {
+                        return $group->group_name;
+                    }
+                    return '#group_failed';
+                }
+
+                return "--";
+            })
+            ->addColumn('actions', 'HRDLevelAcces.project.userActions')
+            ->rawColumns(['actions'])
+            ->make(true);
+    }
+
+    public function groupProjectModal($id)
+    {
+        $user = User::find($id);
+
+        $projectGroup = ProjectGroup::where('active', true)->orderBy('group_name', 'asc')->get();
+
+        $projects = Project_Category::where('actived', true)->orderBy('Project_name', 'asc')->get();
+
+        return view('HRDLevelAcces.project.userModal', compact(['projectGroup', 'user', 'projects']));
+    }
+
     public function getprojectHRD()
     {
 
-        $select = Project_Category::select(['id', 'project_name'])->get();
+        $select = Project_Category::latest()->get();
 
         return Datatables::of($select)
-            ->add_column(
+            ->addIndexColumn()
+            ->addColumn('group', function (Project_Category $project) {
+                if ($project->group == 0) {
+                    return null;
+                }
+                $group = ProjectGroup::find($project->group);
+                return $group->group_name;
+            })
+            ->addColumn(
                 'actions',
                 Lang::get('messages.btn_warning', ['title' => 'Edit', 'url' => '{{ URL::route(\'EditprojectHRD\', [$id]) }}', 'class' => 'pencil'])
             )
-            ->make();
+            ->editColumn('actived', function (Project_Category $project) {
+                if ($project->actived == true) {
+                    return 'Active';
+                }
+
+                return "Deactive";
+            })
+            ->setRowClass(function ($user) {
+
+                return $user->actived ? 'text-green' : 'text-red';
+            })
+            ->make(true);
     }
+
 
     public function EditprojectHRD($id)
     {
-        $select = Project_Category::find($id);
+        $project = Project_Category::find($id);
 
+        $groups = ProjectGroup::where('active', true)->orderBy('group_name', 'asc')->get();
 
-        return view::make('HRDLevelAcces.project.edit', ['project' => $select]);
+        return view::make('HRDLevelAcces.project.edit', ['project' => $project, 'groups' => $groups]);
     }
 
     public function postEditprojectHRD(Request $request, $id)
     {
-
         $project = Project_Category::find($id);
 
         $rules = [
-            'name' => 'required'
+            'name' => 'required',
+            'group' => 'required'
         ];
 
         $data = [
             'project_name' => $request->input('name'),
+            'group'        => $request->input('group'),
             'created_by'   => auth::user()->first_name . ' ' . auth::user()->last_name,
         ];
 
         $validator = Validator::make($request->all(), $rules);
-
-        /*    return dd($data);*/
 
         if ($validator->fails()) {
             return Redirect::route('EditprojectHRD', ['id' => $id])
                 ->withErrors($validator)
                 ->withInput();
         } else {
-            Project_Category::where('id', '=', $id)->update($data);
+            Project_Category::find($id)->update($data);
             Session::flash('message', Lang::get('messages.data_updated', ['data' => 'Data User']));
             return Redirect::route('projectHRD');
         }
@@ -1269,29 +1366,32 @@ class HRDLevelAccess extends Controller
 
     public function AddNewPrivilege()
     {
-        return view::make('HRDLevelAcces.project.add');
+        $groups = ProjectGroup::where('active', true)->orderBy('group_name', 'asc')->get();
+
+        return view::make('HRDLevelAcces.project.add', compact(['groups']));
     }
 
     public function postNewPrivilege(Request $request)
     {
         $rules = [
-            'name' => 'required'
+            'name' => 'required',
+            'group' => 'required'
         ];
 
         $data = [
-            'project_name' => $request->input('name')
+            'project_name' => $request->input('name'),
+            'group'        => $request->input('group'),
+            'created_by'   => auth::user()->first_name . ' ' . auth::user()->last_name,
         ];
 
         $validator = Validator::make($request->all(), $rules);
 
-        /*     return dd($data);*/
-
         if ($validator->fails()) {
-            return Redirect::route('Editprivellage', ['id' => $id])
+            return Redirect::route('Addproject12')
                 ->withErrors($validator)
                 ->withInput();
         } else {
-            Project_Category::insert($data);
+            Project_Category::create($data);
             Session::flash('message', Lang::get('messages.data_updated', ['data' => 'Data User']));
             return Redirect::route('projectHRD');
         }

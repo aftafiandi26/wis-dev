@@ -272,6 +272,10 @@
                 });
             });
 
+            let url = "{{ route('attendance/datatables') }}";
+
+            console.log(url);
+
             $('table#tablesWork').DataTable({
                 "columnDefs": [{
                     className: "never",
@@ -282,7 +286,7 @@
                 }],
                 processing: true,
                 responsive: true,
-                ajax: '{{ route('attendance/datatables') }}',
+                ajax: "{{ route('attendance/datatables') }}",
                 columns: [{
                         data: 'DT_Row_Index',
                         orderable: false,

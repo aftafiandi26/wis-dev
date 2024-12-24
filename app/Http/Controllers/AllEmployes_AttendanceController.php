@@ -7,6 +7,7 @@ use App\Attendance_Questions;
 use App\ForfeitedCounts;
 use App\Leave;
 use App\Project_Category;
+use App\ProjectGroup;
 use Carbon\Carbon;
 use DateTime;
 use Greggilbert\Recaptcha\Recaptcha;
@@ -92,6 +93,105 @@ class AllEmployes_AttendanceController extends Controller
         // return $map;
     }
 
+    private function projected()
+    {
+        $projects = Project_Category::where('actived', 1)->get();
+
+        $project1 = auth()->user()->project_category_id_1;
+        $project2 = auth()->user()->project_category_id_2;
+        $project3 = auth()->user()->project_category_id_3;
+        $project4 = auth()->user()->project_category_id_4;
+        $project5 = auth()->user()->project_category_id_5;
+
+        $idProject1 = null;
+        $idProject2 = null;
+        $idProject3 = null;
+        $idProject4 = null;
+        $idProject5 = null;
+
+        if ($project1) {
+            $project1Name = $projects->find($project1);
+            $project1 = null;
+            $idProject1 = null;
+            if ($project1Name) {
+                $group = ProjectGroup::find($project1Name->group);
+                $project1 = null;
+                $idProject1 = null;
+                if ($group) {
+                    $project1 = $group->group_name;
+                    $idProject1 = $group->id;
+                }
+            }
+        }
+
+        if ($project2) {
+            $project2Name = $projects->find($project2);
+            $project2 = null;
+            $idProject2 = null;
+            if ($project2Name) {
+                $group = ProjectGroup::find($project2Name->group);
+                $project2 = null;
+                $idProject2 = null;
+                if ($group) {
+                    $project2 = $group->group_name;
+                    $idProject2 = $group->id;
+                }
+            }
+        }
+
+        if ($project3) {
+            $project3Name = $projects->find($project3);
+            $project3 = null;
+            $idProject3 = null;
+            if ($project3Name) {
+                $group = ProjectGroup::find($project3Name->group);
+                $project3 = null;
+                $idProject3 = null;
+                if ($group) {
+                    $project3 = $group->group_name;
+                    $idProject3 = $group->id;
+                }
+            }
+        }
+
+        if ($project4) {
+            $project4Name = $projects->find($project4);
+            $project4 = null;
+            $idProject4 = null;
+            if ($project4Name) {
+                $group = ProjectGroup::find($project4Name->group);
+                $project4 = null;
+                $idProject4 = null;
+                if ($group) {
+                    $project4 = $group->group_name;
+                    $idProject4 = $group->id;
+                }
+            }
+        }
+
+        if ($project5) {
+            $project5Name = $projects->find($project5);
+            $project5 = null;
+            $idProject5 = null;
+            if ($project5Name) {
+                $group = ProjectGroup::find($project5Name->group);
+                $project5 = null;
+                $idProject5 = null;
+                if ($group) {
+                    $project5 = $group->group_name;
+                    $idProject5 = $group->id;
+                }
+            }
+        }
+
+        $viewProjects = [$project1, $project2, $project3, $project4, $project5];
+        $viewIdProjects = [$idProject1, $idProject2, $idProject3, $idProject4, $idProject5];
+
+        $array = [$viewIdProjects, $viewProjects];
+
+        return $array;
+    }
+
     public function dataProvinsi()
     {
         $data = asset('response/js/provinsi.js');
@@ -118,18 +218,17 @@ class AllEmployes_AttendanceController extends Controller
     {
         $date = Carbon::now();
 
-        $projects = Project_Category::where('actived', 1)->get();
+        $arrayProject = $this->projected();
 
-        if (auth()->user()->dept_category_id != 6) {
-            $projects = Project_Category::where('actived', 2)->get();
-        }
+        $viewProjects = $arrayProject[1];
+        $viewIdProjects = $arrayProject[0];
 
-        return view('all_employee.Absensi.modalCheckIn', compact(['date', 'projects']));
+        return view('all_employee.Absensi.modalCheckIn', compact(['date', 'viewIdProjects', 'viewProjects']));
     }
 
     public function postCheckIn(Request $request)
     {
-        $projectJSON = json_encode($request->input('project'));
+        // $projectJSON = json_encode($request->input('project'));
 
         $datetime = Carbon::now();
         $attendance = Attendance::whereDATE('start', date('Y-m-d'))->where('user_id', auth()->user()->id)->first();
@@ -155,11 +254,25 @@ class AllEmployes_AttendanceController extends Controller
             return redirect()->route('attendance/index');
         }
 
+        if (empty($request->input('project'))) {
+            Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, your project is empty!']));
+            Session::flash('message', Lang::get('messages.data_custom', ['data' => 'Please check your project.']));
+            return redirect()->route('attendance/index');
+        }
+
+        $project = ProjectGroup::find($request->input('project'));
+
+        if ($project->active == false) {
+            Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, ' . $project->group_name . ' has been completed, you cannot choose this project']));
+            Session::flash('message', Lang::get('messages.data_custom', ['data' => 'If you want choose this project, please contact administrator']));
+            return redirect()->route('attendance/index');
+        }
+
         $qeu = [
             'user_id'   => auth()->user()->id,
             'Q1'        => $request->input('feel'),
             'Q2'        => $request->input('health'),
-            'projects'  => $projectJSON,
+            'group'     => $project->id,
             'will_do'   => $request->input('being')
         ];
 
@@ -168,11 +281,11 @@ class AllEmployes_AttendanceController extends Controller
         $question = Attendance_Questions::where('user_id', auth()->user()->id)->latest()->first();
 
         $data = [
-            'user_id'   => auth()->user()->id,
-            'in'        => true,
-            'start'     => $datetime,
+            'user_id'      => auth()->user()->id,
+            'in'           => true,
+            'start'        => $datetime,
             'status_in'    => $request->input('value_work'),
-            'quest_id'  => $question->id,
+            'quest_id'     => $question->id,
         ];
 
         Attendance::create($data);
@@ -188,9 +301,14 @@ class AllEmployes_AttendanceController extends Controller
     public function checkOut()
     {
         $date = Carbon::now();
-        $attendance = Attendance::where('user_id', auth()->user()->id)->where('in', 1)->where('out', 0)->latest()->first();
+        $attendance = Attendance::with(['relationsQuest'])->where('user_id', auth()->user()->id)->where('in', 1)->where('out', 0)->latest()->first();
 
-        return view('all_employee.Absensi.modalCheckOut', compact(['date', 'attendance']));
+        $arrayProject = $this->projected();
+
+        $viewProjects = $arrayProject[1];
+        $viewIdProjects = $arrayProject[0];
+
+        return view('all_employee.Absensi.modalCheckOut', compact(['date', 'attendance', 'viewProjects', 'viewIdProjects']));
     }
 
     public function postCheckOut(Request $request)
@@ -257,31 +375,35 @@ class AllEmployes_AttendanceController extends Controller
                 return $timeString;
             })
             ->addColumn('nameQ1', function (Attendance $att) {
-                return $att->quest()->nameQ1();
-            })
-            ->addColumn('nameQ2', function (Attendance $att) {
-                return $att->quest()->nameQ2();
-            })
-            ->addColumn('projects', function (Attendance $att) {
-                $object = $att->quest()->projects;
 
-                // Decode JSON, return empty array if decoding fails
-                $object = json_decode($object, true);
-                if (!is_array($object)) {
-                    $object = array();
+                if ($att->quest_id) {
+                    $quest = Attendance_Questions::find($att->quest_id);
+
+                    return $quest->nameQ1();
                 }
 
-                $array = array();
+                return "";
+            })
+            ->addColumn('nameQ2', function (Attendance $att) {
 
-                foreach ($object as $value) {
-                    // Find project, continue if found
-                    $project = Project_Category::find($value);
-                    if ($project) {
-                        $array[] = " $project->project_name";
+                if ($att->quest_id) {
+                    $quest = Attendance_Questions::find($att->quest_id);
+                    return $quest->nameQ2();
+                }
+
+                return "";
+            })
+            ->addColumn('projects', function (Attendance $att) {
+                if ($att->quest_id) {
+
+                    $quest = Attendance_Questions::find($att->quest_id);
+                    if ($quest->group) {
+                        $project = ProjectGroup::find($quest->group);
+                        return $project->group_name;
                     }
                 }
 
-                return $array;
+                return "";
             })
             ->make(true);
     }

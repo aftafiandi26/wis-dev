@@ -46,6 +46,8 @@ class attendanceSeeder extends Seeder
             ];
 
             Attendance::create($data);
+
+            return "done";
         }
     }
 }

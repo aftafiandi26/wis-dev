@@ -33,6 +33,8 @@ class HR_Attendance_Controller extends Controller
     {
         $waktu = Carbon::today();
 
+        // dd($waktu);
+
         if (!isset($_COOKIE['date-time-start'])) {
             $start = $waktu->copy()->subDay(7);
         } else {
@@ -45,7 +47,8 @@ class HR_Attendance_Controller extends Controller
             $end = $_COOKIE['date-time-end'];
         }
 
-        $query = Attendance::whereDATE('start', '>=', $start)->whereDATE('start', '<=', $end)->get();
+        // $query = Attendance::whereDATE('start', '>=', $start)->whereDATE('start', '<=', $end)->get();
+        $query = Attendance::whereDATE('start', '>=', $start)->whereDATE('start', '<=', $end)->where('user_id', 3)->get();
 
         return Datatables::of($query)
             ->addIndexColumn()
@@ -76,6 +79,51 @@ class HR_Attendance_Controller extends Controller
                 $return = null;
                 if ($att->end) {
                     $return = date('H:i:s', strtotime($att->end));
+                }
+                return $return;
+            })
+            ->addColumn('feeling', function (Attendance $att) {
+                $return = null;
+
+                if ($att->quest_id) {
+                    $feel = $att->quest()->Q1;
+
+                    if ($feel == 1) {
+                        $return = "Very Unpleasant";
+                    }
+                    if ($feel == 2) {
+                        $return = "Unpleasant";
+                    }
+                    if ($feel == 3) {
+                        $return = "Neutral";
+                    }
+                    if ($feel == 4) {
+                        $return = "Pleasant";
+                    }
+                    if ($feel == 5) {
+                        $return = "Very Pleasant";
+                    }
+                }
+                return $return;
+            })
+            ->addColumn('healing', function (Attendance $att) {
+                $return = null;
+
+                if ($att->quest_id) {
+                    $feel = $att->quest()->Q2;
+
+                    if ($feel == 1) {
+                        $return = "Very Poor";
+                    }
+                    if ($feel == 2) {
+                        $return = "Good";
+                    }
+                    if ($feel == 3) {
+                        $return = "Very Good";
+                    }
+                    if ($feel == 4) {
+                        $return = "Excellent";
+                    }
                 }
                 return $return;
             })
@@ -272,6 +320,51 @@ class HR_Attendance_Controller extends Controller
                 $timeString = sprintf("%02d:%02d", $hours, $remainingMinutes); // Format jam, menit, dan hari menjadi string HH:MM:SS   
 
                 return $timeString;
+            })
+            ->addColumn('feeling', function (Attendance $att) {
+                $return = null;
+
+                if ($att->quest_id) {
+                    $feel = $att->quest()->Q1;
+
+                    if ($feel == 1) {
+                        $return = "Very Unpleasant";
+                    }
+                    if ($feel == 2) {
+                        $return = "Unpleasant";
+                    }
+                    if ($feel == 3) {
+                        $return = "Neutral";
+                    }
+                    if ($feel == 4) {
+                        $return = "Pleasant";
+                    }
+                    if ($feel == 5) {
+                        $return = "Very Pleasant";
+                    }
+                }
+                return $return;
+            })
+            ->addColumn('healing', function (Attendance $att) {
+                $return = null;
+
+                if ($att->quest_id) {
+                    $feel = $att->quest()->Q2;
+
+                    if ($feel == 1) {
+                        $return = "Very Poor";
+                    }
+                    if ($feel == 2) {
+                        $return = "Good";
+                    }
+                    if ($feel == 3) {
+                        $return = "Very Good";
+                    }
+                    if ($feel == 4) {
+                        $return = "Excellent";
+                    }
+                }
+                return $return;
             })
             ->addColumn('actions', function (Attendance $attendance) use ($selectEmp, $empDateStarted, $empDateEnded) {
                 $id = $attendance->id;

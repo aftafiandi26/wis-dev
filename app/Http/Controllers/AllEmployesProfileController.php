@@ -4,12 +4,13 @@ namespace App\Http\Controllers;
 
 use App\Dept_Category;
 use App\Project_Category;
+use App\ProjectGroup;
 use App\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Storage;
-use Validator;
+use Illuminate\Support\Facades\Validator;
 
 class AllEmployesProfileController extends Controller
 {
@@ -35,23 +36,34 @@ class AllEmployesProfileController extends Controller
         }
 
         $projects = Project_Category::orderBy('project_name', 'asc')->get();
+        $groupProject = ProjectGroup::where('active', true)->orderBy('group_name', 'asc')->get();
 
         $mainProject = $projects->find(auth()->user()->project_category_id_1);
 
         if (empty($mainProject)) {
             $mainProject = "--";
         } else {
-            $mainProject = $mainProject->project_name;
+            $group1 = $groupProject->find($mainProject->group);
+
+            if ($group1) {
+                $mainProject = $group1->group_name;
+            } else {
+                $mainProject = "--";
+            }
         }
-
-
 
         $secondProject = $projects->find(auth()->user()->project_category_id_2);
 
         if (empty($secondProject)) {
             $secondProject = "--";
         } else {
-            $secondProject = $secondProject->project_name;
+            $group2 = $groupProject->find($secondProject->group);
+
+            if ($group2) {
+                $secondProject = $group2->group_name;
+            } else {
+                $secondProject = "--";
+            }
         }
 
         $thirdProject = $projects->find(auth()->user()->project_category_id_3);
@@ -59,7 +71,13 @@ class AllEmployesProfileController extends Controller
         if (empty($thirdProject)) {
             $thirdProject = "--";
         } else {
-            $thirdProject = $thirdProject->project_name;
+            $group3 = $groupProject->find($thirdProject->group);
+
+            if ($group3) {
+                $thirdProject = $group3->group_name;
+            } else {
+                $thirdProject = "--";
+            }
         }
 
         $fourProject = $projects->find(auth()->user()->project_category_id_4);
@@ -67,7 +85,13 @@ class AllEmployesProfileController extends Controller
         if (empty($fourProject)) {
             $fourProject = "--";
         } else {
-            $fourProject = $fourProject->project_name;
+            $group4 = $groupProject->find($fourProject->group);
+
+            if ($group4) {
+                $fourProject = $group4->group_name;
+            } else {
+                $fourProject = "--";
+            }
         }
 
         $yourProjects = [
@@ -128,7 +152,9 @@ class AllEmployesProfileController extends Controller
     {
         $allprojects = Project_Category::orderBy('project_name', 'asc')->get();
 
-        return view('all_employee.Profile.modalProjects', compact(['allprojects', 'project', 'id']));
+        $groupProjects = ProjectGroup::where('active', true)->orderBy('group_name', 'asc')->get();
+
+        return view('all_employee.Profile.modalProjects', compact(['allprojects', 'project', 'id', 'groupProjects']));
     }
 
     public function updateProject(Request $request, $id)

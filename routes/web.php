@@ -696,6 +696,16 @@ Route::prefix('HRD')->group(function () {
     route::get('indexEndEmployee', 'HRDLevelAccess@indexEndEmployee')->name('indexEndEmployee');
     route::get('getEndEmployee', 'HRDLevelAccess@getEndEmployee')->name('getEndEmployee');
 
+    Route::prefix('project')->group(function () {
+        Route::get('group-name/data', 'HRDLevelAccess@groupProject')->name('hrd/project-group/data');
+        Route::get('group-name/data/{id}', 'HRDLevelAccess@groupProjectModal')->name('hrd/project-group/show');
+
+        Route::post('group-name/project1/{id}', 'HRD_ProjectController@storerProject1')->name('hrd/project-group/project1');
+        Route::post('group-name/project2/{id}', 'HRD_ProjectController@storerProject2')->name('hrd/project-group/project2');
+        Route::post('group-name/project3/{id}', 'HRD_ProjectController@storerProject3')->name('hrd/project-group/project3');
+        Route::post('group-name/project4/{id}', 'HRD_ProjectController@storerProject4')->name('hrd/project-group/project4');
+    });
+
     route::prefix('Detail')->group(function () {
         route::get('detailTotalEmployee', 'HRDLevelAccess@detailTotalEmployee')->name('detailTotalEmployee');
         route::get('getdetailTotalEmployee', 'HRDLevelAccess@getdetailTotalEmployee')->name('getdetailTotalEmployee');
@@ -1505,6 +1515,20 @@ Route::prefix('general-manager')->group(function () {
 
     Route::get('working-on-weekends/summary', 'GM_WeekendsController@summary')->name('gm/working-on-weekends/summary');
     Route::get('working-on-weekends/summary/data', 'GM_WeekendsController@dataSummary')->name('gm/working-on-weekends/summary/data');
+
+    // Anggarda123  
+});
+
+// Menu Role Admin - Production
+Route::prefix('admin-production')->group(function () {
+    Route::get('summary/attendance', 'GM_Summary_AttendancesController@index')->name('gm/summary/attendance/index');
+    Route::get('summary/attendance/data', 'GM_Summary_AttendancesController@dataTablesIndex')->name('gm/summary/attendance/index/data');
+    Route::get('summary/attendance/data/show/{id}/{date}', 'GM_Summary_AttendancesController@dataTatablesShowEmployes')->name('gm/summary/attendance/index/data/show');
+    Route::get('summary/attendance/filter', 'GM_Summary_AttendancesController@filterDate')->name('gm/summary/attendance/filter');
+    Route::get('summary/attendance/filter/data/{start}/{end}', 'GM_Summary_AttendancesController@filterDataTalesDate')->name('gm/summary/attendance/filter/data');
+    Route::get('summary/attendance/filter/data/{id}/{start}/{end}', 'GM_Summary_AttendancesController@filterDataTablesShowEmployee')->name('gm/summary/attendance/filter/data/show');
+    Route::get('summary/attendance/filter/employee', 'GM_Summary_AttendancesController@employeeFilter')->name('gm/summary/attendance/filter/employee');
+    Route::get('summary/attendance/filter/employee/{id}/{start}/{end}', 'GM_Summary_AttendancesController@employeeFilterShow')->name('gm/summary/attendance/filter/employee/data');
 });
 
 Route::prefix('Voting')->group(function () {
@@ -1759,6 +1783,7 @@ Route::prefix('general=manager')->group(function () {
     Route::get('exdo-extends/disapproval/{id}', 'GM_ExtendsExdoController@disapproval')->name('gm/exdo-extended/disapproval');
 });
 
+// HRD Access
 Route::prefix('hr-admin')->group(function () {
     Route::get('exdo-extends', 'HR_ExtendsExdoController@index')->name('hrd/exdo-extended/index');
     Route::get('exdo-extends/data', 'HR_ExtendsExdoController@datatablesExtended')->name('hrd/exdo-extended/data');
@@ -1770,6 +1795,10 @@ Route::prefix('hr-admin')->group(function () {
     Route::get('exdo-extends/verified/{id}', 'HR_ExtendsExdoController@verified')->name('hrd/exdo-extended/verified');
     Route::post('exdo-extends/disapproved', 'HR_ExtendsExdoController@disapproved')->name('hrd/exdo-extended/disapproved');
     Route::post('exdo-extends/reminders', 'HR_ExtendsExdoController@reminders')->name('hrd/exdo-extended/reminders');
+
+    //Management Leave > Exdo Leave (Report)
+    Route::get('exdo-leave', 'HRExdoController@index')->name('hrd/exdo-leave/index');
+    Route::get('exdo-leave/data', 'HRExdoController@dataTables')->name('hrd/exdo-leave/data');
 });
 
 Route::prefix('dev')->group(function () {

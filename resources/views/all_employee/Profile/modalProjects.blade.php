@@ -5,15 +5,19 @@
         <h4 class="modal-title">Select the project you are currently working on.</h4>
     </div>
     <div class="modal-body">
-    
-    
+
         <label for="project">Your Project : {{ $id }}</label>
         <select name="project" id="project" class="form-control">
-        @foreach ($allprojects as $item)
-            <option value="{{ $item->id }}" @if ($item->id == $project)
-                selected
-            @endif>{{ $item->project_name }}</option>
-        @endforeach
+            @foreach ($allprojects as $item)
+                <option value="{{ $item->id }}" @if ($item->id == $project) selected @endif>
+                    {{ $item->project_name }}</option>
+            @endforeach
+        </select>
+        <select name="project" id="project" class="form-control">
+            @foreach ($groupProjects as $item)
+                <option value="{{ $item->id }}">
+                    {{ $item->group_name }}</option>
+            @endforeach
         </select>
     </div>
     <div class="modal-footer">

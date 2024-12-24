@@ -1,0 +1,149 @@
+@extends('layout')
+
+@section('title')
+    Management Attendance Summary
+@stop
+
+@section('top')
+    @include('assets_css_1')
+    @include('assets_css_2')
+    @include('assets_css_3')
+    @include('assets_css_4')
+    @include('asset_select2')
+@stop
+
+@section('navbar')
+    @include('navbar_top')
+    @include('navbar_left', [
+        'c6101' => 'active',
+    ])
+@stop
+
+@push('style')
+    <style>
+        .mb-5 {
+            margin-bottom: 5px;
+        }
+
+        .mb-15 {
+            margin-bottom: 15px;
+        }
+    </style>
+@endpush
+@section('body')
+    <div class="row">
+        <div class="col-lg-12">
+            <h1 class="page-header">Management Attendance Summary
+            </h1>
+        </div>
+    </div>
+    <div class="row mb-5">
+        <div class="col-lg-6">
+            <form action="{{ route('gm/summary/attendance/filter') }}" method="get" class="form-inline" required>
+                {{ csrf_field() }}
+                <label for="">Search Date:</label>
+                <input type="date" name="start" id="" value="{{ Request::get('start') }}" class="form-control"
+                    required> -
+                <input type="date" name="end" id="" value="{{ Request::get('end') }}" class="form-control"
+                    required>
+                <button type="submit" class="btn-sm btn btn-default">
+                    <i class="fa fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+    <div class="row mb-15">
+        <div class="col-lg-6">
+            <form action="{{ route('gm/summary/attendance/filter/employee') }}" method="get" class="form-inline">
+                {{ csrf_field() }}
+                <label for="">Search Employee:</label>
+                <select name="employee" id="employee" class="form-control" required>
+                    <option value=""></option>
+                    @foreach ($employes as $employee)
+                        <option value="{{ $employee->id }}" @if ($employee->id == 303) selected @endif>
+                            {{ $employee->getFullName() }}</option>
+                    @endforeach
+                </select> -
+                <input type="date" name="start" id="" value="{{ Request::get('start') }}" class="form-control"
+                    required> -
+                <input type="date" name="end" id="" value="{{ Request::get('end') }}" class="form-control"
+                    required>
+                <button type="submit" class="btn-sm btn btn-default">
+                    <i class="fa fa-search"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-6">
+            <table class="table table-condensed table-hover table-striped table-bordered" id="showEmployes" width="100%">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Employes</th>
+                        <th>Position</th>
+                        <th>Date</th>
+                        <th>Project</th>
+                    </tr>
+                </thead>
+            </table>
+        </div>
+    </div>
+
+    <div class="modal fade" id="showModal" tabindex="-1" role="dialog" aria-labelledby="showModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content" id="modal-content">
+                <!--  -->
+            </div>
+        </div>
+    </div>
+@stop
+
+@section('bottom')
+    @include('assets_script_1')
+    @include('assets_script_2')
+    @include('assets_script_3')
+    @include('assets_script_4')
+    @include('assets_script_7')
+@stop
+
+@push('js')
+    <script>
+        $(document).ready(function() {
+            $('select#employee').select2({
+                placeholder: 'choose a employee'
+            });
+
+            let urlEmployee =
+                "{{ route('gm/summary/attendance/filter/employee/data', [Request::get('employee'), Request::get('start'), Request::get('end')]) }}";
+            let started = "{{ Request::get('start') }}";
+            let ended = "{{ Request::get('end') }}";
+
+            $('#showEmployes').DataTable({
+                processing: true,
+                responsive: true,
+                serverSide: true,
+                ajax: urlEmployee,
+                columns: [{
+                    data: 'DT_Row_Index',
+                    orderable: false,
+                    searchable: false
+                }, {
+                    data: 'fullname'
+                }, {
+                    data: 'position'
+                }, {
+                    data: 'dated'
+                }, {
+                    data: 'group_name'
+                }],
+                dom: 'Bfrtip',
+                buttons: [
+                    'excel'
+                ]
+            });
+        });
+    </script>
+@endpush

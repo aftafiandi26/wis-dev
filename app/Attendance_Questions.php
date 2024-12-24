@@ -54,17 +54,39 @@ class Attendance_Questions extends Model
         }
 
         if ($this->Q2 === 2) {
-            $result = "Good";
+            $result = "Very Poor";
         }
 
         if ($this->Q2 === 3) {
-            $result = "Very Good";
+            $result = "Good";
         }
 
         if ($this->Q2 === 4) {
+            $result = "Very Good";
+        }
+
+        if ($this->created_at < date('Y-m-d')) {
+            if ($this->Q2 === 4) {
+                $result = "Excellent";
+            }
+        }
+
+        if ($this->Q2 === 5) {
             $result = "Excellent";
         }
 
         return $result;
+    }
+
+    public function relationsAttendance()
+    {
+        return $this->hasOne(Attendance::class, 'quest_id', 'id');
+    }
+
+    public function projectGroup()
+    {
+        $query = ProjectGroup::find($this->group);
+
+        return $query->group_name;
     }
 }
