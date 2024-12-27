@@ -37,10 +37,8 @@
             <form action="{{ route('gm/summary/attendance/filter') }}" method="get" class="form-inline" required>
                 {{ csrf_field() }}
                 <label for="">Search Date:</label>
-                <input type="date" name="start" id="" value="{{ old('start') }}" class="form-control"
-                    required> -
-                <input type="date" name="end" id="" value="{{ old('end') }}" class="form-control"
-                    required>
+                <input type="date" name="start" id="" class="form-control" required> -
+                <input type="date" name="end" id="" class="form-control" required>
                 <button type="submit" class="btn-sm btn btn-default">
                     <i class="fa fa-search"></i>
                 </button>
@@ -138,10 +136,15 @@
                     orderable: false,
                     searchable: false
                 }],
-                dom: 'Bfrtip',
+                dom: 'lBfrtip',
                 buttons: [
                     'excel'
-                ]
+                ],
+                lengthMenu: [
+                    [10, 25, 50, -1], // Nilai opsi (angka)
+                    [10, 25, 50, "All"] // Label yang ditampilkan
+                ],
+                pageLength: 10
             });
 
 
@@ -171,10 +174,15 @@
                     }, {
                         data: 'project'
                     }],
-                    dom: 'Bfrtip',
+                    dom: 'lBfrtip',
                     buttons: [
                         'excel'
-                    ]
+                    ],
+                    lengthMenu: [
+                        [10, 25, 50, -1], // Nilai opsi (angka)
+                        [10, 25, 50, "All"] // Label yang ditampilkan
+                    ],
+                    pageLength: 10
                 });
             });
 

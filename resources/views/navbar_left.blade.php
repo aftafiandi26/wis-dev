@@ -1048,7 +1048,11 @@
                     </ul>
                 </li>
 
-                @if (auth()->user()->koor == 1 or auth()->user()->gm == 1 or auth()->user()->producer == 1 or auth()->user()->hr == 1)
+                @if (auth()->user()->koor == 1 or
+                        auth()->user()->gm == 1 or
+                        auth()->user()->producer == 1 or
+                        auth()->user()->hr == 1 or
+                        auth()->user()->id == 4)
                     <li>
                         <a class="{!! $c664 or '' !!}" href="#"><i class="fa fa-fw fa fa-wpforms"></i>
                             Weekend Crew<span class="fa arrow"></span></a>
@@ -1063,7 +1067,7 @@
                                             class="fa fa-fw fa fa-genderless"></i> Summary</a>
                                 </li>
                             @endif
-                            @if (auth()->user()->pm === 1)
+                            @if (auth()->user()->pm === 1 or auth()->user()->id == 4)
                                 <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('producer/weekend-crew/index') }}"><i

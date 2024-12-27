@@ -42,17 +42,18 @@
             <form action="{{ route('gm/summary/attendance/filter') }}" method="get" class="form-inline" required>
                 {{ csrf_field() }}
                 <label for="">Search Date:</label>
-                <input type="date" name="start" id="" value="{{ Request::get('start') }}" class="form-control"
-                    required> -
-                <input type="date" name="end" id="" value="{{ Request::get('end') }}" class="form-control"
-                    required>
-                <button type="submit" class="btn-sm btn btn-default">
+                <input type="date" name="start" id="" class="form-control" required> -
+                <input type="date" name="end" id="" class="form-control" required>
+                <button type="submit" class="btn-sm btn btn-default" title="submit filter date">
                     <i class="fa fa-search"></i>
+                </button>
+                <button type="reset" class="btn-sm btn btn-default" title="reset filter date">
+                    <i class="fa fa-refresh"></i>
                 </button>
             </form>
         </div>
     </div>
-    <div class="row mb-15">
+    <div class="row mb-5">
         <div class="col-lg-6">
             <form action="{{ route('gm/summary/attendance/filter/employee') }}" method="get" class="form-inline">
                 {{ csrf_field() }}
@@ -60,23 +61,31 @@
                 <select name="employee" id="employee" class="form-control" required>
                     <option value=""></option>
                     @foreach ($employes as $employee)
-                        <option value="{{ $employee->id }}" @if ($employee->id == 303) selected @endif>
+                        <option value="{{ $employee->id }}" @if ($employee->id == Request::get('employee')) selected @endif>
                             {{ $employee->getFullName() }}</option>
                     @endforeach
                 </select> -
-                <input type="date" name="start" id="" value="{{ Request::get('start') }}" class="form-control"
-                    required> -
-                <input type="date" name="end" id="" value="{{ Request::get('end') }}" class="form-control"
-                    required>
-                <button type="submit" class="btn-sm btn btn-default">
+                <input type="date" name="start" id="" class="form-control" required> -
+                <input type="date" name="end" id="" class="form-control" required>
+                <button type="submit" class="btn-sm btn btn-default" title="submit filter employee">
                     <i class="fa fa-search"></i>
+                </button>
+                <button type="reset" class="btn-sm btn btn-default" title="reset filter employee">
+                    <i class="fa fa-refresh"></i>
                 </button>
             </form>
         </div>
     </div>
+    <div class="row mb-15">
+        <div class="col-lg-12">
+            <a href="{{ route('gm/summary/attendance/index') }}" class="btn btn-sm btn-default">
+                <i class="fa fa-step-backward"></i> Back
+            </a>
+        </div>
+    </div>
 
     <div class="row">
-        <div class="col-lg-6">
+        <div class="col-lg-8">
             <table class="table table-condensed table-hover table-striped table-bordered" id="showEmployes" width="100%">
                 <thead>
                     <tr>
@@ -139,10 +148,15 @@
                 }, {
                     data: 'group_name'
                 }],
-                dom: 'Bfrtip',
+                dom: 'lBfrtip',
                 buttons: [
                     'excel'
-                ]
+                ],
+                lengthMenu: [
+                    [10, 25, 50, -1], // Nilai opsi (angka)
+                    [10, 25, 50, "All"] // Label yang ditampilkan
+                ],
+                pageLength: 10
             });
         });
     </script>

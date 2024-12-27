@@ -37,7 +37,9 @@ class CoordinatorWorkingWeekendsController extends Controller
 
         $tableWorkings = Log_WorkingWeekends::where('coor_id', auth()->user()->id)->get();
 
-        $producers = User::where('active', 1)->where('producer', 1)->get();
+        $producers = User::where('active', 1)->where('producer', 1)->orderBy('first_name', 'asc')->get();
+
+        $anggarda = User::find(4);
 
         $workings = [];
 
@@ -90,7 +92,7 @@ class CoordinatorWorkingWeekendsController extends Controller
             return redirect()->route('coordinator/working/weekends/form/not-accessed');
         }
 
-        return view('all_employee.Form.weekends.form', compact(['users', 'workings', 'producers', 'eocUser']));
+        return view('all_employee.Form.weekends.form', compact(['users', 'workings', 'producers', 'eocUser', 'anggarda']));
     }
 
     public function formInserModal()
