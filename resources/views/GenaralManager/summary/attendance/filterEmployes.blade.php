@@ -38,7 +38,7 @@
         </div>
     </div>
     <div class="row mb-5">
-        <div class="col-lg-6">
+        <div class="col-lg-12">
             <form action="{{ route('gm/summary/attendance/filter') }}" method="get" class="form-inline" required>
                 {{ csrf_field() }}
                 <label for="">Search Date:</label>
@@ -54,7 +54,7 @@
         </div>
     </div>
     <div class="row mb-5">
-        <div class="col-lg-6">
+        <div class="col-lg-12">
             <form action="{{ route('gm/summary/attendance/filter/employee') }}" method="get" class="form-inline">
                 {{ csrf_field() }}
                 <label for="">Search Employee:</label>
@@ -65,8 +65,10 @@
                             {{ $employee->getFullName() }}</option>
                     @endforeach
                 </select> -
-                <input type="date" name="start" id="" class="form-control" required> -
-                <input type="date" name="end" id="" class="form-control" required>
+                <input type="date" name="start" id="" value="{{ Request::get('start') }}" class="form-control"
+                    required> -
+                <input type="date" name="end" id="" value="{{ Request::get('end') }}" class="form-control"
+                    required>
                 <button type="submit" class="btn-sm btn btn-default" title="submit filter employee">
                     <i class="fa fa-search"></i>
                 </button>

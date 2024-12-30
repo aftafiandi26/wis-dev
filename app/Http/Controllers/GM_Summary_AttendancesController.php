@@ -132,7 +132,7 @@ class GM_Summary_AttendancesController extends Controller
                 $countAbsen = [];
                 $absensi = Attendance::with(['relationsQuest'])->whereDATE('start', $dated)->where('in', true)->get();
                 foreach ($absensi as $key => $abs) {
-                    if ($abs->relationsQuest->group == $project->id) {
+                    if ($abs->relationsQuest && $abs->relationsQuest->group == $project->id) {
                         $countAbsen[] = [
                             'id'           => $abs->id,
                             'user_id'       => $abs->user_id,
@@ -142,6 +142,7 @@ class GM_Summary_AttendancesController extends Controller
                         ];
                     }
                 }
+
 
                 $tanggal[] = [
                     'date'          => $dated,

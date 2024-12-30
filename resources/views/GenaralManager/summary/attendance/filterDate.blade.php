@@ -38,37 +38,48 @@
         </div>
     </div>
     <div class="row mb-5">
-        <div class="col-lg-6">
+        <div class="col-lg-12">
             <form action="{{ route('gm/summary/attendance/filter') }}" method="get" class="form-inline">
-                <label for="">Search :</label>
+                <label for="">Search Date:</label>
                 <input type="date" name="start" id="" value="{{ Request::get('start') }}" class="form-control">
                 <input type="date" name="end" id="" value="{{ Request::get('end') }}" class="form-control">
                 <button type="submit" class="btn-sm btn btn-default">
                     <i class="fa fa-search"></i>
                 </button>
+                <button type="reset" class="btn-sm btn btn-default" title="reset filter date">
+                    <i class="fa fa-refresh"></i>
+                </button>
             </form>
         </div>
     </div>
-    <div class="row mb-15">
-        <div class="col-lg-6">
+    <div class="row mb-5">
+        <div class="col-lg-12">
             <form action="{{ route('gm/summary/attendance/filter/employee') }}" method="get" class="form-inline">
                 {{ csrf_field() }}
                 <label for="">Search Employee:</label>
                 <select name="employee" id="employee" class="form-control" required>
                     <option value=""></option>
                     @foreach ($employes as $employee)
-                        <option value="{{ $employee->id }}" @if ($employee->id == 303) selected @endif>
+                        <option value="{{ $employee->id }}" @if ($employee->id == Request::get('id')) selected @endif>
                             {{ $employee->getFullName() }}</option>
                     @endforeach
                 </select> -
-                <input type="date" name="start" id="" value="{{ Request::get('start') }}" class="form-control"
-                    required> -
-                <input type="date" name="end" id="" value="{{ Request::get('end') }}" class="form-control"
-                    required>
+                <input type="date" name="start" id="" class="form-control" required> -
+                <input type="date" name="end" id="" class="form-control" required>
                 <button type="submit" class="btn-sm btn btn-default">
                     <i class="fa fa-search"></i>
                 </button>
+                <button type="reset" class="btn-sm btn btn-default" title="reset filter date">
+                    <i class="fa fa-refresh"></i>
+                </button>
             </form>
+        </div>
+    </div>
+    <div class="row mb-15">
+        <div class="col-lg-12">
+            <a href="{{ route('gm/summary/attendance/index') }}" class="btn btn-sm btn-default">
+                <i class="fa fa-step-backward"></i> Back
+            </a>
         </div>
     </div>
     <div class="row">
@@ -154,7 +165,7 @@
                     orderable: false,
                     searchable: false
                 }],
-                dom: 'Bfrtip',
+                dom: 'lBfrtip',
                 buttons: [
                     'excel'
                 ]
@@ -186,7 +197,7 @@
                     }, {
                         data: 'project'
                     }],
-                    dom: 'Bfrtip',
+                    dom: 'lBfrtip',
                     buttons: [
                         'excel'
                     ]

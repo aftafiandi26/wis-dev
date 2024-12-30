@@ -24,6 +24,10 @@
         .mb-5 {
             margin-bottom: 5px;
         }
+
+        .mb-15 {
+            margin-bottom: 15px;
+        }
     </style>
 @endpush
 @section('body')
@@ -33,7 +37,7 @@
         </div>
     </div>
     <div class="row mb-5">
-        <div class="col-lg-6">
+        <div class="col-lg-12">
             <form action="{{ route('gm/summary/attendance/filter') }}" method="get" class="form-inline" required>
                 {{ csrf_field() }}
                 <label for="">Search Date:</label>
@@ -42,11 +46,14 @@
                 <button type="submit" class="btn-sm btn btn-default">
                     <i class="fa fa-search"></i>
                 </button>
+                <button type="reset" class="btn-sm btn btn-default" title="reset filter date">
+                    <i class="fa fa-refresh"></i>
+                </button>
             </form>
         </div>
     </div>
     <div class="row mb-5">
-        <div class="col-lg-6">
+        <div class="col-lg-12">
             <form action="{{ route('gm/summary/attendance/filter/employee') }}" method="get" class="form-inline">
                 {{ csrf_field() }}
                 <label for="">Search Employee:</label>
@@ -63,7 +70,17 @@
                 <button type="submit" class="btn-sm btn btn-default">
                     <i class="fa fa-search"></i>
                 </button>
+                <button type="reset" class="btn-sm btn btn-default" title="reset filter employee">
+                    <i class="fa fa-refresh"></i>
+                </button>
             </form>
+        </div>
+    </div>
+    <div class="row mb-15">
+        <div class="col-lg-12">
+            <a href="{{ route('gm/summary/attendance/index') }}" class="btn btn-sm btn-default">
+                <i class="fa fa-step-backward"></i> Back
+            </a>
         </div>
     </div>
     <div class="row">
