@@ -162,7 +162,7 @@
             @endif
             @if (Auth::user()->level_hrd === 'Senior Pipeline')
                 <li>
-                    <a class="{!! $c16 or '' !!}" href="{!! URL::route('indexApprovalPipeline') !!}"><i
+                    <a class="{!! $c16 or '' !!}" href="{!! URL::route('manager/pipeline-it/form-list/index') !!}"><i
                             class="fa fa-fw fa fa-genderless"></i> Leave Approval <i>(Pipeline)</i> </a>
                 </li>
             @endif

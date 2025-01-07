@@ -138,6 +138,24 @@ class GM_WeekendsController extends Controller
         return view('GenaralManager.working_on_weekends.detailExdo', compact(['works', 'getId', 'allApproved', 'allDisapproved']));
     }
 
+    public function ajaxConfirm($id)
+    {
+        $sending = SendingDataWorkingWeekend::find($id);
+
+        $sending->update([
+            'approved'   => true,
+            'date_gm' => Carbon::now(),
+            'allowance' => true,
+        ]);
+
+        Session::flash('message', Lang::get('messages.data_custom', ['data' => 'Recorded data has been approved']));
+        Mail::to('dede.aftafiandi@infinitestudios.id')->send(new VerifyMail($id));
+        // Mail::to('wis_system@infinitestudios.id')->send(new VerifyMail($id));
+        Mail::to('dede.aftafiandi@infinitestudios.id')->send(new ApprovedMail($id));
+        // Mail::to($sending->coordiantor()->email)->send(new ApprovedMail($id));
+        return redirect()->route('gm/working-on-weekends/index');
+    }
+
     public function ajaxPush(Request $request)
     {
         $id = $request->input('id');
@@ -206,10 +224,10 @@ class GM_WeekendsController extends Controller
         ]);
 
         Session::flash('message', Lang::get('messages.data_custom', ['data' => 'Recorded data has been approved']));
-        // Mail::to('dede.aftafiandi@infinitestudios.id')->send(new VerifyMail($id));
-        Mail::to('wis_system@infinitestudios.id')->send(new VerifyMail($id));
-        // Mail::to('dede.aftafiandi@infinitestudios.id')->send(new ApprovedMail($id));
-        Mail::to($sending->coordiantor()->email)->send(new ApprovedMail($id));
+        Mail::to('dede.aftafiandi@infinitestudios.id')->send(new VerifyMail($id));
+        // Mail::to('wis_system@infinitestudios.id')->send(new VerifyMail($id));
+        Mail::to('dede.aftafiandi@infinitestudios.id')->send(new ApprovedMail($id));
+        // Mail::to($sending->coordiantor()->email)->send(new ApprovedMail($id));
         return redirect()->route('gm/working-on-weekends/index');
     }
 

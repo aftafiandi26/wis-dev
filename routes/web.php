@@ -1024,6 +1024,16 @@ Route::prefix('Pipeline')->group(function () {
     });
 });
 
+Route::prefix('pipeline-it')->group(function () {
+    Route::get('form-list', 'IT_Pipeline_ApprovalLeaveController@index')->name('manager/pipeline-it/form-list/index');
+    Route::get('form-list/it/data', 'IT_Pipeline_ApprovalLeaveController@dataApprovalIT')->name('manager/pipeline-it/form-list/it/data');
+    Route::get('form-list/pipeline/data', 'IT_Pipeline_ApprovalLeaveController@dataApprovalPipeline')->name('manager/pipeline-it/form-list/pipeline/data');
+    Route::get('form-list/{id}', 'IT_Pipeline_ApprovalLeaveController@modalApproval')->name('manager/pipeline-it/form-list/modal');
+    Route::get('approval/{id}', 'IT_Pipeline_ApprovalLeaveController@approval')->name('manager/pipeline-it/approval');
+    Route::get('disapproval/{id}', 'IT_Pipeline_ApprovalLeaveController@disapproval')->name('manager/pipeline-it/disapproval');
+});
+// End Approval Pipeline
+
 
 
 /////////// IT Department ////////////////////////////////////////////////////////////
@@ -1510,6 +1520,7 @@ Route::prefix('general-manager')->group(function () {
     Route::get('working-on-weekends/exdo/detail/{id}', 'GM_WeekendsController@detailExdo')->name('gm/working-on-weekends/detail/exdo');
 
     Route::post('working-on-weekends/ajaxPush', 'GM_WeekendsController@ajaxPush')->name('gm/working-on-weekends/ajaxPush');
+    Route::get('working-on-weekends/ajaxConfirm/{id}', 'GM_WeekendsController@ajaxConfirm')->name('gm/working-on-weekends/ajaxConfirm');
 
     Route::get('working-on-weekends/getStat/{id}', 'GM_WeekendsController@getStat')->name('gm/working-on-weekends/getStat');
 
@@ -1809,3 +1820,6 @@ Route::prefix('dev')->group(function () {
 });
 
 Route::get('along/{id}', 'Leave_indexCountAnnulContorller@indexNewApply');
+
+Route::get('animation-hearts', 'ZController@animation');
+Route::get('animation-text', 'ZController@animation1');

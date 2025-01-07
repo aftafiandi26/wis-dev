@@ -181,25 +181,6 @@ class LeaveController extends Controller
 
     public function indexNewApply()
     {
-        // $annual = DB::table('users')
-        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
-        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
-        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
-
-        //     ->select([
-        //         DB::raw('
-        //     (
-        //         select (
-        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-        //             and ap_hd  = 1
-        //             and ap_gm  = 1
-        //             and ver_hr = 1
-        //             and ap_hrd = 1
-        //         )
-        //     ) as transactionAnnual')
-        //     ])
-        //     ->first();
-
         $annual = DB::table('users')
             ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
             ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
@@ -399,11 +380,6 @@ class LeaveController extends Controller
 
     public function createLeave()
     {
-        if (auth()->user()->id !== 226) {
-            Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, this page under maintenance!!']));
-            return redirect()->route('index');
-        }
-
         $det = $this->indexNewApply()->try;
 
         $department = dept_category::where(['id' => Auth::user()->dept_category_id])->value('dept_category_name');
@@ -440,45 +416,6 @@ class LeaveController extends Controller
             ) as transactionAnnual')
             ])
             ->first();
-
-        // $init_annual = DB::table('users')
-        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
-        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
-
-        //     ->select([
-        //         DB::raw('
-        //     (
-        //         select (
-        //             select initial_annual from users where id=' . Auth::user()->id . '
-        //         ) - (
-        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-        //             and ap_hd  = 1
-        //             and ap_gm  = 1
-        //             and ver_hr = 1
-        //             and ap_hrd = 1
-        //         )
-        //     ) as remainannual')
-        //     ])
-        //     ->first();
-
-        // $annual = DB::table('users')
-        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
-        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
-        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
-
-        //     ->select([
-        //         DB::raw('
-        //     (
-        //         select (
-        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-        //             and ap_hd  = 1
-        //             and ap_gm  = 1
-        //             and ver_hr = 1
-        //             and ap_hrd = 1
-        //         )
-        //     ) as transactionAnnual')
-        //     ])
-        //     ->first();
 
         $user = User::find(auth::user()->id);
 
@@ -572,23 +509,6 @@ class LeaveController extends Controller
             ) as leavetaken')
             ])
             ->first();
-        // $taken = DB::table('users')
-        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
-        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
-        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
-        //     ->select([
-        //         DB::raw('
-        //     (
-        //         (
-        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-        //             and ap_hd  = 1
-        //             and ap_gm  = 1
-        //             and ver_hr = 1
-        //             and ap_hrd = 1
-        //         )
-        //     ) as leavetaken')
-        //     ])
-        //     ->first();
 
         $ent_annual = DB::table('users')
             ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
@@ -658,6 +578,8 @@ class LeaveController extends Controller
             $assistGM = "";
         }
 
+        $anggarda = User::find(4);
+
         $lineProducer = User::where('active', 1)->where('producer', 1)->where('dept_category_id', 6)->orderBy('first_name', 'asc')->get();
         foreach ($lineProducer as $value)
             $producer[$value->email] =  $value->first_name . ' ' . $value->last_name;
@@ -669,9 +591,6 @@ class LeaveController extends Controller
         $coordinatorIT = User::where('active', 1)->where('koor', 1)->where('dept_category_id', 1)->get();
         foreach ($coordinatorIT as $coorIT)
             $ITcoor[$coorIT->email] = $coorIT->first_name . ' ' . $coorIT->last_name;
-
-        // $provinsi = file_get_contents('https://ibnux.github.io/data-indonesia/propinsi.json');
-        // $provinsi = json_decode($provinsi, true);
 
         $provinsi = $this->dataProvinsi();
 
@@ -703,6 +622,9 @@ class LeaveController extends Controller
 
                     $labelEmailHOD = 'Production Talent Manager :';
                 }
+            } else if (auth::user()->dept_category_id === 1) {
+                $emailHoD = User::where('active', 1)->where('id', 4)->get(); // rule anggarda
+                $labelEmailHOD = 'Head of Department :';
             } else {
                 // 1175 id Mia sinaga -> apply forward ke John Radel
                 if (auth::user()->id === 1175) {
@@ -747,7 +669,7 @@ class LeaveController extends Controller
                 'assistGM' => $assistGM,
                 'generalManager'    => $generalManager,
                 'indexAnnual'       =>  $det,
-                'holiday'   => $subHoly
+                'holiday'   => $subHoly,
 
             ]);
         } else {
@@ -760,24 +682,6 @@ class LeaveController extends Controller
     public function createExdo()
     {
         $department  = dept_category::where(['id' => Auth::user()->dept_category_id])->value('dept_category_name');
-
-        // $taken = DB::table('users')
-        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
-        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
-        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
-        //     ->select([
-        //         DB::raw('
-        //     (
-        //         (
-        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=2
-        //             and ap_hd  = 1
-        //             and ap_gm  = 1
-        //             and ver_hr = 1
-        //             and ap_hrd = 1
-        //         )
-        //     ) as leavetaken')
-        //     ])
-        //     ->first();
 
         $taken = DB::table('users')
             ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
@@ -871,7 +775,7 @@ class LeaveController extends Controller
 
         if (auth::user()->hd === 1) {
             if (auth::user()->dept_category_id === 7) {
-                $$emailHoD = User::where('id', 268)->get();
+                $emailHoD = User::where('id', 268)->get();
                 $generalManager = User::where('id', 268)->first();
             } elseif (auth::user()->dept_category_id === 5) {
                 $generalManager = User::where('active', 1)->where('dept_category_id', 7)->where('hd', 1)->first();
@@ -890,6 +794,9 @@ class LeaveController extends Controller
 
                     $labelEmailHOD = 'Production Talent Manager :';
                 }
+            } else if (auth::user()->dept_category_id === 1) {
+                $emailHoD = User::where('active', 1)->where('id', 4)->get(); // rule anggarda
+                $labelEmailHOD = 'Head of Department :';
             } else {
                 if (auth::user()->id === 1175) {
                     $emailHoD = User::where('active', 1)->where('dept_category_id', 7)->where('hd', 1)->get();
@@ -1043,6 +950,9 @@ class LeaveController extends Controller
 
                     $labelEmailHOD = 'Production Talent Manager :';
                 }
+            } else if (auth::user()->dept_category_id === 1) {
+                $emailHoD = User::where('active', 1)->where('id', 4)->get(); // rule anggarda
+                $labelEmailHOD = 'Head of Department :';
             } else {
                 if (auth::user()->id === 1175) {
                     $emailHoD = User::where('active', 1)->where('dept_category_id', 7)->where('hd', 1)->get();
@@ -1119,44 +1029,6 @@ class LeaveController extends Controller
             ) as transactionAnnual')
             ])
             ->first();
-        // $init_annual = DB::table('users')
-        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
-        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
-
-        //     ->select([
-        //         DB::raw('
-        //     (
-        //         select (
-        //             select initial_annual from users where id=' . Auth::user()->id . '
-        //         ) - (
-        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-        //             and ap_hd  = 1
-        //             and ap_gm  = 1
-        //             and ver_hr = 1
-        //             and ap_hrd = 1
-        //         )
-        //     ) as remainannual')
-        //     ])
-        //     ->first();
-
-        // $annual = DB::table('users')
-        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
-        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
-        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
-
-        //     ->select([
-        //         DB::raw('
-        //     (
-        //         select (
-        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-        //             and ap_hd  = 1
-        //             and ap_gm  = 1
-        //             and ver_hr = 1
-        //             and ap_hrd = 1
-        //         )
-        //     ) as transactionAnnual')
-        //     ])
-        //     ->first();
 
         // new rule
         $user = User::find(auth::user()->id);
@@ -1380,6 +1252,9 @@ class LeaveController extends Controller
 
                     $labelEmailHOD = 'Production Talent Manager :';
                 }
+            } else if (auth::user()->dept_category_id === 1) {
+                $emailHoD = User::where('active', 1)->where('id', 4)->get(); // rule anggarda
+                $labelEmailHOD = 'Head of Department :';
             } else {
                 if (auth::user()->id === 1175) {
                     $emailHoD = User::where('active', 1)->where('dept_category_id', 7)->where('hd', 1)->get();
@@ -1985,24 +1860,6 @@ class LeaveController extends Controller
     public function storeLeave(Request $request)
     {
 
-        // $taken = DB::table('users')
-        //     ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
-        //     ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
-        //     ->leftJoin('leave_transaction', 'leave_transaction.user_id', '=', 'users.id')
-        //     ->select([
-        //         DB::raw('
-        //     (
-        //         (
-        //             select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . Auth::user()->id . ' and leave_category_id=1
-        //             and ap_hd  = 1
-        //             and ap_gm  = 1
-        //             and ver_hr = 1
-        //             and ap_hrd = 1
-        //         )
-        //     ) as leavetaken')
-        //     ])
-        //     ->first();
-
         $taken = DB::table('users')
             ->leftJoin('initial_leave', 'initial_leave.user_id', '=', 'users.id')
             ->leftJoin('leave_category', 'leave_category.id', '=', 'initial_leave.leave_category_id')
@@ -2195,45 +2052,6 @@ class LeaveController extends Controller
                         Cookie::queue('url', $url, 15);
 
                         return redirect()->route('leave/forwarder/annual');
-
-
-                        // Leave::insert($data);
-
-                        // $lastLeaved = Leave::where('user_id', auth::user()->id)->where('leave_category_id', 1)->latest()->first();
-
-                        // if (auth::user()->dept_category_id == 5) {
-                        //     $adminFacility = $request->input('adminFacility');
-                        //     $this->sendNotifAdminFacility($adminFacility, auth::user()->id);
-                        // }
-
-                        // if ($forfeited > $forfeitedCount) {
-
-                        //     $remainsForfeited = $forfeited - $forfeitedCount;
-
-                        //     $rangeForfeited = $remainsForfeited - $jumlah_cuti;
-                        //     $rangeForfeited = $jumlah_cuti + $rangeForfeited;
-
-                        //     if ($rangeForfeited >= $jumlah_cuti) {
-                        //         $rangeForfeited = $jumlah_cuti;
-                        //     } else {
-                        //         $rangeForfeited = $rangeForfeited;
-                        //     }
-
-                        //     $forfeiteds = [
-                        //         'user_id'   => auth::user()->id,
-                        //         'leave_id'  => $lastLeaved->id,
-                        //         'amount'    => $rangeForfeited,
-                        //         'status'    => 0,
-                        //     ];
-
-                        //     ForfeitedCounts::insert($forfeiteds);
-                        // }
-
-                        // Session::flash('message', Lang::get('messages.data_inserted', ['data' => 'Data Leave Transaction']));
-
-                        // $this->testEmail();
-
-                        // return Redirect::route('leave/transaction');
                     }
                 } else {
                     Session::flash('getError', Lang::get('messages.annual_date_error', ['name' => auth::user()->first_name . ' ' . auth::user()->last_name]));
@@ -2297,7 +2115,7 @@ class LeaveController extends Controller
             'resendmail'                => 2,
         ];
 
-        Leave::insert($record);
+        Leave::create($record);
 
         if ($data['leave_category_id'] == 1) {
             $forfeited = Forfeited::where('user_id', auth::user()->id)->pluck('countAnnual')->sum();
@@ -2482,7 +2300,8 @@ class LeaveController extends Controller
                     } else {
                         Mail::send('email.appMail', ['select' => $select], function ($message) use ($select, $subject) {
 
-                            $message->to($select->email_pm)->subject($subject);
+                            // $message->to($select->email_pm)->subject($subject);
+                            $message->to('dede.aftafiandi@infiintestudios.id')->subject($subject);
                             $message->from('wis_system@infinitestudios.id', 'WIS');
                         });
                     }
