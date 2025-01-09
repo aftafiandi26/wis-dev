@@ -39,19 +39,19 @@
                 <tr>
                     <td>Contact Address</td>
                     <td>:</td>
-                    <th colspan="5">{{ $leave->user()->address }}</th>
+                    <th colspan="6">{{ $leave->user()->address }}</th>
                 </tr>
                 <tr>
-                    <td colspan="8"></td>
+                    <td colspan="9"></td>
                 </tr>
                 <tr>
                     <td>Leave Category</td>
                     <td>:</td>
-                    <th colspan="5">{{ $leave->leaveName()->leave_category_name }}</th>
+                    <th colspan="6">{{ $leave->leaveName()->leave_category_name }}</th>
                 </tr>
             </table>
         </div>
-    </div>  
+    </div>
     <div class="row">
         <div class="col-lg-12">
             <h4 class="text-center">Personal Verification</h4>
@@ -81,7 +81,7 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-            <table class="table table-condensed">              
+            <table class="table table-condensed">
                 <tbody>
                     <tr>
                         <td style="width: 20rem">Approved Leave From</td>
@@ -89,7 +89,7 @@
                         <th>{{ $leave->leave_date }}</th>
                         <td>until</td>
                         <th>{{ $leave->end_leave_date }}</th>
-                    
+
                     </tr>
                     <tr>
                         <td>Back to Work on</td>
@@ -103,7 +103,7 @@
                         <td>:</td>
                         <th>{{ $leave->user()->phone }}</th>
                         <td></td>
-                        <td></td>                       
+                        <td></td>
                     </tr>
                 </tbody>
             </table>
@@ -111,40 +111,40 @@
     </div>
     <div class="row">
         <div class="col-lg-12">
-          <table class="table table-condensed">
-            <tr>
-                <th>Reason :</th>  
-            </tr>
-            <tr>
-                <td>{{ $leave->reason_leave }}</td>
-            </tr>
-          </table>
+            <table class="table table-condensed">
+                <tr>
+                    <th>Reason :</th>
+                </tr>
+                <tr>
+                    <td>{{ $leave->reason_leave }}</td>
+                </tr>
+            </table>
         </div>
     </div>
     <div class="row">
         <div class="col-lg-12">
             <p>
                 <b>Status Approve :</b>
-                <ul>
-                    @if ($leave->user()->dept_category_id === 6)
-                        @if ($foreachStatment['coordinator'] !== Null)
-                                <li>{{ $foreachStatment['coordinator'] }}</li>                            
-                        @endif
-                        @if ($foreachStatment['spv'] !== Null)
-                                <li>{{ $foreachStatment['spv'] }}</li>                            
-                        @endif
-                        @if ($foreachStatment['projectManager'] !== Null)
-                                <li>{{ $foreachStatment['projectManager'] }}</li>                            
-                        @endif
-                        @if ($foreachStatment['producer'] !== Null)
-                                <li>{{ $foreachStatment['producer'] }}</li>                            
-                        @endif
-                        <li>{{ $foreachStatment['hod'] }}</li>
-                    @else
-                        <li>{{ $foreachStatment['hod'] }}</li>
+            <ul>
+                @if ($leave->user()->dept_category_id === 6)
+                    @if ($foreachStatment['coordinator'] !== null)
+                        <li>{{ $foreachStatment['coordinator'] }}</li>
                     @endif
-                  
-                </ul>
+                    @if ($foreachStatment['spv'] !== null)
+                        <li>{{ $foreachStatment['spv'] }}</li>
+                    @endif
+                    @if ($foreachStatment['projectManager'] !== null)
+                        <li>{{ $foreachStatment['projectManager'] }}</li>
+                    @endif
+                    @if ($foreachStatment['producer'] !== null)
+                        <li>{{ $foreachStatment['producer'] }}</li>
+                    @endif
+                    <li>{{ $foreachStatment['hod'] }}</li>
+                @else
+                    <li>{{ $foreachStatment['hod'] }}</li>
+                @endif
+
+            </ul>
             </p>
         </div>
     </div>
@@ -152,10 +152,10 @@
         <div class="col-lg-12">
             <p>
                 <b>Status Verify :</b>
-                <ul>
-                    <li>{{ $foreachStatment['frontdesk'] }}</li>
-                    <li>{{ $foreachStatment['hrdManager'] }}</li>
-                </ul>
+            <ul>
+                <li>{{ $foreachStatment['frontdesk'] }}</li>
+                <li>{{ $foreachStatment['hrdManager'] }}</li>
+            </ul>
             </p>
         </div>
     </div>

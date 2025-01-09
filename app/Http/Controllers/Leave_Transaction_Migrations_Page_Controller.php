@@ -49,7 +49,7 @@ class Leave_Transaction_Migrations_Page_Controller extends Controller
             }
         }
 
-        return redirect()->back();
+        return redirect()->route('leave/transaction');
     }
 
     public function foreachStatment($leave)

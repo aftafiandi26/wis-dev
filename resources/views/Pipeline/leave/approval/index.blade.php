@@ -161,8 +161,6 @@
             $(document).on('click', '#tables tr td a[id="actions"]', function(e) {
                 var id = $(this).attr('data-role');
 
-                console.log(id);
-
                 $.ajax({
                     url: id,
                     success: function(e) {
@@ -173,8 +171,6 @@
 
             $(document).on('click', '#tablesIT tr td a[id="actions"]', function(e) {
                 var id = $(this).attr('data-role');
-
-                console.log(id);
 
                 $.ajax({
                     url: id,

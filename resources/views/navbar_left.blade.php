@@ -44,7 +44,7 @@
                         </li>
 
                         <li>
-                            <a class="{!! $c16 or '' !!}" href="{!! URL::route('leave/transaction') !!}"><i
+                            <a class="{!! $c16 or '' !!}" href="{!! URL::route('all_employes/leave/transaction/migrate') !!}"><i
                                     class="fa fa-fw fa fa-genderless"></i> Leave Transaction </a>
                         </li>
                         @if (Auth::user()->koor === 1)
