@@ -176,16 +176,17 @@ class IT_Pipeline_ApprovalLeaveController extends Controller
             $head = User::where('active', 1)->where('hd', 1)->where('dept_category_id', 6)->first();
             $data = [
                 'ap_spv'         => true,
-                'date_ap_hd'    => date('Y-m-d'),
+                'date_ap_spv'    => date('Y-m-d'),
                 'resendmail'    => 2,
             ];
             Mail::send('email.verMail', ['email' => $email], function ($message) use ($email, $head) {
-                $message->to($head->email, 'WIS')->subject('[Approved] Leave Application - ' . $email->request_by . '');
+                $message->to($head->email)->subject('[Approved] Leave Application - ' . $email->request_by . '');
                 $message->from('wis_system@infinitestudios.id', 'WIS');
             });
         }
 
-        $leave->update($data);
+        Leave::where('id', $id)->update($data);
+
 
         Session::flash('message', Lang::get('messages.data_custom', ['data' =>  $leave->request_by . ' leave application form was approved']));
         return redirect()->route('manager/pipeline-it/form-list/index');
@@ -219,12 +220,14 @@ class IT_Pipeline_ApprovalLeaveController extends Controller
             ];
         }
 
-        $leave->update($data);
 
         Mail::send('email.disapproveMail', ['email' => $email], function ($message) use ($email) {
             $message->to($email->email)->subject('[Disapproved] Leave Application - WIS');
             $message->from('wis_system@infinitestudios.id', 'WIS');
         });
+
+        Leave::where('id', $id)->update($data);
+
 
         Session::flash('message', Lang::get('messages.data_custom', ['data' =>  $leave->request_by . ' leave application form was disapproved']));
         return redirect()->route('manager/pipeline-it/form-list/index');

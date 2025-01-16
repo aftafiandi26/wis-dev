@@ -985,6 +985,11 @@
                                 class="fa fa-fw fa fa-genderless"></i>
                             Attendance</a>
                     </li>
+                    <li>
+                        <a class="{!! $c341 or '' !!}" href="{{ route('gm/employee-time-sheet/index') }}"><i
+                                class="fa fa-fw fa fa-genderless"></i>
+                            Employee Time Sheet</a>
+                    </li>
                 </ul>
             </li>
         @endif

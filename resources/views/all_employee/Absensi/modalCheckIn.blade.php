@@ -89,12 +89,16 @@
                                     <td>Project Selection</td>
                                     <th>:
                                         <select name="project" id="projects">
-                                            @foreach ($viewProjects as $index => $project)
+                                            {{-- @foreach ($viewProjects as $index => $project)
                                                 @if ($project)
                                                     <option value="{{ $viewIdProjects[$index] }}">
                                                         {{ $project }}
                                                     </option>
                                                 @endif
+                                            @endforeach --}}
+                                            <option value="">- Choose a project -</option>
+                                            @foreach ($groups as $group)
+                                                <option value="{{ $group->id }}">{{ $group->group_name }}</option>
                                             @endforeach
                                         </select>
                                     </th>

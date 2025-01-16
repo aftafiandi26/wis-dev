@@ -223,7 +223,9 @@ class AllEmployes_AttendanceController extends Controller
         $viewProjects = $arrayProject[1];
         $viewIdProjects = $arrayProject[0];
 
-        return view('all_employee.Absensi.modalCheckIn', compact(['date', 'viewIdProjects', 'viewProjects']));
+        $groups = ProjectGroup::where('active', true)->orderBy('group_name', 'asc')->get();
+
+        return view('all_employee.Absensi.modalCheckIn', compact(['date', 'viewIdProjects', 'viewProjects', 'groups']));
     }
 
     public function postCheckIn(Request $request)

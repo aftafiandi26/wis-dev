@@ -1540,6 +1540,14 @@ Route::prefix('admin-production')->group(function () {
     Route::get('summary/attendance/filter/data/{id}/{start}/{end}', 'GM_Summary_AttendancesController@filterDataTablesShowEmployee')->name('gm/summary/attendance/filter/data/show');
     Route::get('summary/attendance/filter/employee', 'GM_Summary_AttendancesController@employeeFilter')->name('gm/summary/attendance/filter/employee');
     Route::get('summary/attendance/filter/employee/{id}/{start}/{end}', 'GM_Summary_AttendancesController@employeeFilterShow')->name('gm/summary/attendance/filter/employee/data');
+
+    Route::get('employee-time-sheet', 'GM_ProjectTimeSheetControlller@index')->name('gm/employee-time-sheet/index');
+    Route::post('employee-time-sheet/dataFilter', 'GM_ProjectTimeSheetControlller@dataFilter')->name('gm/employee-time-sheet/dataFilter');
+    Route::get('employee-time-sheet/filter/{start}/{end}', 'GM_ProjectTimeSheetControlller@filter')->name('gm/employee-time-sheet/filter');
+    Route::get('employee-time-sheet/filter/data/{month}/{year}', 'GM_ProjectTimeSheetControlller@dataTablesFilter')->name('gm/employee-time-sheet/filter/data');
+
+    Route::get('employee-time-sheet/filter-day/{month}/{year}', 'GM_ProjectTimeSheetControlller@filterDay')->name('gm/employee-time-sheet/filterDay');
+    Route::get('employee-time-sheet/filter-day/data/{month}/{year}', 'GM_ProjectTimeSheetControlller@dataTablesFilterDay')->name('gm/employee-time-sheet/filterDay/data');
 });
 
 Route::prefix('Voting')->group(function () {
