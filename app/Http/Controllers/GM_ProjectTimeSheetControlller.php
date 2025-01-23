@@ -183,6 +183,14 @@ class GM_ProjectTimeSheetControlller extends Controller
                 $group1Count = isset($groupCounts[$user->id][13]) ? $groupCounts[$user->id][13] : 0;
                 return $total > 0 ? round(($group1Count / $total) * 100, 1) . '%' : '0%';
             })
+            ->addColumn('column14', function (User $user) use ($groupCounts) {
+                $total = $user->total;
+                if ($total <= 0) {
+                    return "0%";
+                }
+                $group1Count = isset($groupCounts[$user->id][14]) ? $groupCounts[$user->id][14] : 0;
+                return $total > 0 ? round(($group1Count / $total) * 100, 1) . '%' : '0%';
+            })
             ->make(true);
     }
 

@@ -63,6 +63,15 @@
                                     <input type="text" class="form-control" name="name" id="name" required
                                         value="{{ $project->project_name }}">
                                 </div>
+                                <div class="form-group">
+                                    <label for="status">Status:</label>
+                                    <select name="status" id="status" required class="form-control">
+                                        <option value="1" @if ($project->actived == true) selected @endif>Active
+                                        </option>
+                                        <option value="0" @if ($project->actived == false) selected @endif>Deactive
+                                        </option>
+                                    </select>
+                                </div>
                             </form>
                         </div>
                     </div>

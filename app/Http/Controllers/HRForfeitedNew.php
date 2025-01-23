@@ -63,10 +63,7 @@ class HRForfeitedNew extends Controller
             (
                 select (
                     select COALESCE(sum(total_day), 0) from leave_transaction where user_id=' . $id . ' and leave_category_id=1
-                    and ap_hd  = 1
-                    and ap_gm  = 1
-                    and ver_hr = 1
-                    and ap_hrd = 1
+                    and formStat=1
                 )
             ) as transactionAnnual')
             ])
@@ -386,7 +383,7 @@ class HRForfeitedNew extends Controller
             ->where('active', 1)
             ->whereNotIn('nik', ["", "123456789", "D0002"])
             ->whereNotIn('emp_status', ["Outsource"])
-            ->whereIn('id', [41])
+            ->whereIn('id', [226])
             ->orderBy('first_name', 'asc')
             ->get();
 
@@ -447,37 +444,6 @@ class HRForfeitedNew extends Controller
             ->addColumn('advanceAL2', function (User $user) { })
             ->addColumn('totalAdvance', '{{ $advanceAL1 }}')
             ->addColumn('remainsAL', '{{ $availableAL + $advanceAL1 }}')
-
-            // ->addColumn('DEDE', function (User $user) {
-
-            //     $totalMonth = $this->totalMonth();
-
-            //     $continueMonth = $this->continueMonth() - 1;
-
-            //     $avail = $this->availableLeave($user);
-
-            //     $totalAnnual = $avail['newAnnual'] - $avail['annual'];
-
-            //     $totalAnnualPermanent = $user['initial_annual'] - $avail['annual'];
-
-            //     $totalAnnualPermanent1 = $totalAnnualPermanent - $avail['daffPermanent1'];
-
-            //     if ($user['emp_status'] === "Permanent") {
-            //         $available = $totalAnnualPermanent1;
-            //     } else {
-            //         $available = $totalAnnual;
-            //     }
-
-            //     //end available AL
-
-            //     $forfeited = $available - $continueMonth; // nilai dari forfeited
-
-            //     if ($forfeited < 0) {
-            //         $forfeited = 0;
-            //     }
-
-            //     return $forfeited;
-            // })
             ->addColumn('DEDE', function (User $user) {
                 $forfeited = Forfeited::where('user_id', $user->id)->pluck('countAnnual');
                 $forfeitedCounts = ForfeitedCounts::where('user_id', $user->id)->where('status', 1)->pluck('amount');

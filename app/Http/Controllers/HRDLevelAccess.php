@@ -1349,6 +1349,7 @@ class HRDLevelAccess extends Controller
             'project_name' => $request->input('name'),
             'group'        => $request->input('group'),
             'created_by'   => auth::user()->first_name . ' ' . auth::user()->last_name,
+            'actived'      => $request->input('status')
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -1382,6 +1383,7 @@ class HRDLevelAccess extends Controller
             'project_name' => $request->input('name'),
             'group'        => $request->input('group'),
             'created_by'   => auth::user()->first_name . ' ' . auth::user()->last_name,
+            'actived'      => true
         ];
 
         $validator = Validator::make($request->all(), $rules);

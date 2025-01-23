@@ -90,22 +90,22 @@ class Producer_WeekendCrew_controller extends Controller
 
         $works = WorkingOnWeekends::where('status', $sending->status)->where('ap_producer', false)->get();
 
-        foreach ($works as $work) {
-            $work->update([
-                'ap_producer'   => 2,
-                'approved'      => 2,
-                'date_producer' => Carbon::now()
-            ]);
-        }
+        // foreach ($works as $work) {
+        //     $work->update([
+        //         'ap_producer'   => 2,
+        //         'approved'      => 2,
+        //         'date_producer' => Carbon::now()
+        //     ]);
+        // }
 
-        $sending->update([
-            'ap_producer'   => 2,
-            'approved'   => 2,
-            'date_producer' => Carbon::now()
-        ]);
+        // $sending->update([
+        //     'ap_producer'   => 2,
+        //     'approved'   => 2,
+        //     'date_producer' => Carbon::now()
+        // ]);
 
-        Session::flash('message', Lang::get('messages.data_custom', ['data' => "Form request weekend crew by " . $sending->coordinator()->getFullName() . " has been approved."]));
-        Mail::to('wis_system@infinitestudios.id')->send(new DisapprovedMail($sending->id));
+        Session::flash('message', Lang::get('messages.data_custom', ['data' => "Form request weekend crew by " . $sending->coordinator()->getFullName() . " has been rejected"]));
+        // Mail::to('wis_system@infinitestudios.id')->send(new DisapprovedMail($sending->id));
         return redirect()->route('producer/weekend-crew/index');
     }
 

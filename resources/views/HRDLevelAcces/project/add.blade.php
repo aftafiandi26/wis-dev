@@ -57,7 +57,7 @@
                                 </div>
                                 <div class="form-group">
                                     <label for="name">Project Name:</label>
-                                    <input type="text" class="form-control" id="name" required
+                                    <input type="text" class="form-control" id="name" name="name" required
                                         value="{{ old('name') }}">
                                 </div>
                             </form>
