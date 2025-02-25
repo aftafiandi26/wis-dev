@@ -60,76 +60,122 @@
     <div class="row">
         <div class="col-lg-12">
             <div class="panel-group">
-                <div class="panel panel-default">
-                    <div class="panel-heading">Form Weekend Crew <span id="homan">(Allowance)</span></div>
-                    <div class="panel-body table-wrapper">
-                        <table class="table table-condensed table-hover table-striped table-bordered" id="list">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Employes</th>
-                                    <th>Position</th>
-                                    <th>Project</th>
-                                    <th>Work Status</th>
-                                    <th>Change With:</th>
-                                    <th>Started</th>
-                                    <th>ended</th>
-                                    <th>Time</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($allowances as $key => $allowance)
+                @if (count($allowances) !== 0)
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Form Weekend Crew <span id="homan">(Allowance)</span></div>
+                        <div class="panel-body table-wrapper">
+                            <table class="table table-condensed table-hover table-striped table-bordered"
+                                id="list">
+                                <thead>
                                     <tr>
-                                        <td>{{ ++$key }}</td>
-                                        <td>{{ $allowance->user()->getFullName() }}</td>
-                                        <td>{{ $allowance->user()->position }}</td>
-                                        <td>{{ $allowance->project }}</td>
-                                        <td>{{ strtoupper($allowance->workStat) }}</td>
-                                        <td>{{ title_case($allowance->extra) }}</td>
-                                        <td>{{ $allowance->start }}</td>
-                                        <td>{{ $allowance->end }}</td>
-                                        <td>{{ sprintf('%02d:%02d', $allowance->hourly, $allowance->minutely) }}</td>
+                                        <th>No</th>
+                                        <th>Employes</th>
+                                        <th>Position</th>
+                                        <th>Project</th>
+                                        <th>Work Status</th>
+                                        <th>Change With:</th>
+                                        <th>Started</th>
+                                        <th>ended</th>
+                                        <th>Time</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach ($allowances as $key => $allowance)
+                                        <tr>
+                                            <td>{{ ++$key }}</td>
+                                            <td>{{ $allowance->user()->getFullName() }}</td>
+                                            <td>{{ $allowance->user()->position }}</td>
+                                            <td>{{ $allowance->project }}</td>
+                                            <td>{{ strtoupper($allowance->workStat) }}</td>
+                                            <td>{{ title_case($allowance->extra) }}</td>
+                                            <td>{{ $allowance->start }}</td>
+                                            <td>{{ $allowance->end }}</td>
+                                            <td>{{ sprintf('%02d:%02d', $allowance->hourly, $allowance->minutely) }}
+                                            </td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
-                <div class="panel panel-default">
-                    <div class="panel-heading">Form Weekend Crew <span id="homan">(Exdo)</span></div>
-                    <div class="panel-body">
-                        <table class="table table-condensed table-hover table-striped table-bordered" id="list">
-                            <thead>
-                                <tr>
-                                    <th>No</th>
-                                    <th>Employes</th>
-                                    <th>Position</th>
-                                    <th>Project</th>
-                                    <th>Work Status</th>
-                                    <th>Change With:</th>
-                                    <th>Started</th>
-                                    <th>ended</th>
-                                    <th>Time</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @foreach ($exdoed as $key => $exdo)
+                @endif
+                @if (count($catchup) !== 0)
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Form Weekend Crew <span id="homan">(Catch Up)</span></div>
+                        <div class="panel-body">
+                            <table class="table table-condensed table-hover table-striped table-bordered"
+                                id="list">
+                                <thead>
                                     <tr>
-                                        <td>{{ ++$key }}</td>
-                                        <td>{{ $exdo->user()->getFullName() }}</td>
-                                        <td>{{ $exdo->user()->position }}</td>
-                                        <td>{{ $exdo->project }}</td>
-                                        <td>{{ strtoupper($exdo->workStat) }}</td>
-                                        <td>{{ title_case($exdo->extra) }}</td>
-                                        <td>{{ $exdo->start }}</td>
-                                        <td>{{ $exdo->end }}</td>
-                                        <td>{{ sprintf('%02d:%02d', $exdo->hourly, $exdo->minutely) }}</td>
+                                        <th>No</th>
+                                        <th>Employes</th>
+                                        <th>Position</th>
+                                        <th>Project</th>
+                                        <th>Work Status</th>
+                                        <th>Change With:</th>
+                                        <th>Started</th>
+                                        <th>ended</th>
+                                        <th>Time</th>
                                     </tr>
-                                @endforeach
-                            </tbody>
-                        </table>
+                                </thead>
+                                <tbody>
+                                    @foreach ($catchup as $key => $cat)
+                                        <tr>
+                                            <td>{{ ++$key }}</td>
+                                            <td>{{ $cat->user()->getFullName() }}</td>
+                                            <td>{{ $cat->user()->position }}</td>
+                                            <td>{{ $cat->project }}</td>
+                                            <td>{{ strtoupper($cat->workStat) }}</td>
+                                            <td>{{ title_case($cat->extra) }}</td>
+                                            <td>{{ $cat->start }}</td>
+                                            <td>{{ $cat->end }}</td>
+                                            <td>{{ sprintf('%02d:%02d', $cat->hourly, $cat->minutely) }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
                     </div>
-                </div>
+                @endif
+                @if (count($exdoed) !== 0)
+                    <div class="panel panel-default">
+                        <div class="panel-heading">Form Weekend Crew <span id="homan">(Exdo)</span></div>
+                        <div class="panel-body">
+                            <table class="table table-condensed table-hover table-striped table-bordered"
+                                id="list">
+                                <thead>
+                                    <tr>
+                                        <th>No</th>
+                                        <th>Employes</th>
+                                        <th>Position</th>
+                                        <th>Project</th>
+                                        <th>Work Status</th>
+                                        <th>Change With:</th>
+                                        <th>Started</th>
+                                        <th>ended</th>
+                                        <th>Time</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach ($exdoed as $key => $exdo)
+                                        <tr>
+                                            <td>{{ ++$key }}</td>
+                                            <td>{{ $exdo->user()->getFullName() }}</td>
+                                            <td>{{ $exdo->user()->position }}</td>
+                                            <td>{{ $exdo->project }}</td>
+                                            <td>{{ strtoupper($exdo->workStat) }}</td>
+                                            <td>{{ title_case($exdo->extra) }}</td>
+                                            <td>{{ $exdo->start }}</td>
+                                            <td>{{ $exdo->end }}</td>
+                                            <td>{{ sprintf('%02d:%02d', $exdo->hourly, $exdo->minutely) }}</td>
+                                        </tr>
+                                    @endforeach
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                @endif
+
             </div>
         </div>
     </div>

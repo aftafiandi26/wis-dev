@@ -996,8 +996,8 @@
 
         {{-- overtime --}}
         <li>
-            <a class="{!! $c63 or '' !!}" href="#"><i class="fa fa-fw fa fa-wpforms"></i> Production
-                Form<span class="fa arrow"></span></a>
+            <a class="{!! $c63 or '' !!}" href="#"><i class="fa fa-fw fa fa-wpforms"></i> Form
+                Request<span class="fa arrow"></span></a>
             <ul class="nav nav-second-level {!! $c1u or '' !!}">
                 <li>
                     <a class="{!! $c663 or '' !!}" href="#"><i class="fa fa-fw fa fa-wpforms"></i>
@@ -1053,7 +1053,8 @@
                     </ul>
                 </li>
 
-                @if (auth()->user()->koor == 1 or
+                @if (auth()->user()->dept_category_id != 6 or
+                        auth()->user()->koor == 1 or
                         auth()->user()->gm == 1 or
                         auth()->user()->producer == 1 or
                         auth()->user()->hr == 1 or
@@ -1062,7 +1063,7 @@
                         <a class="{!! $c664 or '' !!}" href="#"><i class="fa fa-fw fa fa-wpforms"></i>
                             Weekend Crew<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level {!! $c12u or '' !!}">
-                            @if (auth()->user()->koor == 1)
+                            @if (auth()->user()->koor == 1 or auth()->user()->dept_category_id != 6 and auth()->user()->nik != null)
                                 <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('coordinator/working/weekends/form') }}"><i
@@ -1148,6 +1149,21 @@
 
             </ul>
         </li>
+
+        {{-- @if (auth()->user()->dept_category_id !== 6)
+            <li>
+                <a class="{!! $c63 or '' !!}" href="#"><i class="fa fa-fw fa fa-wpforms"></i> Form
+                    Request<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level {!! $c1u or '' !!}">
+                    <li>
+                        <a class="{!! $c1 or '' !!}"
+                            href="{{ route('coordinator/working/weekends/form') }}"><i
+                                class="fa fa-fw fa fa-genderless"></i> Weekend Crew</a>
+                    </li>
+
+                </ul>
+            </li>
+        @endif --}}
 
         <li>
             <a class="{!! $c63 or '' !!}" href="#"><i class="fa fa-fw fa fa-wpforms"></i> Guideline<span

@@ -6,6 +6,7 @@ use App\Attendance;
 use App\Attendance_Questions;
 use App\Dept_Category;
 use App\Project_Category;
+use App\ProjectGroup;
 use App\User;
 use Carbon\Carbon;
 use DateTime;
@@ -26,7 +27,9 @@ class HR_Attendance_Controller extends Controller
     {
         $users = User::where('active', 1)->where('dept_category_id', 6)->orderBy('first_name', 'asc')->get();
 
-        return view('HRDLevelAcces.attendances.index', compact(['users']));
+        $projectGroups = ProjectGroup::where('active', true)->orderBy('group_name', 'asc')->get();
+
+        return view('HRDLevelAcces.attendances.index', compact(['users', 'projectGroups']));
     }
 
     public function  datatables()
@@ -255,7 +258,33 @@ class HR_Attendance_Controller extends Controller
                 ->withInput();
         }
 
+        $atted = Attendance::where('user_id', $data['user_id'])->whereDATE('start', $data['start'])->first();
+
+        if ($atted) {
+            Session::flash('message', Lang::get('messages.data_custom', ['data' => 'Recorded data already exists.']));
+            return redirect()->route('hr/summary/attendance/index');
+        }
+
+        $qeu = [
+            'user_id'   => $request->input('employes'),
+            'Q1'        => 3,
+            'Q2'        => 3,
+            'group'     => $request->input('project'),
+            'will_do'   => 'create by HRD'
+        ];
+
+        // Attendance_Questions::create($qeu);
+
+        $ken = Attendance_Questions::find($data['user_id'])->orderBy('id', 'desc')->first();
+
+        $arra = [
+            'quest_id' => $ken->id
+        ];
+
+        $data = array_merge($data, (array) $arra);
+
         Attendance::create($data);
+
         Session::flash('message', Lang::get('messages.data_custom', ['data' => 'The recorded data has been inserted']));
         return redirect()->route('hr/summary/attendance/index');
     }

@@ -117,6 +117,26 @@ class HR_Weekend_Crew_controller extends Controller
             ->make(true);
     }
 
+    public function showDataSummaryCatchUp($id)
+    {
+        $send = SendingDataWorkingWeekend::find($id);
+
+        $query = WorkingOnWeekends::where('status', $send->status)->where('extra', 'catch up')->whereIn('approved', [true, false])->get();
+
+        return Datatables::of($query)
+            ->addIndexColumn()
+            ->addColumn('fullname', function (WorkingOnWeekends $work) {
+                return $work->user()->getFullName();
+            })
+            ->addColumn('position', function (WorkingOnWeekends $work) {
+                return $work->user()->position;
+            })
+            ->editColumn('workStat', function (WorkingOnWeekends $work) {
+                return strtoupper($work->workStat);
+            })
+            ->make(true);
+    }
+
     public function delete($id)
     {
         $getId = SendingDataWorkingWeekend::find($id);

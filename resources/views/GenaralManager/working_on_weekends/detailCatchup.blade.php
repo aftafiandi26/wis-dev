@@ -49,9 +49,10 @@
 
 <div class='modal-header'>
     <button type='button' class='close' data-dismiss='modal' aria-hidden='true'>&times;</button>
-    <h3 class='modal-title text-center' id='showModalLabel2'>Weekend Crew <span id="homan">(Allowance)</span> on <i>
-            on
-            <i>{{ date('Y-m-d', strtotime($works[0]['start'])) }}</i>.</h3>
+    <h3 class='modal-title text-center' id='showModalLabel2'>Weekend Crew <span id="homan">(Unpaid / Catch Up)</span>
+        on
+        <i>{{ date('Y-m-d', strtotime($works[0]['start'])) }}</i>.
+    </h3>
 </div>
 <div class='modal-body'>
     <div class="row">
@@ -109,14 +110,16 @@
         </div>
     </div>
 </div>
+
 <form id="formPushApp" method="post" hidden>
     {{ csrf_field() }}
 </form>
+
 <div class='modal-footer'>
     @if ($getId->ap_producer == true)
-        <a href={{ route('gm/working-on-weekends/approved', $getId->id) }} class='btn btn-sm btn-default'
+        <a href={{ route('gm/working-on-weekends/approved/catchup', $getId->id) }} class='btn btn-sm btn-default'
             id="approved">All Approved [<span id="getApp">{{ $allApproved }}</span>]</a>
-        <a href="{{ route('gm/working-on-weekends/disapproved', $getId->id) }}" class='btn btn-sm btn-default'
+        <a href="{{ route('gm/working-on-weekends/disapproved/catchup', $getId->id) }}" class='btn btn-sm btn-default'
             id="disapproved">All Disapproved [ <span id="asd">{{ $allDisapproved }}</span> ]</a>
         <a href="{{ route('gm/working-on-weekends/ajaxConfirm', $getId->id) }}"
             class="btn btn-sm btn-default pull-left">Confirm</a>
@@ -124,30 +127,10 @@
         <a href="#" class='btn btn-sm btn-default' id="waiting">Waiting {{ $getId->producer()->getFullName() }}
             Approval</a>
     @endif
-
     <button type='button' class='btn btn-sm btn-default' data-dismiss='modal'>Close</button>
 </div>
 
 <script>
-    function setCookie(name, value, minutes) {
-        const date = new Date();
-        // Menambahkan waktu kedaluwarsa dalam menit
-        date.setTime(date.getTime() + (minutes * 60 * 1000));
-        const expires = "expires=" + date.toUTCString();
-        document.cookie = name + "=" + value + ";" + expires + ";path=/";
-    }
-
-    function getCookie(name) {
-        const nameEQ = name + "=";
-        const ca = document.cookie.split(';');
-        for (let i = 0; i < ca.length; i++) {
-            let c = ca[i];
-            while (c.charAt(0) === ' ') c = c.substring(1, c.length);
-            if (c.indexOf(nameEQ) === 0) return c.substring(nameEQ.length, c.length);
-        }
-        return null; // Jika cookie tidak ditemukan
-    }
-
     $('select#pushApp').on('change', function() {
         var approved = $(this).val();
 
@@ -170,15 +153,10 @@
             data: data, // Data yang dikirim
             dataType: 'json',
             success: function(response) {
-                // console.log(response);
                 // Tanggapan dari server
                 document.getElementById('getApp').innerHTML = response.allApproved;
                 document.getElementById('asd').innerHTML = response.allDisapproved;
-
-                setCookie("confirmed", true, 1);
                 alert(response.message);
-                alert(response.confirm);
-                // console.log(response);
             },
             error: function(xhr, status, error) {
                 // Penanganan error

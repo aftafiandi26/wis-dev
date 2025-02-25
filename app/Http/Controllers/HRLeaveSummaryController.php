@@ -43,8 +43,8 @@ class HRLeaveSummaryController extends Controller
 
     public function dataProvinsi()
     {
-        $provinsi = file_get_contents('https://dev.farizdotid.com/api/daerahindonesia/provinsi', 200);
-        // $provinsi = file_get_contents('https://ibnux.github.io/data-indonesia/provinsi.json', 200);
+        // $provinsi = file_get_contents('https://dev.farizdotid.com/api/daerahindonesia/provinsi', 200);
+        $provinsi = file_get_contents('https://ibnux.github.io/data-indonesia/provinsi.json', 200);
         $provinsi = json_decode($provinsi, true);
         $provinsi = $provinsi['provinsi'];
 
@@ -53,8 +53,8 @@ class HRLeaveSummaryController extends Controller
 
     public function dataNameProvinsi($id)
     {
-        $provinsi = file_get_contents('https://dev.farizdotid.com/api/daerahindonesia/provinsi/' . $id, 200);
-        // $provinsi = file_get_contents('https://ibnux.github.io/data-indonesia/kabupaten/'.$id.'.json', 200);
+        // $provinsi = file_get_contents('https://dev.farizdotid.com/api/daerahindonesia/provinsi/' . $id, 200);
+        $provinsi = file_get_contents('https://ibnux.github.io/data-indonesia/kabupaten/' . $id . '.json', 200);
         $provinsi = json_decode($provinsi, true);
 
         return $provinsi['nama'];
@@ -62,8 +62,8 @@ class HRLeaveSummaryController extends Controller
 
     public function dataNameHometown($id)
     {
-        $provinsi = file_get_contents('https://dev.farizdotid.com/api/daerahindonesia/kota/' . $id, 200);
-        // $provinsi = file_get_contents('https://ibnux.github.io/data-indonesia/kabupaten/'.$id.'.json', 200);
+        // $provinsi = file_get_contents('https://dev.farizdotid.com/api/daerahindonesia/kota/' . $id, 200);
+        $provinsi = file_get_contents('https://ibnux.github.io/data-indonesia/kabupaten/' . $id . '.json', 200);
         $provinsi = json_decode($provinsi, true);
 
         return  $provinsi['nama'];
@@ -1606,9 +1606,13 @@ class HRLeaveSummaryController extends Controller
 
         $category = Leave_Category::all();
 
-        $provinsi = file_get_contents('https://dev.farizdotid.com/api/daerahindonesia/provinsi');
-        $provinsi = json_decode($provinsi, true);
-        $provinsi = $provinsi['provinsi'];
+        $provinsi = $this->dataProvinsi();
+
+        // dd($pro);
+
+        // $provinsi = file_get_contents('https://dev.farizdotid.com/api/daerahindonesia/provinsi');
+        // $provinsi = json_decode($provinsi, true);
+        // $provinsi = $provinsi['provinsi'];
 
         $exdo = Initial_Leave::where('user_id', $data->user_id)->pluck('initial')->sum();
         $advanceExdo = $this->exdo($id, $exdo);

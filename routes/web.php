@@ -740,6 +740,7 @@ Route::prefix('HRD')->group(function () {
     Route::get('weekend-crew/data', 'HR_Weekend_Crew_controller@dataTabalesSummary')->name('hrd/weekend-crew/summary/data');
     Route::get('weekend-crew/data/{id}', 'HR_Weekend_Crew_controller@showDataSummary')->name('hrd/weekend-crew/summary/data/show');
     Route::get('weekend-crew/data/exdo/{id}', 'HR_Weekend_Crew_controller@showDataSummary2')->name('hrd/weekend-crew/summary/data/exdo/show');
+    Route::get('weekend-crew/data/catchup/{id}', 'HR_Weekend_Crew_controller@showDataSummaryCatchUp')->name('hrd/weekend-crew/summary/data/catchup/show');
     Route::get('weekend-crew/delete/{id}', 'HR_Weekend_Crew_controller@delete')->name('hrd/weekend-crew/summary/delete');
     Route::get('weekend-crew/delete/push/{id}', 'HR_Weekend_Crew_controller@pushDelete')->name('hrd/weekend-crew/summary/delete/push');
 
@@ -1511,10 +1512,19 @@ Route::prefix('general-manager')->group(function () {
     Route::get('working-on-weekends', 'GM_WeekendsController@index')->name('gm/working-on-weekends/index');
     Route::get('working-on-weekends/allowance', 'GM_WeekendsController@datatablesAllowance')->name('gm/working-on-weekends/index/allowance/data');
     Route::get('working-on-weekends/allowance/detail/{id}', 'GM_WeekendsController@detail')->name('gm/working-on-weekends/detail');
+
     Route::get('working-on-weekends/approved/{id}', 'GM_WeekendsController@apporved')->name('gm/working-on-weekends/approved');
     Route::get('working-on-weekends/approved/exdo/{id}', 'GM_WeekendsController@apporvedExdo')->name('gm/working-on-weekends/approved/exdo');
+
+    Route::get('working-on-weekends/approved/catchup/{id}', 'GM_WeekendsController@apporvedCatchup')->name('gm/working-on-weekends/approved/catchup');
+
     Route::get('working-on-weekends/disapproved/{id}', 'GM_WeekendsController@disapproved')->name('gm/working-on-weekends/disapproved');
     Route::get('working-on-weekends/disapproved/exdo/{id}', 'GM_WeekendsController@disapprovedExdo')->name('gm/working-on-weekends/disapproved/exdo');
+
+    Route::get('working-on-weekends/disapproved/catchup/{id}', 'GM_WeekendsController@disapprovedCatchup')->name('gm/working-on-weekends/disapproved/catchup');
+
+    Route::get('working-on-weekends/catchup', 'GM_WeekendsController@datatablesCatchUp')->name('gm/working-on-weekends/catchup');
+    Route::get('working-on-weekends/catchup/detail/{id}', 'GM_WeekendsController@detailCatchUp')->name('gm/working-on-weekends/catchup/detail');
 
     Route::get('working-on-weekends/exdo', 'GM_WeekendsController@datatablesExdo')->name('gm/working-on-weekends/index/exdo/data');
     Route::get('working-on-weekends/exdo/detail/{id}', 'GM_WeekendsController@detailExdo')->name('gm/working-on-weekends/detail/exdo');

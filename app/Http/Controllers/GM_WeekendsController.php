@@ -67,7 +67,7 @@ class GM_WeekendsController extends Controller
 
     public function datatablesExdo()
     {
-        $query = SendingDataWorkingWeekend::where('ap_producer', true)->where('exdo', true)->whereIn('approved', [false, 2])->get();
+        $query = SendingDataWorkingWeekend::where('ap_producer', true)->where('exdo', false)->whereIn('approved', [false, 2])->get();
 
         return Datatables::of($query)
             ->addIndexColumn()
@@ -103,6 +103,52 @@ class GM_WeekendsController extends Controller
             ->make(true);
     }
 
+    public function datatablesCatchUp()
+    {
+        $query = SendingDataWorkingWeekend::where('ap_producer', true)->where('catchup', false)->whereIn('approved', [false])->get();
+
+        return Datatables::of($query)
+            ->addIndexColumn()
+            ->addColumn('fullname', function (SendingDataWorkingWeekend $sent) {
+                return $sent->coordinator()->getFullName();
+            })
+            ->addColumn('position', function (SendingDataWorkingWeekend $sent) {
+                return $sent->coordinator()->position;
+            })
+            ->addColumn('project', function (SendingDataWorkingWeekend $sent) {
+                return $sent->coordinator()->getProjectName($sent->coordinator()->project_category_id_1);
+            })
+            ->addColumn('actions', 'GenaralManager.working_on_weekends.actionsLink')
+            ->addColumn('exdo', function (SendingDataWorkingWeekend $sent) {
+                $query = WorkingOnWeekends::where('status', $sent->status)->where('extra', 'catch up')->get();
+
+                return $query->count();
+            })
+            ->rawColumns(['actions'])
+            ->editColumn('approved', function (SendingDataWorkingWeekend $sent) {
+                if ($sent->approved == true) {
+                    $return = "Approved";
+                } else {
+                    if ($sent->ap_producer == false) {
+                        $return = "Waiting " . $sent->producer()->getFullName() . " approval";
+                    } else {
+                        $return = "Waiting Approval";
+                    }
+                }
+
+                return $return;
+            })
+            ->make(true);
+    }
+
+    public function confirmForm($id)
+    {
+        $getId = SendingDataWorkingWeekend::find($id);
+        $works = WorkingOnWeekends::where('status', $getId->status)->where('coor_id', $getId->coor_id)->get();
+
+        return view('GenaralManager.working_on_weekends.confirmForm', compact(['getId', 'works']));
+    }
+
     public function detail($id)
     {
         $getId = SendingDataWorkingWeekend::find($id);
@@ -110,6 +156,11 @@ class GM_WeekendsController extends Controller
         $works = WorkingOnWeekends::where('status', $getId->status)->where('coor_id', $getId->coor_id)->where('extra', 'allowance')->get();
         $allApproved = WorkingOnWeekends::whereIn('approved', [0, 1])->where('status', $getId->status)->where('coor_id', $getId->coor_id)->where('extra', 'allowance')->get()->count();
         $allDisapproved = WorkingOnWeekends::whereIn('approved', [0, 2])->where('status', $getId->status)->where('coor_id', $getId->coor_id)->where('extra', 'allowance')->get()->count();
+
+        $fworks = WorkingOnWeekends::where('status', $getId->status)->where('coor_id', $getId->coor_id)->where('extra', 'allowance')->first();
+        if (empty($fworks)) {
+            return "Data allowance is empty";
+        }
 
         return view('GenaralManager.working_on_weekends.detail', compact(['works', 'getId', 'allApproved', 'allDisapproved']));
     }
@@ -135,8 +186,31 @@ class GM_WeekendsController extends Controller
         $allApproved = WorkingOnWeekends::whereIn('approved', [0, 1])->where('status', $getId->status)->where('coor_id', $getId->coor_id)->where('extra', 'exdo')->get()->count();
         $allDisapproved = WorkingOnWeekends::whereIn('approved', [0, 2])->where('status', $getId->status)->where('coor_id', $getId->coor_id)->where('extra', 'exdo')->get()->count();
 
+        $fworks = WorkingOnWeekends::where('status', $getId->status)->where('coor_id', $getId->coor_id)->where('extra', 'exdo')->first();
+        if (empty($fworks)) {
+            return "Data allowance is empty";
+        }
+
         return view('GenaralManager.working_on_weekends.detailExdo', compact(['works', 'getId', 'allApproved', 'allDisapproved']));
     }
+
+    public function detailCatchUp($id)
+    {
+        $getId = SendingDataWorkingWeekend::find($id);
+
+        $works = WorkingOnWeekends::where('status', $getId->status)->where('coor_id', $getId->coor_id)->where('extra', 'catch up')->get();
+
+        $allApproved = WorkingOnWeekends::whereIn('approved', [0, 1])->where('status', $getId->status)->where('coor_id', $getId->coor_id)->where('extra', 'catch up')->get()->count();
+        $allDisapproved = WorkingOnWeekends::whereIn('approved', [0, 2])->where('status', $getId->status)->where('coor_id', $getId->coor_id)->where('extra', 'catch up')->get()->count();
+
+        $fworks = WorkingOnWeekends::where('status', $getId->status)->where('coor_id', $getId->coor_id)->where('extra', 'catch up')->first();
+        if (empty($fworks)) {
+            return "Data allowance is empty";
+        }
+
+        return view('GenaralManager.working_on_weekends.detailCatchup', compact(['works', 'getId', 'allApproved', 'allDisapproved']));
+    }
+
 
     public function ajaxConfirm($id)
     {
@@ -186,13 +260,14 @@ class GM_WeekendsController extends Controller
             $res = "disapproved";
         }
 
-        $allApproved = WorkingOnWeekends::whereIn('approved', [0, 1])->where('status', $work->status)->where('coor_id', $work->coor_id)->where('extra', 'exdo')->get()->count();
-        $allDisapproved = WorkingOnWeekends::whereIn('approved', [0, 2])->where('status', $work->status)->where('coor_id', $work->coor_id)->where('extra', 'exdo')->get()->count();
+        $allApproved = WorkingOnWeekends::whereIn('approved', [0, 1])->where('status', $work->status)->where('coor_id', $work->coor_id)->where('extra', $work->extra)->get()->count();
+        $allDisapproved = WorkingOnWeekends::whereIn('approved', [0, 2])->where('status', $work->status)->where('coor_id', $work->coor_id)->where('extra', $work->extra)->get()->count();
 
         return response()->json([
             'message' => $work->user()->getFullName() . ' ' . $res . '.',
             'allApproved' => $allApproved,
             'allDisapproved'    => $allDisapproved,
+            'confirm'   => "Don't forget after finish, please klik confirm"
         ]);
     }
 
@@ -202,7 +277,7 @@ class GM_WeekendsController extends Controller
 
         $allowance = WorkingOnWeekends::where('status', $sending->status)->where('extra', 'allowance')->where('ap_producer', true)->where('approved', false)->get();
         $exdo = WorkingOnWeekends::where('status', $sending->status)->where('extra', 'exdo')->where('ap_producer', true)->where('approved', false)->get();
-
+        $catchups = WorkingOnWeekends::where('status', $sending->status)->where('extra', 'catch up')->where('ap_producer', true)->where('approved', false)->get();
         foreach ($allowance as $work) {
             $work->update([
                 'approved'   => true,
@@ -214,6 +289,13 @@ class GM_WeekendsController extends Controller
             $x->update([
                 'approved' => 2,
                 'date_gm'   => Carbon::now()
+            ]);
+        }
+
+        foreach ($catchups as $catch) {
+            $catch->update([
+                'approved' => 2,
+                'date_gm' => Carbon::now()
             ]);
         }
 
@@ -237,6 +319,7 @@ class GM_WeekendsController extends Controller
 
         $allowance = WorkingOnWeekends::where('status', $sending->status)->where('extra', 'allowance')->where('ap_producer', true)->where('approved', false)->get();
         $exdo = WorkingOnWeekends::where('status', $sending->status)->where('extra', 'exdo')->where('ap_producer', true)->where('approved', false)->get();
+        $catchups = WorkingOnWeekends::where('status', $sending->status)->where('extra', 'catch up')->where('ap_producer', true)->where('approved', false)->get();
 
         foreach ($exdo as $x) {
             $x->update([
@@ -252,10 +335,58 @@ class GM_WeekendsController extends Controller
             ]);
         }
 
+        foreach ($catchups as $catch) {
+            $catch->update([
+                'approved' => 2,
+                'date_gm' => Carbon::now()
+            ]);
+        }
+
         $sending->update([
             'approved'   => true,
             'date_gm' => Carbon::now(),
             'exdo'      => true,
+        ]);
+
+        Session::flash('message', Lang::get('messages.data_custom', ['data' => 'Recorded data has been approved']));
+        Mail::to('dede.aftafiandi@infinitestudios.id')->send(new VerifyMail($id));
+        Mail::to('dede.aftafiandi@infinitestudios.id')->send(new ApprovedMail($id));
+        return redirect()->route('gm/working-on-weekends/index');
+    }
+
+    public function apporvedCatchup($id)
+    {
+        $sending = SendingDataWorkingWeekend::find($id);
+
+        $allowance = WorkingOnWeekends::where('status', $sending->status)->where('extra', 'allowance')->where('ap_producer', true)->where('approved', false)->get();
+        $exdo = WorkingOnWeekends::where('status', $sending->status)->where('extra', 'exdo')->where('ap_producer', true)->where('approved', false)->get();
+        $catchups = WorkingOnWeekends::where('status', $sending->status)->where('extra', 'catch up')->where('ap_producer', true)->where('approved', false)->get();
+
+        foreach ($catchups as $catch) {
+            $catch->update([
+                'approved' => true,
+                'date_gm' => Carbon::now()
+            ]);
+        }
+
+        foreach ($exdo as $x) {
+            $x->update([
+                'approved' => 2,
+                'date_gm'   => Carbon::now()
+            ]);
+        }
+
+        foreach ($allowance as $work) {
+            $work->update([
+                'approved'   => 2,
+                'date_gm' => Carbon::now()
+            ]);
+        }
+
+        $sending->update([
+            'approved'   => true,
+            'date_gm' => Carbon::now(),
+            'catchup'      => true,
         ]);
 
         Session::flash('message', Lang::get('messages.data_custom', ['data' => 'Recorded data has been approved']));
@@ -293,6 +424,30 @@ class GM_WeekendsController extends Controller
         $sending = SendingDataWorkingWeekend::find($id);
 
         $exdo = WorkingOnWeekends::where('status', $sending->status)->where('extra', 'exdo')->where('ap_producer', true)->where('approved', false)->get();
+
+        foreach ($exdo as $work) {
+            $work->update([
+                'approved'   => 2,
+                'date_gm' => Carbon::now()
+            ]);
+        }
+
+        $sending->update([
+            'approved'   => 2,
+            'date_gm' => Carbon::now(),
+            'exdo'  => 2
+        ]);
+
+        Session::flash('message', Lang::get('messages.data_custom', ['data' => 'Recorded data has been disapproved']));
+        Mail::to('dede.aftafiandi@infinitestudios.id')->send(new DisapprovedMail($sending->id));
+        return redirect()->route('gm/working-on-weekends/index');
+    }
+
+    public function disapprovedCatchup($id)
+    {
+        $sending = SendingDataWorkingWeekend::find($id);
+
+        $exdo = WorkingOnWeekends::where('status', $sending->status)->where('extra', 'catch up')->where('ap_producer', true)->where('approved', false)->get();
 
         foreach ($exdo as $work) {
             $work->update([

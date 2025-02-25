@@ -21,7 +21,7 @@ class CoordinatorWorkingWeekendsController extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'active', 'koor']);
+        $this->middleware(['auth', 'active']);
     }
 
     private function getCookies()
@@ -33,7 +33,7 @@ class CoordinatorWorkingWeekendsController extends Controller
 
     public function form()
     {
-        $users = User::where('active', 1)->where('dept_category_id', 6)->where('gm', false)->where('hd', false)->orderBy('first_name', 'asc')->get();
+        $users = User::where('active', 1)->where('dept_category_id', auth()->user()->dept_category_id)->where('gm', false)->where('hd', false)->whereNotIn('nik', ["", "123456789"])->orderBy('first_name', 'asc')->get();
 
         $tableWorkings = Log_WorkingWeekends::where('coor_id', auth()->user()->id)->get();
 
@@ -64,7 +64,8 @@ class CoordinatorWorkingWeekendsController extends Controller
                 'time'      => sprintf("%02d:%02d", $work->hourly, $work->minutely),
                 'workStat'  => strtoupper($work->workStat),
                 'extra'     => title_case($work->extra),
-                'eoc'       => "text-red"
+                'eoc'       => "text-red",
+                'meal'      => $work->lunch + $work->dinner,
             ];
         }
 
@@ -85,12 +86,12 @@ class CoordinatorWorkingWeekendsController extends Controller
         $eocUser = json_encode($eocUser);
 
 
-        if ($now->format('N') == 4 and $now->format('H') >= 16) {
-            return redirect()->route('coordinator/working/weekends/form/not-accessed');
-        }
-        if ($now->format('N') > 4) {
-            return redirect()->route('coordinator/working/weekends/form/not-accessed');
-        }
+        // if ($now->format('N') == 4 and $now->format('H') >= 16) {
+        //     return redirect()->route('coordinator/working/weekends/form/not-accessed');
+        // }
+        // if ($now->format('N') > 4) {
+        //     return redirect()->route('coordinator/working/weekends/form/not-accessed');
+        // }
 
         return view('all_employee.Form.weekends.form', compact(['users', 'workings', 'producers', 'eocUser', 'anggarda']));
     }
@@ -103,14 +104,13 @@ class CoordinatorWorkingWeekendsController extends Controller
             dd('sorry, your data is null');
         }
 
-        $findUser = User::where('active', 1)->where('dept_category_id', 6)->find($employes);
+        $findUser = User::where('active', 1)->where('dept_category_id', auth()->user()->dept_category_id)->find($employes);
 
         return view('all_employee.Form.weekends.modalInsert', compact(['findUser']));
     }
 
     public function postFormInsert(Request $request)
     {
-
         $employes = $request->input('user1');
 
         $user = User::find($employes);
@@ -137,24 +137,46 @@ class CoordinatorWorkingWeekendsController extends Controller
 
         $count = $countTime;
 
-        foreach ($request->input('extra') as $extra) {
-            $data = [
-                'coor_id'   => auth()->user()->id,
-                'user_id'   => $employes,
-                'project'   => $user->getProjectName($user->project_category_id_1),
-                'start'     => $timeStart,
-                'end'       => $timeEnd,
-                'hourly'    => $count->h,
-                'minutely'  => $count->m,
-                'workStat'  => $request->input('workStat'),
-                'extra'     => $extra
-            ];
-            Log_WorkingWeekends::create($data);
+        $log = Log_WorkingWeekends::where('user_id', $employes)->whereDATE('start', $timeStart->format('Y-m-d'))->first();
+
+        if ($log) {
+            Session::flash('message', Lang::get('messages.data_custom', ['data' => $user->getFullName() . ' weekend form has beenasda ad']));
+            return redirect()->back();
+        } else {
+            foreach ($request->input('extra') as $extra) {
+
+                $meal = (array) $request->input('meal'); // Pastikan selalu array
+
+                $lunch = in_array("lunch", $meal) ? 1 : 0;
+                $dinner = in_array("dinner", $meal) ? 1 : 0;
+
+                if ($request->input('workStat') == 'wfh') {
+                    $lunch = 0;
+                    $dinner = 0;
+                }
+
+                $data = [
+                    'coor_id'   => auth()->user()->id,
+                    'user_id'   => $employes,
+                    'project'   => $user->getProjectName($user->project_category_id_1),
+                    'start'     => $timeStart,
+                    'end'       => $timeEnd,
+                    'hourly'    => $count->h,
+                    'minutely'  => $count->m,
+                    'workStat'  => $request->input('workStat'),
+                    'extra'     => $extra,
+                    'lunch'      => $lunch,
+                    'dinner'      => $dinner,
+                ];
+                Log_WorkingWeekends::create($data);
+            }
+
+            Session::flash('message', Lang::get('messages.data_custom', ['data' => $user->getFullName() . ' weekend form has been inserted']));
+
+            // return response()->json(['message' => $user->getFullName() . " weekend form has been inserted"]);           
         }
 
-        Session::flash('message', Lang::get('messages.data_custom', ['data' => $user->getFullName() . ' has been inserted']));
-        // return response()->json(['message' => $request->all()]);
-        return response()->json(['message' => "Data has been inserted"]);
+        return redirect()->back();
     }
 
     public function editDataTable($id)
@@ -178,6 +200,14 @@ class CoordinatorWorkingWeekendsController extends Controller
             return redirect()->route('coordinator/working/weekends/form');
         }
 
+        $lunch     = $request->input('lunch');
+        $dinner   = $request->input('dinner');
+
+        if ($request->input('workStatus') === 'wfh') {
+            $lunch = 0;
+            $dinner = 0;
+        }
+
         $countTime = $timeStart->diff($timeEnd);
 
         $count = $countTime;
@@ -196,7 +226,9 @@ class CoordinatorWorkingWeekendsController extends Controller
             'minutely'  => $count->m,
             'project'   => $request->input('project'),
             'workStat'  => $request->input('workStatus'),
-            'extra'     => $request->input('over')
+            'extra'     => $request->input('over'),
+            'lunch'     => $lunch,
+            'dinner'    => $dinner
         ];
 
         $validator = Validator::make($request->all(), $rules);
@@ -245,6 +277,8 @@ class CoordinatorWorkingWeekendsController extends Controller
 
         $weekends = Log_WorkingWeekends::where('coor_id', auth()->user()->id)->get();
 
+        // dd($weekends);
+
         if ($dataSending['count'] = 0) {
             Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, cannot sending...']));
             return redirect()->route('coordinator/working/weekends/form');
@@ -266,7 +300,9 @@ class CoordinatorWorkingWeekendsController extends Controller
                 'minutely'  => $weekend->minutely,
                 'workStat'  => $weekend->workStat,
                 'producer_id' => $request->input('producers'),
-                'extra'     => $weekend->extra
+                'extra'     => $weekend->extra,
+                'lunch'     => $weekend->lunch,
+                'dinner'    => $weekend->dinner
             ];
 
             $count[] = ++$key;
@@ -282,8 +318,8 @@ class CoordinatorWorkingWeekendsController extends Controller
         ];
 
         SendingDataWorkingWeekend::create($dataSending);
-        // Mail::to('dede.aftafiandi@infinitestudios.id')->send(new Weekend_Crew_Mail($statused));
-        Mail::to($producer->email)->send(new Weekend_Crew_Mail($statused));
+        Mail::to('dede.aftafiandi@infinitestudios.id')->send(new Weekend_Crew_Mail($statused));
+        // Mail::to($producer->email)->send(new Weekend_Crew_Mail($statused));
         $weekends->each->delete();
         Session::flash('message', Lang::get('messages.data_custom', ['data' => 'The Weekend work request form has been successfully submitted.']));
         return redirect()->route('coordinator/working/weekends/form');

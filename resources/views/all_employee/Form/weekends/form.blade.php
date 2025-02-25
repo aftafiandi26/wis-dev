@@ -142,6 +142,10 @@
             color: red;
         }
 
+        .mb-5 {
+            margin-top: -10px;
+        }
+
         #ngeri {
             background-color: whitesmoke;
             color: black;
@@ -180,7 +184,7 @@
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-lg-6">
+                            <div class="col-lg-12">
                                 <div class="form-group">
                                     <label for="user1">Employes: </label>
                                     <select name="user1" id="user1" class="form-control">
@@ -200,7 +204,14 @@
                                         title="change overtime with.." multiple>
                                         <option value=""></option>
                                         <option value="allowance">Allowance</option>
+                                        <option value="catch up">Catch Up</option>
                                         <option value="exdo">Exdo</option>
+                                    </select>
+                                    <select name="meal[]" id="meal" class="form-control" title="keep your meal"
+                                        multiple>
+                                        <option value=""></option>
+                                        <option value="lunch">Lunch</option>
+                                        <option value="dinner">Dinner</option>
                                     </select>
                                     <a class="btn btn-sm btn-default" id="ngeri">insert</a>
                                 </div>
@@ -231,6 +242,7 @@
                                         <th>Ended</th>
                                         <th>Time</th>
                                         <th>Work Status</th>
+                                        <th>Meal</th>
                                         <th>Change With:</th>
                                         <th>Action</th>
                                     </thead>
@@ -245,6 +257,7 @@
                                                 <td>{{ $data['end'] }}</td>
                                                 <td>{{ $data['time'] }}</td>
                                                 <td>{{ $data['workStat'] }}</td>
+                                                <td>{{ $data['meal'] }}</td>
                                                 <td>
                                                     @if ($data['extra'])
                                                         {{ $data['extra'] }}
@@ -359,178 +372,209 @@
 
 @push('js')
     <script src="{{ asset('assets/js/datetimepicker/jquery.datetimepicker.full.js') }}" defer></script>
+    <script>
+        $(document).ready(function() {
+            $('select#over').select2();
+
+            $("a#getDate").on("click", function() {
+
+                var id = $(this).attr('data-role');
+
+                $.ajax({
+                    url: id,
+                    success: function(e) {
+                        $("#modal-content-insert").html(e);
+                    }
+                });
+            });
+
+            $("select#user").select2({
+                placeholder: "Select a employes",
+                theme: "classic"
+            });
+
+            $("select#user").on('change', function() {
+
+                var tanggalKedaluwarsa = new Date();
+                tanggalKedaluwarsa.setTime(tanggalKedaluwarsa.getTime() + (3 * 60 * 60 *
+                    1000)); // 1 menit dalam milidetik
+
+                var kedaluwarsa = "expires=" + tanggalKedaluwarsa.toUTCString();
+
+                document.cookie = "employes=" + $(this).val() + "; " + kedaluwarsa + "; path=/";
+            });
+
+            $("a#edit").on("click", function() {
+                var id = $(this).attr('data-role');
+
+                $.ajax({
+                    url: id,
+                    success: function(e) {
+                        $("#modal-content-edit").html(e);
+                    }
+                });
+
+            });
+
+            $("a#delete").on("click", function() {
+                var id = $(this).attr('data-role');
+
+                $.ajax({
+                    url: id,
+                    success: function(e) {
+                        $("#modal-content-delete").html(e);
+                    }
+                });
+
+            });
+
+            var redNames = '{{ $eocUser }}';
+
+            $("select#user1").select2({
+                placeholder: "Select a employee",
+                theme: "classic",
+                templateResult: function(data) {
+                    if (!data.id) {
+                        return data.text;
+                    }
+
+                    var $result = $('<span></span>');
+                    $result.text(data.text);
+                    if (redNames.includes(data.text)) {
+                        $result.addClass('disabled-option');
+                    }
+
+                    return $result;
+                }
+            }).on('select2:select', function(e) {
+                var selectedText = e.params.data.text;
+                var $container = $('#select2-user1-container').text();
+
+                if (redNames.includes(selectedText)) {
+                    window.alert($container + " contract period will end soon, please note this");
+                }
+            });
+
+            $("select#workStat").select2({
+                placeholder: "Select a work from..",
+                theme: "classic",
+                minimumResultsForSearch: Infinity
+            });
+
+            $("select#extra").select2({
+                placeholder: "",
+                theme: "classic",
+                minimumResultsForSearch: Infinity,
+            });
+
+            $("select#meal").select2({
+                placeholder: "meal",
+                theme: "classic",
+                minimumResultsForSearch: Infinity,
+            });
+
+            $("a#ngeri").on('click', function() {
+                var dataLocal1 = document.getElementById('local1').value;
+                var local1 = new Date(dataLocal1);
+
+                var dataLocal2 = document.getElementById('local2').value;
+                var local2 = new Date(dataLocal2);
+
+                var user1 = document.getElementById('user1').value;
+
+                var workStat = document.getElementById('workStat').value;
+
+                if (dataLocal1.trim() === '' || dataLocal2.trim() === '' || !user1 || !workStat) {
+                    alert('Please fill in all required fields.');
+                    return;
+                }
+
+                if (local1 > local2) {
+                    window.alert("Please, check your data");
+                    return;
+                }
+
+                var forms = document.getElementById("formData");
+                var formData = new FormData(forms);
+
+                $.ajax({
+                    url: "{{ route('coordinator/working/weekends/form/insert') }}",
+                    method: "POST",
+                    data: formData,
+                    contentType: false,
+                    processData: false,
+                    success: function(response) {
+                        location.reload();
+                        // console.log(response);
+                    },
+                    error: function(error) {
+                        console.log(error);
+                        alert('Failed to insert form. Please check your data.');
+                    }
+                });
+            });
+
+            $("input#local1").on('change', function() {
+                var local1 = $(this).val();
+
+                var tanggalKedaluwarsa = new Date();
+                tanggalKedaluwarsa.setTime(tanggalKedaluwarsa.getTime() + (3 * 60 * 60 *
+                    1000)); // 1 menit dalam milidetik
+
+                var kedaluwarsa = "expires=" + tanggalKedaluwarsa.toUTCString();
+
+                var datetimeValue = document.getElementById('local1')
+                    .value; // Ambil nilai dari elemen input datetime-local
+                document.cookie = "date-time-1=" + encodeURIComponent(datetimeValue) + "; " + kedaluwarsa +
+                    "; path=/";
+            });
+
+            $("input#local2").on('change', function() {
+                var local2 = $(this).val();
+
+                var tanggalKedaluwarsa = new Date();
+                tanggalKedaluwarsa.setTime(tanggalKedaluwarsa.getTime() + (3 * 60 * 60 *
+                    1000)); // 1 menit dalam milidetik
+
+                var kedaluwarsa = "expires=" + tanggalKedaluwarsa.toUTCString();
+
+                var datetimeValue = document.getElementById('local2')
+                    .value; // Ambil nilai dari elemen input datetime-local
+                document.cookie = "date-time-2=" + encodeURIComponent(datetimeValue) + "; " + kedaluwarsa +
+                    "; path=/";
+            });
+
+            document.getElementById('local1').value = getCookie("date-time-1");
+            document.getElementById('local2').value = getCookie("date-time-2");
+
+            function getCookie(cookieName) {
+                var name = cookieName + "=";
+                var decodedCookie = decodeURIComponent(document.cookie);
+                var cookieArray = decodedCookie.split(';');
+                for (var i = 0; i < cookieArray.length; i++) {
+                    var cookie = cookieArray[i];
+                    while (cookie.charAt(0) === ' ') {
+                        cookie = cookie.substring(1);
+                    }
+                    if (cookie.indexOf(name) === 0) {
+                        return cookie.substring(name.length, cookie.length);
+                    }
+                }
+                return "";
+            }
+
+            function deleteCookie(cookieName) {
+                document.cookie = cookieName +
+                    "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            }
+            document.getElementById('btnTanggalWaktu').addEventListener('click', function() {
+                var
+                    inputTanggalWaktu = document.createElement('input');
+                inputTanggalWaktu.setAttribute('type', 'datetime-local');
+                inputTanggalWaktu.setAttribute('id', 'tanggalWaktu');
+                inputTanggalWaktu.setAttribute('name', 'tanggalWaktu');
+                inputTanggalWaktu.click();
+            });
+        });
+    </script>
 @endpush
-
-@section('script')
-
-    $('select#over').select2();
-
-    $("a#getDate").on("click", function() {
-
-    var id = $(this).attr('data-role');
-
-    $.ajax({
-    url: id,
-    success: function(e) {
-    $("#modal-content-insert").html(e);
-    }
-    });
-    });
-
-    $("select#user").select2({
-    placeholder: "Select a employes",
-    theme: "classic"
-    });
-
-    $("select#user").on('change', function() {
-
-    var tanggalKedaluwarsa = new Date();
-    tanggalKedaluwarsa.setTime(tanggalKedaluwarsa.getTime() + (3 * 60 * 60 * 1000)); // 1 menit dalam milidetik
-
-    var kedaluwarsa = "expires=" + tanggalKedaluwarsa.toUTCString();
-
-    document.cookie = "employes=" + $(this).val() + "; " + kedaluwarsa + "; path=/";
-    });
-
-    $("a#edit").on("click", function() {
-    var id = $(this).attr('data-role');
-
-    $.ajax({
-    url: id,
-    success: function(e) {
-    $("#modal-content-edit").html(e);
-    }
-    });
-
-    });
-
-    $("a#delete").on("click", function() {
-    var id = $(this).attr('data-role');
-
-    $.ajax({
-    url: id,
-    success: function(e) {
-    $("#modal-content-delete").html(e);
-    }
-    });
-
-    });
-
-    var redNames = '{{ $eocUser }}';
-
-    $("select#user1").select2({
-    placeholder: "Select a employee",
-    theme: "classic",
-    templateResult: function (data) {
-    if (!data.id) {
-    return data.text;
-    }
-
-    var $result = $('<span></span>');
-    $result.text(data.text);
-    if (redNames.includes(data.text)) {
-    $result.addClass('disabled-option');
-    }
-
-    return $result;
-    }
-    }).on('select2:select', function (e) {
-    var selectedText = e.params.data.text;
-    var $container = $('#select2-user1-container').text();
-
-    if (redNames.includes(selectedText)) {
-    window.alert($container + " contract period will end soon, please note this");
-    }
-    });
-
-    $("select#workStat").select2({
-    placeholder: "Select a work from..",
-    theme: "classic",
-    minimumResultsForSearch: Infinity
-    });
-
-    $("select#extra").select2({
-    placeholder: "",
-    theme: "classic",
-    minimumResultsForSearch: Infinity,
-    });
-
-    $("a#ngeri").on('click', function () {
-    var dataLocal1 = document.getElementById('local1').value;
-    var local1 = new Date(dataLocal1);
-
-    var dataLocal2 = document.getElementById('local2').value;
-    var local2 = new Date(dataLocal2);
-
-    var user1 = document.getElementById('user1').value;
-
-    var workStat = document.getElementById('workStat').value;
-
-    if (dataLocal1.trim() === '' || dataLocal2.trim() === '' || !user1 || !workStat) {
-    alert('Please fill in all required fields.');
-    return;
-    }
-
-    if (local1 > local2) {
-    window.alert("Please, check your data");
-    return;
-    }
-
-    var forms = document.getElementById("formData");
-    var formData = new FormData(forms);
-
-    $.ajax({
-    url: "{{ route('coordinator/working/weekends/form/insert') }}",
-    method: "POST",
-    data: formData,
-    contentType: false,
-    processData: false,
-    success: function(response) {
-    location.reload();
-    },
-    error: function(error) {
-    console.log(error);
-    alert('Failed to submit form. Please check your data.');
-    }
-    });
-    });
-
-    $("input#local1").on('change', function() {
-    var local1 = $(this).val();
-
-    var tanggalKedaluwarsa = new Date();
-    tanggalKedaluwarsa.setTime(tanggalKedaluwarsa.getTime() + (3 * 60 * 60 * 1000)); // 1 menit dalam milidetik
-
-    var kedaluwarsa = "expires=" + tanggalKedaluwarsa.toUTCString();
-
-    var datetimeValue = document.getElementById('local1').value; // Ambil nilai dari elemen input datetime-local
-    document.cookie = "date-time-1=" + encodeURIComponent(datetimeValue) + "; " + kedaluwarsa + "; path=/";
-    });
-
-    $("input#local2").on('change', function() {
-    var local2 = $(this).val();
-
-    var tanggalKedaluwarsa = new Date();
-    tanggalKedaluwarsa.setTime(tanggalKedaluwarsa.getTime() + (3 * 60 * 60 * 1000)); // 1 menit dalam milidetik
-
-    var kedaluwarsa = "expires=" + tanggalKedaluwarsa.toUTCString();
-
-    var datetimeValue = document.getElementById('local2').value; // Ambil nilai dari elemen input datetime-local
-    document.cookie = "date-time-2=" + encodeURIComponent(datetimeValue) + "; " + kedaluwarsa + "; path=/";
-    });
-
-    document.getElementById('local1').value = getCookie("date-time-1");
-    document.getElementById('local2').value = getCookie("date-time-2");
-
-    function getCookie(cookieName) {
-    var name = cookieName + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var cookieArray = decodedCookie.split(';');
-    for(var i = 0; i < cookieArray.length; i++) { var cookie=cookieArray[i]; while (cookie.charAt(0)===' ' ) {
-        cookie=cookie.substring(1); } if (cookie.indexOf(name)===0) { return cookie.substring(name.length, cookie.length); }
-        } return "" ; } function deleteCookie(cookieName) { document.cookie=cookieName
-        + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;" ; }
-        document.getElementById('btnTanggalWaktu').addEventListener('click', function() { var
-        inputTanggalWaktu=document.createElement('input'); inputTanggalWaktu.setAttribute('type', 'datetime-local' );
-        inputTanggalWaktu.setAttribute('id', 'tanggalWaktu' ); inputTanggalWaktu.setAttribute('name', 'tanggalWaktu' );
-    inputTanggalWaktu.click(); }); @stop

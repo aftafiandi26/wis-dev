@@ -230,7 +230,7 @@
                                 <div class="form-group">
                                     <label for="employes">Employes:</label>
                                     <select name="employes" id="employes" class="form-control" required>
-                                        <option value=""></option>
+                                        <option value="" selected></option>
                                         @foreach ($users as $user)
                                             <option value="{{ $user->id }}">{{ $user->getFullName() }}</option>
                                         @endforeach
@@ -252,6 +252,15 @@
                                         <option value="">- choose -</option>
                                         <option value="wfs">WFS</option>
                                         <option value="wfh">WFh</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="project">Project Selection:</label>
+                                    <select name="project" id="project" class="form-control" required>
+                                        <option value="" selected></option>
+                                        @foreach ($projectGroups as $project)
+                                            <option value="{{ $project->id }}">{{ $project->group_name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div class="form-group">
@@ -313,137 +322,164 @@
     @include('assets_script_7')
 @stop
 
+@push('js')
+    <script>
+        $(document).ready(function() {
+            $('#modalAdd').on('shown.bs.modal', function() {
+                $('select#employes').select2({
+                    placeholder: 'please a employee'
+                });
+
+                $('select#project').select2({
+                    placeholder: 'project selection'
+                });
+                $('.select2-search__field').focus();
+            });
+            $('select#selectEmp').select2();
+
+            $('table#tables').DataTable({
+                processing: true,
+                responsive: true,
+                "dom": 'Blfrtip',
+                "buttons": [{
+                    extend: 'excel',
+                    text: 'Excel',
+                    titleAttr: 'Attendance',
+                    title: 'Attendance'
+                }],
+                ajax: "{{ route('hr/summary/attendance/datatables') }}",
+                columns: [{
+                        "data": "DT_Row_Index",
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        "data": 'nik',
+                        orderable: false,
+                        searchable: false
+                    },
+                    {
+                        "data": 'employes'
+                    },
+                    {
+                        "data": 'department'
+                    },
+                    {
+                        "data": 'dateStart'
+                    },
+                    {
+                        "data": 'timeStart'
+                    },
+                    {
+                        "data": 'timeEnded'
+                    },
+                    {
+                        "data": 'durations'
+                    },
+                    {
+                        "data": 'status_in'
+                    },
+                    {
+                        "data": 'feeling'
+                    },
+                    {
+                        "data": 'healing'
+                    },
+                    {
+                        "data": 'actions'
+                    },
+                ]
+            });
+            $(document).on('click', '#tables tr td a[id="edit"]', function(e) {
+                var id = $(this).attr('data-role');
+
+                $.ajax({
+                    url: id,
+                    success: function(e) {
+                        $("#modal-content-edit").html(e);
+                    }
+                });
+            });
+
+            $(document).on('click', '#tables tr td a[id="delete"]', function(e) {
+                var id = $(this).attr('data-role');
+
+                $.ajax({
+                    url: id,
+                    success: function(e) {
+                        $("#modal-content-delete").html(e);
+                    }
+                });
+            });
+
+            $('input#dateStarted').on('change', function() {
+                var dated = $(this).val();
+
+                var tanggalKedaluwarsa = new Date();
+                tanggalKedaluwarsa.setTime(tanggalKedaluwarsa.getTime() + (4 * 60 * 60 *
+                    1000)); // 1 menit dalam milidetik
+
+                var kedaluwarsa = "expires=" + tanggalKedaluwarsa.toUTCString();
+                document.cookie = "date-time-start=" + encodeURIComponent(dated) + "; " + kedaluwarsa +
+                    "; path=/";
+            });
+
+            $('input#dateEnded').on('change', function() {
+                var dated = $(this).val();
+
+                var tanggalKedaluwarsa = new Date();
+                tanggalKedaluwarsa.setTime(tanggalKedaluwarsa.getTime() + (4 * 60 * 60 *
+                    1000)); // 1 menit dalam milidetik
+
+                var kedaluwarsa = "expires=" + tanggalKedaluwarsa.toUTCString();
+                document.cookie = "date-time-end=" + encodeURIComponent(dated) + "; " + kedaluwarsa +
+                    "; path=/";
+            });
+
+            $('a#find').on('click', function() {
+                var dateStarted = document.getElementById('dateStarted').value;
+                var dateEnded = document.getElementById('dateEnded').value;
+
+                var started = new Date(dateStarted);
+                var ended = new Date(dateEnded);
+
+                if (started > ended) {
+                    window.alert('Please check your date');
+                    return;
+                }
+
+                location.reload();
+
+            });
+
+            function getCookie(cookieName) {
+                var name = cookieName + "=";
+                var decodedCookie = decodeURIComponent(document.cookie);
+                var cookieArray = decodedCookie.split(';');
+                for (var i = 0; i < cookieArray.length; i++) {
+                    var cookie = cookieArray[i];
+                    while (cookie.charAt(0) === ' ') {
+                        cookie = cookie.substring(1);
+                    }
+                    if (cookie.indexOf(name) === 0) {
+                        return cookie.substring(name.length, cookie.length);
+                    }
+                }
+                return "";
+            }
+
+            function deleteCookie(cookieName) {
+                document.cookie = cookieName +
+                    "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+            }
+            document.getElementById('dateStarted').value = getCookie('date-time-start');
+            document.getElementById('dateEnded').value = getCookie('date-time-end');
+            document.getElementById('submitFormChart').addEventListener('click', function() {
+                $('form#formChart').submit();
+            });
+        });
+    </script>
+@endpush
 @section('script')
-    $('#modalAdd').on('shown.bs.modal', function() {
-    $('select#employes').select2({
-    placeholder: 'please a employee'
-    });
-    $('.select2-search__field').focus();
-    });
-    $('select#selectEmp').select2();
 
-    $('table#tables').DataTable({
-    processing: true,
-    responsive: true,
-    "dom": 'Blfrtip',
-    "buttons": [{
-    extend: 'excel',
-    text: 'Excel',
-    titleAttr: 'Attendance',
-    title: 'Attendance'
-    }],
-    ajax: '{{ route('hr/summary/attendance/datatables') }}',
-    columns: [{
-    "data": "DT_Row_Index",
-    orderable: false,
-    searchable: false
-    },
-    {
-    "data": 'nik',
-    orderable: false,
-    searchable: false
-    },
-    {
-    "data": 'employes'
-    },
-    {
-    "data": 'department'
-    },
-    {
-    "data": 'dateStart'
-    },
-    {
-    "data": 'timeStart'
-    },
-    {
-    "data": 'timeEnded'
-    },
-    {
-    "data": 'durations'
-    },
-    {
-    "data": 'status_in'
-    },
-    {
-    "data": 'feeling'
-    },
-    {
-    "data": 'healing'
-    },
-    {
-    "data": 'actions'
-    },
-    ]
-    });
-    $(document).on('click', '#tables tr td a[id="edit"]', function(e) {
-    var id = $(this).attr('data-role');
-
-    $.ajax({
-    url: id,
-    success: function(e) {
-    $("#modal-content-edit").html(e);
-    }
-    });
-    });
-
-    $(document).on('click', '#tables tr td a[id="delete"]', function(e) {
-    var id = $(this).attr('data-role');
-
-    $.ajax({
-    url: id,
-    success: function(e) {
-    $("#modal-content-delete").html(e);
-    }
-    });
-    });
-
-    $('input#dateStarted').on('change', function() {
-    var dated = $(this).val();
-
-    var tanggalKedaluwarsa = new Date();
-    tanggalKedaluwarsa.setTime(tanggalKedaluwarsa.getTime() + (4 * 60 * 60 *
-    1000)); // 1 menit dalam milidetik
-
-    var kedaluwarsa = "expires=" + tanggalKedaluwarsa.toUTCString();
-    document.cookie = "date-time-start=" + encodeURIComponent(dated) + "; " + kedaluwarsa + "; path=/";
-    });
-
-    $('input#dateEnded').on('change', function() {
-    var dated = $(this).val();
-
-    var tanggalKedaluwarsa = new Date();
-    tanggalKedaluwarsa.setTime(tanggalKedaluwarsa.getTime() + (4 * 60 * 60 *
-    1000)); // 1 menit dalam milidetik
-
-    var kedaluwarsa = "expires=" + tanggalKedaluwarsa.toUTCString();
-    document.cookie = "date-time-end=" + encodeURIComponent(dated) + "; " + kedaluwarsa + "; path=/";
-    });
-
-    $('a#find').on('click', function() {
-    var dateStarted = document.getElementById('dateStarted').value;
-    var dateEnded = document.getElementById('dateEnded').value;
-
-    var started = new Date(dateStarted);
-    var ended = new Date(dateEnded);
-
-    if (started > ended) {
-    window.alert('Please check your date');
-    return;
-    }
-
-    location.reload();
-
-    });
-
-    function getCookie(cookieName) {
-    var name = cookieName + "=";
-    var decodedCookie = decodeURIComponent(document.cookie);
-    var cookieArray = decodedCookie.split(';');
-    for (var i = 0; i < cookieArray.length; i++) { var cookie=cookieArray[i]; while (cookie.charAt(0)===' ' ) {
-        cookie=cookie.substring(1); } if (cookie.indexOf(name)===0) { return cookie.substring(name.length, cookie.length); }
-        } return "" ; } function deleteCookie(cookieName) { document.cookie=cookieName
-        + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;" ; }
-        document.getElementById('dateStarted').value=getCookie('date-time-start');
-        document.getElementById('dateEnded').value=getCookie('date-time-end');
-        document.getElementById('submitFormChart').addEventListener('click', function() { $('form#formChart').submit(); });
-    @stop
+@stop

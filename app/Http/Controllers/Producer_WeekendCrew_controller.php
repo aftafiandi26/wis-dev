@@ -57,7 +57,9 @@ class Producer_WeekendCrew_controller extends Controller
 
         $exdoed = WorkingOnWeekends::where('status', $getId->status)->where('extra', 'exdo')->where('ap_producer', false)->get();
 
-        return view('production.producer.weekend_crew.detail', compact(['getId', 'allowances', 'exdoed']));
+        $catchup = WorkingOnWeekends::where('status', $getId->status)->where('extra', 'catch up')->where('ap_producer', false)->get();
+
+        return view('production.producer.weekend_crew.detail', compact(['getId', 'allowances', 'exdoed', 'catchup']));
     }
 
     public function approved($id)
@@ -79,7 +81,7 @@ class Producer_WeekendCrew_controller extends Controller
         ]);
 
         Session::flash('message', Lang::get('messages.data_custom', ['data' => "Form request weekend crew by " . $sending->coordinator()->getFullName() . " has been approved."]));
-        // Mail::to('dede.aftafiandi@infinitestudios.id')->send(new ProducerMail($id));
+        Mail::to('dede.aftafiandi@infinitestudios.id')->send(new ProducerMail($id));
         // Mail::to($gm->email)->send(new ProducerMail($id));
         return redirect()->route('producer/weekend-crew/index');
     }
@@ -90,19 +92,19 @@ class Producer_WeekendCrew_controller extends Controller
 
         $works = WorkingOnWeekends::where('status', $sending->status)->where('ap_producer', false)->get();
 
-        // foreach ($works as $work) {
-        //     $work->update([
-        //         'ap_producer'   => 2,
-        //         'approved'      => 2,
-        //         'date_producer' => Carbon::now()
-        //     ]);
-        // }
+        foreach ($works as $work) {
+            $work->update([
+                'ap_producer'   => 2,
+                'approved'      => 2,
+                'date_producer' => Carbon::now()
+            ]);
+        }
 
-        // $sending->update([
-        //     'ap_producer'   => 2,
-        //     'approved'   => 2,
-        //     'date_producer' => Carbon::now()
-        // ]);
+        $sending->update([
+            'ap_producer'   => 2,
+            'approved'   => 2,
+            'date_producer' => Carbon::now()
+        ]);
 
         Session::flash('message', Lang::get('messages.data_custom', ['data' => "Form request weekend crew by " . $sending->coordinator()->getFullName() . " has been rejected"]));
         // Mail::to('wis_system@infinitestudios.id')->send(new DisapprovedMail($sending->id));
