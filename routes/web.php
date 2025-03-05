@@ -1839,5 +1839,18 @@ Route::prefix('dev')->group(function () {
 
 Route::get('along/{id}', 'Leave_indexCountAnnulContorller@indexNewApply');
 
-Route::get('animation-hearts', 'ZController@animation');
-Route::get('animation-text', 'ZController@animation1');
+Route::prefix('form')->group(function () {
+    Route::get('remote-access-wfh', 'FormNonAccess\\EmployesWFH_Controller@index')->name('remote-access-wfh');
+    Route::post('remote-access-wfh/store', 'FormNonAccess\\EmployesWFH_Controller@store')->name('remote-access-wfh/store');
+    Route::get('remote-access-wfh/success', 'FormNonAccess\\EmployesWFH_Controller@thanks')->name('remote-access-wfh/success');
+});
+
+Route::prefix('it-form')->group(function () {
+    Route::get('remote-access-wfh', 'ITForm_WfhChecklistController@index')->name('it/form/remote-access-wfh');
+    Route::get('remote-access-wfh/data', 'ITForm_WfhChecklistController@dataTables')->name('it/form/remote-access-wfh/data');
+    Route::get('remote-access-wfh/form/{id}', 'ITForm_WfhChecklistController@formIndex')->name('it/form/remote-access-wfh/form');
+    Route::get('remote-access-wfh/form/modal/vpn04/{id}', 'ITForm_WfhChecklistController@modalButtonVPN04')->name('it/form/remote-access-wfh/form/modal/vpn04');
+    Route::get('remote-access-wfh/form/modal/vpn03/{id}', 'ITForm_WfhChecklistController@modalButtonVPN03')->name('it/form/remote-access-wfh/form/modal/vpn03');
+    Route::get('remote-access-wfh/form/modal/bandwidth/{id}', 'ITForm_WfhChecklistController@modalButtonBandwidth')->name('it/form/remote-access-wfh/form/modal/bandwidth');
+    Route::post('remote-access-wfh/form/update/{id}', 'ITForm_WfhChecklistController@updateForm')->name('it/form/remote-access-wfh/form/update');
+});

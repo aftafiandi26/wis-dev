@@ -999,6 +999,31 @@
             <a class="{!! $c63 or '' !!}" href="#"><i class="fa fa-fw fa fa-wpforms"></i> Form
                 Request<span class="fa arrow"></span></a>
             <ul class="nav nav-second-level {!! $c1u or '' !!}">
+                @if (auth()->user()->dept_category_id == 1)
+                    <li>
+                        <a class="{!! $c662 or '' !!}" href="#"><i class="fa fa-fw fa fa-codepen"></i>
+                            Network Check For WFH<span class="fa arrow"></span></a>
+                        <ul class="nav nav-second-level {!! $c10u or '' !!}">
+                            @if (auth()->user()->id === 103 or auth()->user()->id == 226)
+                                <li>
+                                    <a class="{!! $c69 or '' !!}" href="#"><i
+                                            class="fa fa-fw fa fa-genderless"></i> Document ID</a>
+                                </li>
+                            @endif
+                            @if (auth()->user()->id !== 103)
+                                <li>
+                                    <a class="{!! $c69 or '' !!}"
+                                        href="{{ route('it/form/remote-access-wfh') }}"><i
+                                            class="fa fa-fw fa fa-genderless"></i> Check Form</a>
+                                </li>
+                                <li>
+                                    <a class="{!! $c69 or '' !!}" href="#"><i
+                                            class="fa fa-fw fa fa-genderless"></i> Summary</a>
+                                </li>
+                            @endif
+                        </ul>
+                    </li>
+                @endif
                 <li>
                     <a class="{!! $c663 or '' !!}" href="#"><i class="fa fa-fw fa fa-wpforms"></i>
                         VPN<span class="fa arrow"></span></a>
