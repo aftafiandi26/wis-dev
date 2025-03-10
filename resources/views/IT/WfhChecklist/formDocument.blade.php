@@ -149,7 +149,7 @@
 
     @include('asset_feedbackErrors')
 
-    <form action="{{ route('it/form/remote-access-wfh/form/update', $data->id) }}" method="post">
+    <form action="{{ route('it/form/remote-access-wfh/document/form/update', $data->id) }}" method="post">
         {{ csrf_field() }}
         <div class="panel-body">
             <div class="row">
@@ -157,9 +157,10 @@
                     <table class="table-bordered table table-condensed">
                         <tbody>
                             <tr>
-                                <th>Document Number <br> <input type="text" value="{{ $data->document }}"></th>
+                                <th>Document Number <br> <input type="text" required value="{{ $data->document }}"
+                                        name="document"></th>
                                 <th>Date Checking <br> <input type="date" readonly
-                                        value="{{ date('Y-m-d', strtotime($data->date)) }}">>
+                                        value="{{ date('Y-m-d', strtotime($data->date)) }}">
                                 </th>
                                 <th class="text-red">Requester <br> <input type="text" value="{{ $data->requester }}"
                                         placeholder="fullname">
@@ -212,7 +213,7 @@
                                     </sup> </th>
 
                                 <th>
-                                    <input type="number" min="0" value="{{ $data->bandwidth }}" required
+                                    <input type="number" min="0" value="{{ $data->bandwidth }}" readonly
                                         placeholder="0" class="input-number">
                                 </th>
                                 <th>
@@ -321,7 +322,7 @@
                             <tr>
                                 <th>Sugesstions From IT</th>
                                 <th colspan="2">
-                                    <textarea name="suges_it" id="suges_it" cols="30" rows="3" required></textarea>
+                                    <textarea name="suges_it" id="suges_it" cols="30" rows="3" readonly></textarea>
                                 </th>
                             </tr>
                             <tr>

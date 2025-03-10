@@ -1843,6 +1843,10 @@ Route::prefix('form')->group(function () {
     Route::get('remote-access-wfh', 'FormNonAccess\\EmployesWFH_Controller@index')->name('remote-access-wfh');
     Route::post('remote-access-wfh/store', 'FormNonAccess\\EmployesWFH_Controller@store')->name('remote-access-wfh/store');
     Route::get('remote-access-wfh/success', 'FormNonAccess\\EmployesWFH_Controller@thanks')->name('remote-access-wfh/success');
+
+    Route::get('remote-access-wfh/summary', 'HR_NetworkCheckForWFH_Controller@summaryForm')->name('remote-access-wfh/summary');
+    Route::get('remote-access-wfh/summary/data', 'HR_NetworkCheckForWFH_Controller@dataTableSummary')->name('remote-access-wfh/summary/data');
+    Route::get('remote-access-wfh/summary/{id}', 'HR_NetworkCheckForWFH_Controller@formSummary')->name('remote-access-wfh/summary/form');
 });
 
 Route::prefix('it-form')->group(function () {
@@ -1853,4 +1857,17 @@ Route::prefix('it-form')->group(function () {
     Route::get('remote-access-wfh/form/modal/vpn03/{id}', 'ITForm_WfhChecklistController@modalButtonVPN03')->name('it/form/remote-access-wfh/form/modal/vpn03');
     Route::get('remote-access-wfh/form/modal/bandwidth/{id}', 'ITForm_WfhChecklistController@modalButtonBandwidth')->name('it/form/remote-access-wfh/form/modal/bandwidth');
     Route::post('remote-access-wfh/form/update/{id}', 'ITForm_WfhChecklistController@updateForm')->name('it/form/remote-access-wfh/form/update');
+
+    //
+    Route::get('remote-access-wfh/document', 'IT_Admin_NetworkCheckWFH_Controller@index')->name('it/form/remote-access-wfh/document');
+    Route::get('remote-access-wfh/document/data', 'IT_Admin_NetworkCheckWFH_Controller@dataTables')->name('it/form/remote-access-wfh/document/data');
+    Route::get('remote-access-wfh/document/{data}', 'IT_Admin_NetworkCheckWFH_Controller@form')->name('it/form/remote-access-wfh/document/form');
+    Route::post('remote-access-wfh/document/update/{data}', 'IT_Admin_NetworkCheckWFH_Controller@update')->name('it/form/remote-access-wfh/document/form/update');
+});
+
+Route::prefix('hr-form')->group(function () {
+    Route::get('remote-access-wfh', 'HR_NetworkCheckForWFH_Controller@index')->name('hr/form/remote-access-wfh');
+    Route::get('remote-access-wfh/data', 'HR_NetworkCheckForWFH_Controller@dataTables')->name('hr/form/remote-access-wfh/data');
+    Route::get('remote-access-wfh/form/{id}', 'HR_NetworkCheckForWFH_Controller@form')->name('hr/form/remote-access-wfh/form');
+    Route::post('remote-access-wfh/update/{id}', 'HR_NetworkCheckForWFH_Controller@updateForm')->name('hr/form/remote-access-wfh/update');
 });

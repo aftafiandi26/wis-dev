@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('title')
-    (it) Index Request Form
+    (hr) Index Request Form
 @stop
 
 @section('top')
@@ -149,7 +149,7 @@
 
     @include('asset_feedbackErrors')
 
-    <form action="{{ route('it/form/remote-access-wfh/form/update', $data->id) }}" method="post">
+    <form action="{{ route('hr/form/remote-access-wfh/update', $data->id) }}" method="post">
         {{ csrf_field() }}
         <div class="panel-body">
             <div class="row">
@@ -157,9 +157,9 @@
                     <table class="table-bordered table table-condensed">
                         <tbody>
                             <tr>
-                                <th>Document Number <br> <input type="text" value="{{ $data->document }}"></th>
+                                <th>Document Number <br> <input type="text" value="{{ $data->document }}" readonly></th>
                                 <th>Date Checking <br> <input type="date" readonly
-                                        value="{{ date('Y-m-d', strtotime($data->date)) }}">>
+                                        value="{{ date('Y-m-d', strtotime($data->date)) }}">
                                 </th>
                                 <th class="text-red">Requester <br> <input type="text" value="{{ $data->requester }}"
                                         placeholder="fullname">
@@ -239,11 +239,11 @@
                                 <th>Network Status
                                 </th>
                                 <th>
-                                    <input type="radio"name="net_stat" id="bandwidth_stable" class="custom-radio"
-                                        value="1" @selected(true)>
+                                    <input type="radio" id="bandwidth_stable" class="custom-radio" value="1"
+                                        @if ($data->net_stat === 1) checked @endif disabled>
                                     <label for="bandwidth_stable">Stable</label>
-                                    <input type="radio" name="net_stat" id="bandwidth_unstable" class="custom-radio"
-                                        value="2">
+                                    <input type="radio" id="bandwidth_unstable" class="custom-radio" value="2"
+                                        @if ($data->net_stat === 2) checked @endif disabled>
                                     <label for="bandwidth_unstable">Unstable</label>
                                 </th>
                             </tr>
@@ -271,10 +271,10 @@
                             </th>
                             <th>
                                 <input type="radio" name="vpn03_stat" id="vpn03_stable" class="custom-radio"
-                                    value="1">
+                                    value="1" @if ($data->vpn03_stat === 1) checked @endif disabled>
                                 <label for="vpn03_stable">Stable</label>
                                 <input type="radio" name="vpn03_stat" id="vpn03_unstable" class="custom-radio"
-                                    value="2">
+                                    value="2" @if ($data->vpn03_stat === 2) checked @endif disabled>
                                 <label for="vpn03_unstable">Unstable</label>
                             </th>
                         </tr>
@@ -290,10 +290,10 @@
                             </th>
                             <th>
                                 <input type="radio" name="vpn04_stat" id="vpn04_stable" class="custom-radio"
-                                    value="1">
+                                    value="1" @if ($data->vpn04_stat === 1) checked @endif disabled>
                                 <label for="vpn04_stable">Stable</label>
                                 <input type="radio" name="vpn04_stat" id="vpn04_unstable" class="custom-radio"
-                                    value="2">
+                                    value="2" @if ($data->vpn04_stat === 2) checked @endif disabled>
                                 <label for="vpn04_unstable">Unstable</label>
                             </th>
                         </tr>
@@ -301,13 +301,14 @@
                             <th>Network Quality</th>
                             <th colspan="3">
                                 <input type="radio" id="net_quality_bad" class="custom-radio" name="network_quality"
-                                    value="1">
+                                    value="1" @if ($data->net_quality === 1) checked @endif disabled>
                                 <label for="net_quality_bad">Not Good</label>
                                 <input type="radio" id="net_quality_good" class="custom-radio" name="network_quality"
-                                    value="2">
+                                    value="2" @if ($data->net_quality === 1) checked @endif disabled>
                                 <label for="net_quality_good">Good</label>
                                 <input type="radio" id="net_quality_excellent" class="custom-radio"
-                                    name="network_quality" value="3">
+                                    name="network_quality" value="3" @if ($data->net_quality === 3) checked @endif
+                                    disabled>
                                 <label for="net_quality_excellent">Excellent</label>
                             </th>
                         </tr>
@@ -321,22 +322,24 @@
                             <tr>
                                 <th>Sugesstions From IT</th>
                                 <th colspan="2">
-                                    <textarea name="suges_it" id="suges_it" cols="30" rows="3" required></textarea>
+                                    <textarea name="suges_it" id="suges_it" cols="30" rows="3">{{ $data->suges_it }}</textarea>
                                 </th>
                             </tr>
                             <tr>
                                 <th>Confirm:</th>
-                                <th class="text-grey">
-                                    <input type="radio" id="confirm_accept" class="custom-radio" disabled>
+                                <th>
+                                    <input type="radio" id="confirm_accept" class="custom-radio" required
+                                        value="1" name="confirmed">
                                     <label for="confirm_accept">Accept</label>
-                                    <input type="radio" id="confirm_reject" class="custom-radio" disabled>
+                                    <input type="radio" id="confirm_reject" class="custom-radio" required
+                                        value="2" name="confirmed">
                                     <label for="confirm_reject">Reject</label>
                                 </th>
                             </tr>
                             <tr>
                                 <th>Suggestions from HRD</th>
                                 <th>
-                                    <input type="text" readonly>
+                                    <textarea name="suges_hr" id="suges_hr" cols="30" rows="3" required>{{ $data->suges_hrd }}</textarea>
                                 </th>
                             </tr>
                         </tbody>

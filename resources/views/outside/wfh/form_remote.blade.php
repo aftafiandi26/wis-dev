@@ -241,15 +241,15 @@
                                         <table class="table-bordered table table-condensed">
                                             <tbody>
                                                 <tr class="text-red">
-                                                    <th>Bandwidth <sup>(Mbps)
-                                                            <a href="https://www.speedtest.net/id"
-                                                                class="btn btn-xs btn-default" target="_blank"
-                                                                rel="noopener noreferrer">check</a>
-                                                        </sup> </th>
+                                                    <th>Bandwidth<sup>(Mbps)
+                                                            <a href="#"class="btn btn-xs btn-default"
+                                                                data-toggle="modal"data-target="#modalBandwidth">check</a>
+                                                        </sup>
+                                                    </th>
 
                                                     <th>
                                                         <input type="number" min="0" name="bandwidth" required
-                                                            placeholder="0" class="input-number">
+                                                            placeholder="0" class="input-number"step="any">
                                                     </th>
                                                     <th>
                                                         <input type="file" name="bandwidth_file" required
@@ -261,7 +261,7 @@
                                                     <th>Download <sup>(Mbps)</sup></th>
                                                     <th>
                                                         <input type="number" min="0" name="download" required
-                                                            placeholder="0">
+                                                            placeholder="0" step="any">
                                                     </th>
                                                     <th></th>
                                                 </tr>
@@ -269,7 +269,7 @@
                                                     <th>Upload <sup>(Mbps)</sup></th>
                                                     <th>
                                                         <input type="number" min="0" name="upload" required
-                                                            placeholder="0">
+                                                            placeholder="0" step="any">
                                                     </th>
                                                     <th></th>
                                                 </tr>
@@ -293,8 +293,8 @@
                                         <table class="table table-bordered table-condensed">
                                             <tr>
                                                 <th colspan="4">Check Latency <sup>(Ping Test)
-                                                        <a href="{{ $filePdf }}" target="_blank"
-                                                            class="btn btn-xs btn-default">check</a>
+                                                        <a href="#" class="btn btn-xs btn-default"
+                                                            data-toggle="modal" data-target="#modalLatency">check</a>
                                                     </sup></th>
                                             </tr>
                                             <tr class="text-red">
@@ -411,7 +411,27 @@
 
     @include('assets_script_1')
 
-    <div id="myCheck" class="modal fade" role="dialog">
+    <div id="modalBandwidth" class="modal fade" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    <h4 class="modal-title">Check Bandwidth / Download / Upload</h4>
+                </div>
+                <div class="modal-body">
+                    <iframe src="{{ $filePdf1 }}" frameborder="1" style="width: 100%; height: 600px;"></iframe>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <div id="modalLatency" class="modal fade" role="dialog">
         <div class="modal-dialog modal-lg">
 
             <!-- Modal content-->

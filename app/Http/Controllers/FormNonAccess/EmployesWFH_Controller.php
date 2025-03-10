@@ -18,7 +18,7 @@ class EmployesWFH_Controller extends Controller
 {
     private function tanggal()
     {
-        return "2025-03-04";
+        return "2025-03-06";
     }
 
     public function index(Request $request)
@@ -37,8 +37,9 @@ class EmployesWFH_Controller extends Controller
         }
 
         $filePdf = asset('storage/INFINTE-STUDIOS-LATENCY.pdf'); // Path yang benar untuk URL
+        $filePdf1 = asset('storage/INFINTE-STUDIOS-BANDWIDTH.pdf'); // Path yang benar untuk URL
 
-        return view('outside.wfh.form_remote', compact(['filePdf']));
+        return view('outside.wfh.form_remote', compact(['filePdf', 'filePdf1']));
     }
 
     public function store(Request $request)

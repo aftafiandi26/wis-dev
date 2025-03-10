@@ -7,7 +7,7 @@
 
 <body>
     <p>Hi there,</p>
-    <p>"Network Checking For WFH" has been Formed by :</p>
+    <p>"Network Checking For WFH" has been completed by :</p>
     <ul>
         @foreach ($data as $key => $value)
             <li><strong>{{ $key }}:</strong> {{ $value }}</li>
