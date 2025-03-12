@@ -17,6 +17,29 @@
         'c300' => 'active',
     ])
 @stop
+
+@push('style')
+    <style>
+        a.btn-form {
+            color: darkred;
+        }
+
+        a.btn-form:hover {
+            color: white;
+            background-color: darkred;
+        }
+
+        a.btn-pdf {
+            color: darkgreen;
+        }
+
+        a.btn-pdf:hover {
+            color: white;
+            background-color: darkgreen;
+        }
+    </style>
+@endpush
+
 @section('body')
     <div class="row">
         <div class="col-lg-12">

@@ -1870,4 +1870,6 @@ Route::prefix('hr-form')->group(function () {
     Route::get('remote-access-wfh/data', 'HR_NetworkCheckForWFH_Controller@dataTables')->name('hr/form/remote-access-wfh/data');
     Route::get('remote-access-wfh/form/{id}', 'HR_NetworkCheckForWFH_Controller@form')->name('hr/form/remote-access-wfh/form');
     Route::post('remote-access-wfh/update/{id}', 'HR_NetworkCheckForWFH_Controller@updateForm')->name('hr/form/remote-access-wfh/update');
+
+    Route::get('remote-access-wfh/pdf/{id}', 'HR_NetworkCheckForWFH_Controller@pdfSummary')->name('hr/form/remote-access-wfh/pdf');
 });

@@ -6,6 +6,7 @@ use App\Mail\Outside\WFH\doneMail;
 use App\Mail\Outside\WFH\SendingMail;
 use App\User;
 use App\Wfh_Checklist;
+use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Lang;
@@ -145,6 +146,19 @@ class HR_NetworkCheckForWFH_Controller extends Controller
         $data = Wfh_Checklist::find($id);
         $filePdf = asset('storage/INFINTE-STUDIOS-LATENCY.pdf');
 
-        return view('HRDLevelAcces.networkForWfh.formIndex', compact(['data', 'filePdf']));
+        return view('HRDLevelAcces.networkForWfh.formSummary', compact(['data', 'filePdf']));
+    }
+
+    public function pdfSummary($id)
+    {
+        $data = Wfh_Checklist::find($id);
+
+        $date = Carbon::now();
+
+        // Menghasilkan PDF
+        $pdf = PDF::loadView('outside.wfh.pdfSummary', compact(['data', 'date']))
+            ->setPaper('a4', 'potrait')->setWarnings(false);
+
+        return $pdf->stream('Network_Access_Check.pdf');
     }
 }
