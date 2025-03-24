@@ -245,6 +245,7 @@ Route::get('hr_mgmt-data/leave/{id}/tempCreateInitialExdo', 'HRController@tempCr
 
 Route::post('hr_mgmt-data/leave/{id}/tempStoreInitialExdo', 'HRController@tempStoreInitialExdo')->name('hr_mgmt-data/leave/tempStoreInitialExdo');
 //  End Route HR
+Route::get('leave/findCity/{id}', 'LeaveController@dataKota')->name('leave/findCity');
 Route::get('leavel/ecek/{id}', 'LeaveController@dataKota')->name('leave/ecek');
 //	Start Route Leave
 //	Start Route Applying Leave

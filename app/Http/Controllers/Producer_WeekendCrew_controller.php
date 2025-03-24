@@ -18,7 +18,7 @@ class Producer_WeekendCrew_controller extends Controller
 {
     public function __construct()
     {
-        $this->middleware(['auth', 'active', 'producer']);
+        $this->middleware(['auth', 'active']);
     }
 
     public function index()

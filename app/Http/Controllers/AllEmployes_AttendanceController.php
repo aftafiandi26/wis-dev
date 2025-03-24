@@ -6,6 +6,7 @@ use App\Attendance;
 use App\Attendance_Questions;
 use App\ForfeitedCounts;
 use App\Leave;
+use App\Mail\IT\Notify\NoticeAttendanceMails;
 use App\Project_Category;
 use App\ProjectGroup;
 use Carbon\Carbon;
@@ -15,6 +16,7 @@ use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Cookie;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Yajra\Datatables\Facades\Datatables;
 
@@ -256,11 +258,11 @@ class AllEmployes_AttendanceController extends Controller
             return redirect()->route('attendance/index');
         }
 
-        if (empty($request->input('project'))) {
-            Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, your project is empty!']));
-            Session::flash('message', Lang::get('messages.data_custom', ['data' => 'Please check your project.']));
-            return redirect()->route('attendance/index');
-        }
+        // if (empty($request->input('project'))) {
+        //     Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, your project is empty!']));
+        //     Session::flash('message', Lang::get('messages.data_custom', ['data' => 'Please check your project.']));
+        //     return redirect()->route('attendance/index');
+        // }
 
         $project = ProjectGroup::find($request->input('project'));
 
@@ -291,6 +293,7 @@ class AllEmployes_AttendanceController extends Controller
         ];
 
         Attendance::create($data);
+        Mail::to('dede.aftafiandi@infinitestudios.id')->send(new NoticeAttendanceMails($data));
         Session::flash('message', lang::get('messages.data_custom', ['data' => "Attendance data has been recorded."]));
         return redirect()->route('attendance/index');
     }

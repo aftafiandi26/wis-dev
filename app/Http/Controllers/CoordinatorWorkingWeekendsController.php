@@ -41,6 +41,8 @@ class CoordinatorWorkingWeekendsController extends Controller
 
         $anggarda = User::find(4);
 
+        $hods = User::where('active', 1)->where('dept_category_id', auth()->user()->dept_category_id)->where('hd', true)->get();
+
         $workings = [];
 
         $eocUser = [];
@@ -92,8 +94,9 @@ class CoordinatorWorkingWeekendsController extends Controller
         // if ($now->format('N') > 4) {
         //     return redirect()->route('coordinator/working/weekends/form/not-accessed');
         // }
+        // dd($hods);
 
-        return view('all_employee.Form.weekends.form', compact(['users', 'workings', 'producers', 'eocUser', 'anggarda']));
+        return view('all_employee.Form.weekends.form', compact(['users', 'workings', 'producers', 'eocUser', 'anggarda', 'hods']));
     }
 
     public function formInserModal()

@@ -1097,21 +1097,40 @@
                         <a class="{!! $c664 or '' !!}" href="#"><i class="fa fa-fw fa fa-wpforms"></i>
                             Weekend Crew<span class="fa arrow"></span></a>
                         <ul class="nav nav-second-level {!! $c12u or '' !!}">
-                            @if (auth()->user()->koor == 1 or auth()->user()->dept_category_id != 6 and auth()->user()->nik != null)
+
+                            @if (auth()->user()->dept_category === 6 and auth()->user()->koor == 1)
                                 <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('coordinator/working/weekends/form') }}"><i
                                             class="fa fa-fw fa fa-genderless"></i> Form Registration</a>
+                                </li>
+                                <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('working-on-weekends/summary/index') }}"><i
                                             class="fa fa-fw fa fa-genderless"></i> Summary</a>
                                 </li>
                             @endif
-                            @if (auth()->user()->pm === 1 or auth()->user()->id == 4)
+
+                            @if (auth()->user()->dept_category !== 6 and auth()->user()->hd !== 1)
+                                <li>
+                                    <a class="{!! $c69 or '' !!}"
+                                        href="{{ route('coordinator/working/weekends/form') }}"><i
+                                            class="fa fa-fw fa fa-genderless"></i> Form Registration</a>
+                                </li>
+                                <li>
+                                    <a class="{!! $c69 or '' !!}"
+                                        href="{{ route('working-on-weekends/summary/index') }}"><i
+                                            class="fa fa-fw fa fa-genderless"></i> Summary</a>
+                                </li>
+                            @endif
+
+                            @if (auth()->user()->pm === 1 or auth()->user()->hd == 1 or auth()->user()->id == 4)
                                 <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('producer/weekend-crew/index') }}"><i
-                                            class="fa fa-fw fa fa-genderless"></i> Approved (producer)</a>
+                                            class="fa fa-fw fa fa-genderless"></i> Approved (form)</a>
+                                </li>
+                                <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('producer/weekend-crew/summary') }}"><i
                                             class="fa fa-fw fa fa-genderless"></i> Summary</a>
@@ -1122,6 +1141,8 @@
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('gm/working-on-weekends/index') }}"><i
                                             class="fa fa-fw fa fa-genderless"></i> Approved (gm)</a>
+                                </li>
+                                <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('gm/working-on-weekends/summary') }}"><i
                                             class="fa fa-fw fa fa-genderless"></i> Summary</a>
@@ -1132,6 +1153,8 @@
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('hrd/weekend-crew/index') }}"><i
                                             class="fa fa-fw fa fa-genderless"></i>Summary</a>
+                                </li>
+                                <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('hrd/weekend-crew/history/index') }}"><i
                                             class="fa fa-fw fa fa-genderless"></i> History</a>

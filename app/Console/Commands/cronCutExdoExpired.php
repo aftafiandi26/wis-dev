@@ -4,9 +4,7 @@ namespace App\Console\Commands;
 
 use App\Dept_Category;
 use App\Initial_Leave;
-use App\Jobs\cutExdoExpired;
 use App\Jobs\ExpiredExdoJob;
-use App\Jobs\test;
 use App\Leave;
 use App\User;
 use Illuminate\Console\Command;
@@ -50,7 +48,7 @@ class cronCutExdoExpired extends Command
 
             $totalExdo = Initial_Leave::where('user_id', $user->id)->pluck('initial')->sum();
 
-            $exdoExpired = Initial_Leave::where('user_id', $user->id)->where('expired', '<', date('Y-m-d'))->pluck('initial')->sum();
+            $exdoExpired = Initial_Leave::where('user_id', $user->id)->where('expired', '<', date('Y-m-d', strtotime('-7 day')))->pluck('initial')->sum();
 
             $taken = Leave::where('leave_category_id', 2)->where('user_id', $user->id)->where('ap_hrd', 1)->pluck('total_day')->sum();
 
@@ -98,7 +96,7 @@ class cronCutExdoExpired extends Command
                         'email_spv'                 => null,
                         'email_pm'                  => null,
                         'email_producer'            => null,
-                        'reason_leave'              => "Exdo cut expiration",
+                        'reason_leave'              => "Exdo Expired",
                         'r_departure'               => null,
                         'r_after_leaving'           => null,
                         'plan_leave'                => null,
@@ -108,9 +106,10 @@ class cronCutExdoExpired extends Command
 
                     // dispatch(new test($data));
 
-                    $job = (new ExpiredExdoJob($data))->onConnection('database');
+                    // $job = (new ExpiredExdoJob($data))->onConnection('database');
 
-                    dispatch($job);
+                    // dispatch($job);
+                    Leave::insert($data);
                 }
             }
         }

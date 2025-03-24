@@ -1796,14 +1796,12 @@ class HRController extends Controller
 
         $category = Leave_Category::all();
 
-        $provinsi = file_get_contents('http://dev.farizdotid.com/api/daerahindonesia/provinsi');
-        $provinsi = json_decode($provinsi, true);
-        $provinsi = $provinsi['provinsi'];
+        // $provinsi = file_get_contents('http://dev.farizdotid.com/api/daerahindonesia/provinsi');
+        // $provinsi = json_decode($provinsi, true);
+        // $provinsi = $provinsi['provinsi'];
 
+        $provinsi = $this->dataProvinsi();
 
-        // $provinsi = $this->dataProvinsi();
-
-        // dd($provinsi);
         $takenLeave = $this->takenAnnual($id);
 
         $advanceAnnual = $data->initial_annual - $takenLeave;

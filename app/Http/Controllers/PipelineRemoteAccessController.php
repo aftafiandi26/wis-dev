@@ -5,12 +5,13 @@ namespace App\Http\Controllers;
 use App\FormOvertimes;
 use App\User;
 use Illuminate\Http\Request;
-use Datatables;
+
 use DateTime;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Mail;
+use Yajra\Datatables\Facades\Datatables;
 
 class PipelineRemoteAccessController extends Controller
 {
@@ -28,7 +29,7 @@ class PipelineRemoteAccessController extends Controller
 
     public function dataProgress()
     {
-       $data = FormOvertimes::where('startovertime', '>=', date('Y-m-d') . " 00:00")->where('startovertime', '<=', date("Y-m-d", strtotime("+ 24 hours")))->orderBy('startovertime', 'dasc')->get();
+        $data = FormOvertimes::where('startovertime', '>=', date('Y-m-d') . " 00:00")->where('startovertime', '<=', date("Y-m-d", strtotime("+ 24 hours")))->orderBy('startovertime', 'dasc')->get();
 
         return Datatables::of($data)
             ->addIndexColumn()

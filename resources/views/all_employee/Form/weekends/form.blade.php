@@ -333,15 +333,27 @@
                         <div class="row">
                             <div class="col-lg-12">
                                 <div class="form-group">
-                                    <label for="producers">producer: </label>
-                                    <select name="producers" id="producers" class="form-control" required>
-                                        <option value="">-Select a producer -</option>
-                                        <option value="{{ $anggarda->id }}">{{ $anggarda->getFullName() }}</option>
-                                        @foreach ($producers as $producer)
-                                            <option value="{{ $producer->id }}">{{ $producer->getFulLName() }}</option>
-                                        @endforeach
+                                    @if (auth()->user()->dept_category_id === 6)
+                                        <label for="producers">producer: </label>
+                                        <select name="producers" id="producers" class="form-control" required>
+                                            <option value="">-Select a producer -</option>
+                                            <option value="{{ $anggarda->id }}">{{ $anggarda->getFullName() }}</option>
+                                            @foreach ($producers as $producer)
+                                                <option value="{{ $producer->id }}">{{ $producer->getFulLName() }}
+                                                </option>
+                                            @endforeach
 
-                                    </select>
+                                        </select>
+                                    @else
+                                        <label for="producers">Head Of Department: </label>
+                                        <select name="producers" id="producers" class="form-control" required>
+                                            <option value="">-Select a head department -</option>
+                                            @foreach ($hods as $hod)
+                                                <option value="{{ $hod->id }}">{{ $hod->getFullName() }}</option>
+                                            @endforeach
+
+                                        </select>
+                                    @endif
                                 </div>
                             </div>
                         </div>
