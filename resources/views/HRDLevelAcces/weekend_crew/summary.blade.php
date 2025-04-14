@@ -444,7 +444,7 @@
             $('table#tables3').DataTable({
                 processing: true,
                 responsive: true,
-                ajax: '{{ route('hrd/weekend-crew/summary/data/complate') }}',
+                ajax: "{{ route('hrd/weekend-crew/summary/data/complate') }}",
                 columns: [{
                         "data": "DT_Row_Index",
                         orderable: false,
@@ -492,6 +492,7 @@
                 var id = $(this).attr('data-role');
 
                 var u = $(this).attr('data-route');
+                var catchup = $(this).attr('data-catchup');
 
                 var coordinator = $(this).closest('tr').find('td:eq(2)').text();
                 var producer = $(this).closest('tr').find('td:eq(3)').text();
@@ -507,6 +508,7 @@
 
                 $('table#tables2').DataTable().destroy();
                 $('table#tables4').DataTable().destroy();
+                $('table#tables5').DataTable().destroy();
 
                 $('table#tables2').DataTable({
                     processing: true,
@@ -540,6 +542,9 @@
                         },
                         {
                             "data": "dinner"
+                        },
+                        {
+                            "data": "extra"
                         },
                         {
                             "data": "start"
@@ -584,6 +589,9 @@
                             "data": "dinner"
                         },
                         {
+                            "data": "extra"
+                        },
+                        {
                             "data": "start"
                         },
                         {
@@ -591,6 +599,53 @@
                         },
                     ]
                 });
+
+                $('table#tables5').DataTable({
+                    processing: true,
+                    responsive: true,
+                    dom: 'Bfrtip',
+                    buttons: [{
+                        extend: 'excel',
+                        text: 'Excel',
+                        title: 'Weekend Crew Exdo',
+                    }],
+                    ajax: catchup,
+                    columns: [{
+                            "data": "DT_Row_Index",
+                            orderable: false,
+                            searchable: false
+                        },
+                        {
+                            "data": "fullname"
+                        },
+                        {
+                            "data": "position"
+                        },
+                        {
+                            "data": "project"
+                        },
+                        {
+                            "data": "workStat"
+                        },
+                        {
+                            "data": "lunch"
+                        },
+                        {
+                            "data": "dinner"
+                        },
+                        {
+                            "data": "extra"
+                        },
+                        {
+                            "data": "start"
+                        },
+                        {
+                            "data": "end"
+                        },
+                    ]
+                });
+
+
 
                 document.getElementById('table2Coor').innerText = coordinator;
                 document.getElementById('table2Producer').innerText = producer;

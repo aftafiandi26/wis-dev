@@ -151,6 +151,13 @@
                             @else
                                 <a class="btn btn-sm btn-default" id="checkIn" data-toggle="modal"
                                     data-target="#showModal" data-role="{{ route('attendance/checkin') }}">Check In</a>
+
+                                @if ($noteQ1 == true)
+                                    <a class="btn btn-sm btn-default" id="checkIn" data-toggle="modal"
+                                        data-target="#showModal" data-role="{{ route('attendance/modal/feel') }}">Check
+                                        In
+                                        Q1</a>
+                                @endif
                             @endif
                         </th>
                     </tr>

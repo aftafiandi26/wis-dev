@@ -19,6 +19,7 @@ use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Session;
 use Yajra\Datatables\Facades\Datatables;
+use Illuminate\Support\Str;
 
 class AllEmployes_AttendanceController extends Controller
 {
@@ -203,6 +204,24 @@ class AllEmployes_AttendanceController extends Controller
         return $response;
     }
 
+    private function feels($object)
+    {
+        $array = [
+            '1' => 'Very Unpleasant',
+            '2' => 'Unpleasant',
+            '3' => 'Neutral',
+            '4' => 'Pleasant',
+            '5' => 'Very Pleasant'
+        ];
+
+        // Memeriksa apakah $object ada dalam array dan mengembalikan nilainya
+        if (array_key_exists($object, $array)) {
+            return $array[$object]; // Mengembalikan value sesuai dengan key
+        }
+
+        return "**********"; // Mengembalikan null jika key tidak ditemukan
+    }
+
     public function index()
     {
         $header = $this->header();
@@ -211,9 +230,33 @@ class AllEmployes_AttendanceController extends Controller
 
         $attendance = Attendance::where('user_id', auth()->user()->id)->where('in', 1)->whereDATE('start', date('Y-m-d'))->latest()->first();
 
+        $feeled = Attendance::with('relationsQuest')->where('user_id', auth()->user()->id)->orderBy('start', 'desc')->first();
+
+        $Q1 = $feeled->relationsQuest->Q1;
+        $noteQ1 = false;
+        $Q2 = $feeled->relationsQuest->Q2;
+        $noteQ2 = false;
+
+        if ($Q1 <= 2) {
+            $noteQ1 = true;
+        }
+
+        if ($Q2 <= 2) {
+            $noteQ2 = true;
+        }
+
         $hidden = "hidden";
 
-        return view('all_employee.Absensi.indexAttendance', compact(['date', 'header', 'hidden', 'attendance', 'endOfDay']));
+        return view('all_employee.Absensi.indexAttendance', compact(['date', 'header', 'hidden', 'attendance', 'endOfDay', 'noteQ1', 'noteQ2']));
+    }
+
+    public function modalFeel()
+    {
+        $feeled = Attendance::with('relationsQuest')->where('user_id', auth()->user()->id)->orderBy('start', 'desc')->first();
+
+        $q1 = Str::lower($this->feels($feeled->relationsQuest->Q1));
+
+        return view('all_employee.Absensi.modalFeel', compact(['q1']));
     }
 
     public function checkIn()

@@ -1492,6 +1492,9 @@ Route::prefix('attendance')->group(function () {
     Route::get('data', 'AllEmployes_AttendanceController@dataTables')->name('attendance/datatables');
 
     Route::post('form/questions', 'AllEmployes_AttendanceController@formQuestions')->name('attendance/form/questions');
+
+    Route::get('modalFeel', 'AllEmployes_AttendanceController@modalFeel')->name('attendance/modal/feel');
+    // ini modal feel
 });
 
 

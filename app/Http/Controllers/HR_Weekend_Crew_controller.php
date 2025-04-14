@@ -121,7 +121,7 @@ class HR_Weekend_Crew_controller extends Controller
     {
         $send = SendingDataWorkingWeekend::find($id);
 
-        $query = WorkingOnWeekends::where('status', $send->status)->where('extra', 'catch up')->whereIn('approved', [true, false])->get();
+        $query = WorkingOnWeekends::where('status', $send->status)->where('extra', 'catch up')->where('approved', '!=', 2)->get();
 
         return Datatables::of($query)
             ->addIndexColumn()
