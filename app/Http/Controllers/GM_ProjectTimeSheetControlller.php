@@ -54,18 +54,24 @@ class GM_ProjectTimeSheetControlller extends Controller
 
     public function dataTablesFilter($startDate, $endDate)
     {
-        $query = User::select('id', 'first_name', 'last_name', 'position', 'nik')->where('active', 1)->where('dept_category_id', 6)->whereNotIn('nik', ["123456789", ""])->orderBy('first_name', 'asc')->get();
+        $query = User::select('id', 'first_name', 'last_name', 'position', 'nik')->where('id', 303)->where('active', 1)->where('dept_category_id', 6)->whereNotIn('nik', ["123456789", ""])->orderBy('first_name', 'asc')->get();
         // set_time_limit(120);
 
         $attendances = Attendance::with(['relationsQuest'])
-            ->whereBetween('start', [$startDate, $endDate])
+            ->where('start', [$startDate, $endDate])
+            ->get();
+
+        $attendances = Attendance::with(['relationsQuest'])
+            ->whereDATE('start', '>=', $startDate)
+            ->whereDATE('start', '<=', $endDate)
             ->get()
             ->groupBy('user_id');
 
-        // Buat koleksi untuk menghitung total per grup
         $groupCounts = $attendances->map(function ($items) {
             return $items->groupBy('relationsQuest.group')->map->count();
         });
+        dd($attendances);
+
 
         return Datatables::of($query)
             ->addIndexColumn()
@@ -73,7 +79,7 @@ class GM_ProjectTimeSheetControlller extends Controller
                 return $user->getFullName();
             })
             ->addColumn('total', function (User $user) use ($startDate, $endDate) {
-                $user->total = Attendance::with(['relationsQuest'])->where('user_id', $user->id)->whereBetween('start', [$startDate, $endDate])->whereHas('relationsQuest', function ($query) {
+                $user->total = Attendance::with(['relationsQuest'])->where('user_id', $user->id)->whereDATE('start', '>=', $startDate)->whereDATE('start', '<=', $endDate)->whereHas('relationsQuest', function ($query) {
                     $query->where('group', '!=', null);
                 })->count();
 
@@ -189,6 +195,14 @@ class GM_ProjectTimeSheetControlller extends Controller
                     return "0%";
                 }
                 $group1Count = isset($groupCounts[$user->id][14]) ? $groupCounts[$user->id][14] : 0;
+                return $total > 0 ? round(($group1Count / $total) * 100, 1) . '%' : '0%';
+            })
+            ->addColumn('column15', function (User $user) use ($groupCounts) {
+                $total = $user->total;
+                if ($total <= 0) {
+                    return "0%";
+                }
+                $group1Count = isset($groupCounts[$user->id][15]) ? $groupCounts[$user->id][15] : 0;
                 return $total > 0 ? round(($group1Count / $total) * 100, 1) . '%' : '0%';
             })
             ->make(true);

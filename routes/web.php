@@ -1540,8 +1540,6 @@ Route::prefix('general-manager')->group(function () {
 
     Route::get('working-on-weekends/summary', 'GM_WeekendsController@summary')->name('gm/working-on-weekends/summary');
     Route::get('working-on-weekends/summary/data', 'GM_WeekendsController@dataSummary')->name('gm/working-on-weekends/summary/data');
-
-    // Anggarda123  
 });
 
 // Menu Role Admin - Production
@@ -1562,6 +1560,15 @@ Route::prefix('admin-production')->group(function () {
 
     Route::get('employee-time-sheet/filter-day/{month}/{year}', 'GM_ProjectTimeSheetControlller@filterDay')->name('gm/employee-time-sheet/filterDay');
     Route::get('employee-time-sheet/filter-day/data/{month}/{year}', 'GM_ProjectTimeSheetControlller@dataTablesFilterDay')->name('gm/employee-time-sheet/filterDay/data');
+
+    Route::get('vpn-beyond-duration', 'ProductionAdminController@index')->name('admin-production/vpn-duration/index');
+    Route::get('vpn-beyond-duration/data', 'ProductionAdminController@dataTablesUser')->name('admin-production/vpn-duration/dataTables');
+    Route::get('vpn-beyond-duration/show/{id}/{month}/{year}', 'ProductionAdminController@show')->name('admin-production/vpn-duration/show');
+    Route::get('vpn-beyond-duration/show/data/{id}/{month}/{year}', 'ProductionAdminController@dataTablesShow')->name('admin-production/vpn-duration/dataTablesShow');
+
+    Route::post('vpn-beyond-duration/filterForm', 'ProductionAdminController@filterFormMonth')->name('admin-production/vpn-duration/filterForm');
+    Route::get('vpn-beyond-duration/filter-month/{month}/{year}', 'ProductionAdminController@filterMonth')->name('admin-production/vpn-duration/filterMonth');
+    Route::get('vpn-beyond-duration/filter-month/data/{month}/{year}', 'ProductionAdminController@dataTablesFilterMonth')->name('admin-production/vpn-duration/filterMonth/data');
 });
 
 Route::prefix('Voting')->group(function () {

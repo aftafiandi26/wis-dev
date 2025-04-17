@@ -444,34 +444,6 @@
                     </li>
                 </ul>
             </li>
-
-            <li>
-                <a class="{!! $c3 or '' !!}" href="#"><i class="fa fa-calendar-times-o"></i> WS
-                    Mapping<span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level {!! $c1u or '' !!}">
-                    <li>
-                        <a class="{!! $c3 or '' !!}" href="{{ route('indexMAP') }}"><i
-                                class="fa fa-fw fa fa-genderless"></i> 3D Animation</a>
-                    </li>
-                    <li>
-                        <a class="{!! $c3 or '' !!}" href="{{ route('indexLayout') }}"><i
-                                class="fa fa-fw fa fa-genderless"></i> Layout</a>
-                    </li>
-                    <li>
-                        <a class="{!! $c3 or '' !!}" href="{{ route('indexRender') }}"><i
-                                class="fa fa-fw fa fa-genderless"></i> Render</a>
-                    </li>
-                    <li>
-                        <a class="{!! $c3 or '' !!}" href="{{ route('indexITMap') }}"><i
-                                class="fa fa-fw fa fa-genderless"></i> IT Room</a>
-                    </li>
-                    <li>
-                        <a class="{!! $c3 or '' !!}" href="{{ route('indexMAPOfficer') }}"><i
-                                class="fa fa-fw fa fa-genderless"></i> Officer</a>
-                    </li>
-                </ul>
-            </li>
-
         @endif
 
         @if (Auth::user()->level_hrd === 'Senior Pipeline' or Auth::user()->level_hrd === 'Technical Director')
@@ -894,7 +866,7 @@
                     </li>
                     <li>
                         <a class="{!! $c1002 or '' !!}" href="{{ route('indexListAssetTracking') }}"><i
-                                class="fa fa-fw fa fa-genderless"></i> Hardware</a>
+                                class="fa fa-fw fa fa-genderless"></i> Hardware</a>3D
                     </li>
                 </ul>
             </li>
@@ -914,27 +886,7 @@
             </li>
         @endif
         <!-- AllEmployee WS MAP -->
-        @if (Auth::user()->dept_category_id != 1)
-            <li>
-                <a class="{!! $c3 or '' !!}" href="#"><i class="fa fa-calendar-times-o"></i> WS
-                    Mapping<span class="fa arrow"></span></a>
-                <ul class="nav nav-second-level {!! $c1u or '' !!}">
-                    <li>
-                        <a class="{!! $c3 or '' !!}" href="{{ route('3D-Animation') }}"><i
-                                class="fa fa-fw fa fa-genderless"></i> 3D Animation</a>
-                    </li>
-                    <li>
-                        <a class="{!! $c3 or '' !!}" href="{{ route('2D-Layout') }}"><i
-                                class="fa fa-fw fa fa-genderless"></i> Layout</a>
-                    </li>
-                    <li>
-                        <a class="{!! $c3 or '' !!}" href="{{ route('Render-Area') }}"><i
-                                class="fa fa-fw fa fa-genderless"></i> Render</a>
-                    </li>
-                </ul>
-            </li>
-        @endif
-        @if (auth::user()->dept_category_id === 5)
+        {{-- @if (auth::user()->dept_category_id === 5)
             <li>
                 <a class="{!! $c2 or '' !!}" href="#"><i class="fa fa-calendar-times-o"></i> List
                     Transportation<span class="fa arrow"></span></a>
@@ -946,11 +898,11 @@
                 </ul>
             </li>
             <li>
-        @endif
-        <li>
+        @endif --}}
+        {{-- <li>
             <a class="{!! $c3 or '' !!}" href="{{ route('indexPolingKantinEmployee') }}"><i
                     class="fa fa-fw fa fa-genderless"></i> Canteen Assessment</a>
-        </li>
+        </li> --}}
         @if (auth::user()->id === '226')
             <li>
                 <a class="{!! $c3 or '' !!}" href="{{ route('indexHousingAssessment') }}"><i
@@ -989,6 +941,35 @@
                         <a class="{!! $c341 or '' !!}" href="{{ route('gm/employee-time-sheet/index') }}"><i
                                 class="fa fa-fw fa fa-genderless"></i>
                             Employee Time Sheet</a>
+                    </li>
+                </ul>
+            </li>
+        @endif
+
+        @if (auth()->user()->id === 1654)
+            <li>
+                <a class="{!! $c33 or '' !!}" href="#"><i class="fa fa-line-chart"></i> Admin
+                    Production<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level {!! $c1u or '' !!}">
+                    {{-- <li>
+                        <a class="{!! $c34 or '' !!}" href="{{ route('headOfProduction/index') }}"><i
+                                class="fa fa-fw fa fa-genderless"></i> Attendance</a>
+                    </li> --}}
+                    <li>
+                        <a class="{!! $c34 or '' !!}" href="{{ route('gm/summary/attendance/index') }}"><i
+                                class="fa fa-fw fa fa-genderless"></i>
+                            Attendance</a>
+                    </li>
+                    <li>
+                        <a class="{!! $c341 or '' !!}" href="{{ route('gm/employee-time-sheet/index') }}"><i
+                                class="fa fa-fw fa fa-genderless"></i>
+                            Employee Time Sheet</a>
+                    </li>
+                    <li>
+                        <a class="{!! $c341 or '' !!}"
+                            href="{{ route('admin-production/vpn-duration/index') }}"><i
+                                class="fa fa-fw fa fa-genderless"></i>
+                            VPN Beyond Duration</a>
                     </li>
                 </ul>
             </li>
@@ -1260,6 +1241,7 @@
         </li>
         <?php endif ?>
 
+        {{-- yg dibawh jgn di hapus --}}
         </ul>
 
     </div>

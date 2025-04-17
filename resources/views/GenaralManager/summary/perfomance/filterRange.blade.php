@@ -151,6 +151,10 @@
                     data: 'column12'
                 }, {
                     data: 'column13'
+                }, {
+                    data: 'column14'
+                }, {
+                    data: 'column15'
                 }],
                 dom: 'lBfrtip',
                 buttons: [
