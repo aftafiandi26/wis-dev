@@ -15,4 +15,9 @@ class ZController extends Controller
     {
         return view('z_animation.2');
     }
+
+    public function index()
+    {
+        return view('z_animation.kado-main.index');
+    }
 }

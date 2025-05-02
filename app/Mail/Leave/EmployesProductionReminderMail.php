@@ -3,6 +3,7 @@
 namespace App\Mail\Leave;
 
 use App\Leave;
+use App\Leave_Category;
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
 use Illuminate\Queue\SerializesModels;
@@ -34,8 +35,12 @@ class EmployesProductionReminderMail extends Mailable
      */
     public function build()
     {
-        $data = $this->data['message'];
+        $data = $this->data;
 
-        return $this->from(auth()->user()->email)->to('dede.aftafiandi@infinitestudios.id')->view('all_employee.leave.employes.productions.message', compact('data'));
+        $leave = Leave::find($data['id']);
+
+        $category = Leave_Category::find($leave->leave_category_id);
+
+        return $this->from(auth()->user()->email)->to($data['to'])->view('all_employee.leave.employes.productions.message', compact('data', 'leave', 'category'));
     }
 }

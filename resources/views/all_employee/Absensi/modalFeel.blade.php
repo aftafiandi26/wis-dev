@@ -567,10 +567,6 @@
         <label for="happy">:)</label>
         <input id="normal" type="radio" name="smiley" value="Normal">
         <label for="normal">:|</label>
-        {{-- <input id="angry" type="radio" name="smiley" value="Angry">
-        <label for="angry">:(</label>
-        <input id="furious" type="radio" name="smiley" value="Furious">
-        <label for="furious">:&lt;</label> --}}
 
         <div class="smiley">
             <div class="steam-container">
@@ -617,32 +613,20 @@
 
         </div>
 
-        <h4 id="feelText">
-            Hi <b>{{ auth()->user()->getFullName() }}</b>, yesterday you felt <i>{{ $q1 }}</i>.
-            <br>
-            We hope you are better now.
-        </h4>
+        @if ($bitFeel == 'feel')
+            <h4 id="feelText">Hi {{ auth()->user()->getFullName() }}, are you feeling better?</h4>
+        @elseif ($bitFeel == 'health')
+            <h4 id="feelText">Hi {{ auth()->user()->getFullName() }}, has your health improved?</h4>
+        @else
+            <h4>**************************</h4>
+        @endif
 
     </div>
     <div class="modal-footer">
-        <center>
-            {{-- <button type="submit" class="btn btn-success btn-sm" id="buttonNext" data-toggle="modal"
-                data-target="#1234" style="margin-right: 10xp;">Yes, i'm
-                ok!</button> --}}
-            <a class="btn btn-sm btn-default" id="checkIn123" data-toggle="modal" data-target="#1234"
-                data-role="{{ route('attendance/checkin') }}">Yes, i'm ok!</a>
-        </center>
-    </div>
-</div>
-
-<div class="modal fade" id="1234" tabindex="-1" role="dialog" aria-labelledby="showModalLabel"
-    aria-hidden="true">
-    <div class="modal-dialog modal-lg">
-        <div class="modal-content">
-            <div class="modal-body" id="modal-content123">
-
-            </div>
-        </div>
+        <a class="btn btn-sm btn-success pull-left" id="checkYes" data-toggle="modal" data-target="#showModal1"
+            data-role="{{ route('attendance/checkInYes') }}">Yes, i'm ok!</a>
+        <a class="btn btn-sm btn-warning pull-right" id="checkYes" data-toggle="modal" data-target="#showModal1"
+            data-role="{{ route('attendance/checkInNo') }}">No, i'm not ok!</a>
     </div>
 </div>
 
@@ -652,23 +636,18 @@
             location.reload();
         });
 
-        $(document).on('click', 'a[id="checkIn123"]', function(e) {
+        $(document).on('click', 'a[id="checkYes"]', function(e) {
+
             var id = $(this).attr('data-role');
             $.ajax({
                 url: id,
                 success: function(e) {
-                    $("#modal-content123").html(e);
-                    $('#showModal').modal('hidden');
-
+                    $('div#showModal').modal('hide');
+                    $("#modal-content-1").html(e);
                     $('.checkIn-select2-element').select2();
                 }
             });
 
-            var work = $('select#work_from').val();
-
-            // if (work === "") {
-            //     window.alert("Please select a work option.");
-            // }
         });
     });
 </script>

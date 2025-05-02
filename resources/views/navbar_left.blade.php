@@ -1088,7 +1088,7 @@
                                 <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('working-on-weekends/summary/index') }}"><i
-                                            class="fa fa-fw fa fa-genderless"></i> Summary</a>
+                                            class="fa fa-fw fa fa-genderless"></i> Summary1</a>
                                 </li>
                             @endif
 
@@ -1101,7 +1101,7 @@
                                 <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('working-on-weekends/summary/index') }}"><i
-                                            class="fa fa-fw fa fa-genderless"></i> Summary</a>
+                                            class="fa fa-fw fa fa-genderless"></i> Summary2</a>
                                 </li>
                             @endif
 
@@ -1109,31 +1109,31 @@
                                 <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('producer/weekend-crew/index') }}"><i
-                                            class="fa fa-fw fa fa-genderless"></i> Approved (form)</a>
+                                            class="fa fa-fw fa fa-genderless"></i> Approvals (form)</a>
                                 </li>
-                                <li>
+                                {{-- <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('producer/weekend-crew/summary') }}"><i
-                                            class="fa fa-fw fa fa-genderless"></i> Summary</a>
-                                </li>
+                                            class="fa fa-fw fa fa-genderless"></i> Summarsy</a>
+                                </li> --}}
                             @endif
                             @if (auth()->user()->gm == 1)
                                 <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('gm/working-on-weekends/index') }}"><i
-                                            class="fa fa-fw fa fa-genderless"></i> Approved (gm)</a>
+                                            class="fa fa-fw fa fa-genderless"></i> Approvals (gm)</a>
                                 </li>
                                 <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('gm/working-on-weekends/summary') }}"><i
-                                            class="fa fa-fw fa fa-genderless"></i> Summary</a>
+                                            class="fa fa-fw fa fa-genderless"></i> Summary3</a>
                                 </li>
                             @endif
                             @if (auth()->user()->hr == true)
                                 <li>
                                     <a class="{!! $c69 or '' !!}"
                                         href="{{ route('hrd/weekend-crew/index') }}"><i
-                                            class="fa fa-fw fa fa-genderless"></i>Summary</a>
+                                            class="fa fa-fw fa fa-genderless"></i>Summary4</a>
                                 </li>
                                 <li>
                                     <a class="{!! $c69 or '' !!}"

@@ -149,14 +149,20 @@
                                     <span class="thanks">Thank you for filling out your attendance!!</span>
                                 @endif
                             @else
-                                <a class="btn btn-sm btn-default" id="checkIn" data-toggle="modal"
-                                    data-target="#showModal" data-role="{{ route('attendance/checkin') }}">Check In</a>
-
                                 @if ($noteQ1 == true)
                                     <a class="btn btn-sm btn-default" id="checkIn" data-toggle="modal"
                                         data-target="#showModal" data-role="{{ route('attendance/modal/feel') }}">Check
-                                        In
-                                        Q1</a>
+                                        In</a>
+                                @else
+                                    @if ($noteQ2 == true)
+                                        <a class="btn btn-sm btn-default" id="checkIn" data-toggle="modal"
+                                            data-target="#showModal" data-role="{{ route('attendance/modal/feel') }}">Check
+                                            In</a>
+                                    @else
+                                        <a class="btn btn-sm btn-default" id="checkIn" data-toggle="modal"
+                                            data-target="#showModal" data-role="{{ route('attendance/checkin') }}">Check
+                                            In</a>
+                                    @endif
                                 @endif
                             @endif
                         </th>
@@ -186,11 +192,33 @@
         </div>
     </div>
 
-    <div class="modal fade" id="showModal" tabindex="-1" role="dialog" aria-labelledby="showModalLabel"
+    <div class="modal fade" id="showModal" tabindex="1" role="dialog" aria-labelledby="showModalLabel"
         aria-hidden="true">
         <div class="modal-dialog modal-lg">
             <div class="modal-content" id="modal-content">
                 <!--  -->
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="showModal1" tabindex="2" role="dialog" aria-labelledby="showModalLabel1"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-body" id="modal-content-1">
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal fade" id="showModal2" tabindex="3" role="dialog" aria-labelledby="showModalLabel2"
+        aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-body" id="modal-content-2">
+
+                </div>
             </div>
         </div>
     </div>
@@ -205,47 +233,40 @@
 @stop
 
 @push('js')
-    <script type="text/javascript">
-        window.setTimeout("waktu()", 1000);
-
-        function waktu() {
-            var waktu = new Date();
-            setTimeout("waktu()", 1000);
-            document.getElementById("jam").innerHTML = waktu.getHours();
-            document.getElementById("menit").innerHTML = waktu.getMinutes();
-            document.getElementById("detik").innerHTML = waktu.getSeconds();
-        }
-
-        function setCookie(name, value, daysToExpire) {
-            var expires = "";
-            if (daysToExpire) {
-                var date = new Date();
-                date.setTime(date.getTime() + (daysToExpire * 8 * 60 * 60 * 1000));
-                expires = "; expires=" + date.toUTCString();
-            }
-            document.cookie = name + "=" + value + expires + "; path=/";
-        }
-
-        $('select#work_from').on('change', function() {
-            let val = $(this).val(); // Menggunakan val() untuk mendapatkan nilai terpilih
-
-            setCookie("checkIn", val, 1);
-        });
-
-        function deleteCookie(name) {
-            setCookie(name, "", -1); // Mengatur masa berlaku cookie menjadi masa lalu, sehingga browser akan menghapusnya
-        }
-        deleteCookie("checkIn");
-    </script>
-@endpush
-
-@section('script')
-
-@endsection
-
-@push('js')
     <script>
         $(document).ready(function() {
+            window.setTimeout("waktu()", 1000);
+
+            function waktu() {
+                var waktu = new Date();
+                setTimeout("waktu()", 1000);
+                document.getElementById("jam").innerHTML = waktu.getHours();
+                document.getElementById("menit").innerHTML = waktu.getMinutes();
+                document.getElementById("detik").innerHTML = waktu.getSeconds();
+            }
+
+            function setCookie(name, value, daysToExpire) {
+                var expires = "";
+                if (daysToExpire) {
+                    var date = new Date();
+                    date.setTime(date.getTime() + (daysToExpire * 8 * 60 * 60 * 1000));
+                    expires = "; expires=" + date.toUTCString();
+                }
+                document.cookie = name + "=" + value + expires + "; path=/";
+            }
+
+            $('select#work_from').on('change', function() {
+                let val = $(this).val(); // Menggunakan val() untuk mendapatkan nilai terpilih
+
+                setCookie("checkIn", val, 1);
+            });
+
+            function deleteCookie(name) {
+                setCookie(name, "", -
+                    1); // Mengatur masa berlaku cookie menjadi masa lalu, sehingga browser akan menghapusnya
+            }
+            deleteCookie("checkIn");
+
             $(document).on('click', '#tables tr th a[id="checkIn"]', function(e) {
                 var id = $(this).attr('data-role');
                 $.ajax({

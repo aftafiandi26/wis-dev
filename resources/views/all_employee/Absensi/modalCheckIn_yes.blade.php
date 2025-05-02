@@ -3,7 +3,7 @@
         -webkit-appearance: none;
         width: 100%;
         height: 8px;
-        background: linear-gradient(to right, #a91504 0%, #ffff00 50%, #007f00 100%);
+        background: linear-gradient(to right, #ffff00 0%, #00ff00 50%, #007f00 100%);
         border-radius: 5px;
         outline: none;
         padding: 0;
@@ -61,13 +61,11 @@
 <div class="modal-content">
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" id="modalClose">&times;</button>
-        <h4 class="modal-title">Form Attendance ds</h4>
+        <h4 class="modal-title">Form Attendance</h4>
     </div>
     <div class="modal-body">
-        <form action="{{ route('attendance/checkin/post') }}" method="post" class="" id="formPost">
+        <form action="{{ route('attendance/checkInYes/post') }}" method="post" class="" id="formPost">
             {{ csrf_field() }}
-
-            {{--  --}}
             <div class="row">
                 <div class="col-lg-12">
                     <table class="table table-condensed table-borderles table-light">
@@ -121,8 +119,8 @@
                         <label class="control-label col-lg-2" for="feel">Choose how you're feeling right
                             now?</label>
                         <div class="col-lg-8">
-                            <input class="feelBar" type="range" value="1" min="1" max="5"
-                                oninput="updateSlider(this)" id="colorRange" name="feel" />
+                            <input class="feelBar" type="range" value="{{ $q1 }}" min="1"
+                                max="3" oninput="updateSlider(this)" id="colorRange" name="feel" />
                         </div>
                         <div class="col-lg-2" id="emoji"></div>
                     </div>
@@ -134,8 +132,8 @@
                     <div class="form-group">
                         <label class="control-label col-lg-2" for="health">How's your current health status?</label>
                         <div class="col-lg-8">
-                            <input class="healthyBar" type="range" value="3" min="1" max="3"
-                                oninput="updateSliderHealth(this)" id="colorHealth" name="health" />
+                            <input class="healthyBar" type="range" value="{{ $q2 }}" min="1"
+                                max="3" oninput="updateSliderHealth(this)" id="colorHealth" name="health" />
                         </div>
                         <div class="col-lg-2" id="sticker"></div>
                     </div>
@@ -197,41 +195,15 @@
     function updateSlider(input) {
         const emoji = document.getElementById('emoji');
         const value = parseInt(input.value);
+        // Calculate thumb color
+        // Calculate thumb color in HEX
         const min = parseInt(input.min);
         const max = parseInt(input.max);
         const percentage = (value - min) / (max - min);
 
-        let red, green, blue;
-        if (percentage == "0") {
-            red = 169;
-            green = 21;
-            blue = 4;
-        }
-
-        if (percentage == "0.25") {
-            red = 255;
-            green = 148;
-            blue = 0;
-        }
-
-        if (percentage == "0.5") {
-            red = 255;
-            green = 212;
-            blue = 0;
-        }
-
-
-        if (percentage == "0.75") {
-            red = 110;
-            green = 200;
-            blue = 0;
-        }
-
-        if (percentage == "1") {
-            red = 0;
-            green = 127;
-            blue = 0;
-        }
+        const red = percentage < 0.5 ? 253 : 0;
+        // const green = 255;
+        const green = percentage < 0.5 ? 212 : (percentage > 0.5 ? 127 : 255);
 
         // Convert RGB to HEX
         const toHex = (component) => {
@@ -239,7 +211,10 @@
             return hex.length === 1 ? "0" + hex : hex;
         };
 
-        const thumbColor = `#${toHex(red)}${toHex(green)}${toHex(blue)}`;
+        const thumbColor = `#${toHex(red)}${toHex(green)}00`;
+
+        console.log(thumbColor);
+
 
         // Apply thumb color and position using CSS variables
         input.style.setProperty('--thumb-color', thumbColor);
@@ -250,27 +225,11 @@
                 `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100" height="100" color="` +
                 thumbColor + `" fill="` + fillColor + `">
                 <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M8 17C8.91212 15.7856 10.3643 15 12 15C13.6357 15 15.0879 15.7856 16 17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M7 9.01067C7 9.01067 8.40944 8.88341 9.19588 9.50798M9.19588 9.50798L8.93275 10.3427C8.82896 10.6719 9.10031 11 9.4764 11C9.87165 11 10.1327 10.6434 9.92918 10.3348C9.74877 10.0612 9.50309 9.75196 9.19588 9.50798ZM17 9.01067C17 9.01067 15.5906 8.88341 14.8041 9.50798M14.8041 9.50798L15.0672 10.3427C15.171 10.6719 14.8997 11 14.5236 11C14.1283 11 13.8673 10.6434 14.0708 10.3348C14.2512 10.0612 14.4969 9.75196 14.8041 9.50798Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg> <br> <span style="color: ` + thumbColor + `">Distressed</span>`;
-        } else if (value == 2) {
-            emoji.innerHTML =
-                `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100" height="100" color="` +
-                thumbColor + `" fill="` + fillColor + `">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M7 8C7.20949 8.5826 7.77476 9 8.43922 9C9.10367 9 9.66894 8.5826 9.87843 8M14.1216 8C14.3311 8.5826 14.8963 9 15.5608 9C16.2252 9 16.7905 8.5826 17 8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-                <path d="M12 13.5C13.6732 13.5 15.1098 14.4559 15.7297 15.8205C15.9802 16.3718 16.1055 16.6475 15.8889 16.8748C15.6723 17.1022 15.2907 16.9913 14.5274 16.7696C13.8039 16.5595 12.9019 16.3703 12 16.3703C11.0981 16.3703 10.1961 16.5595 9.47257 16.7696C8.70933 16.9913 8.32771 17.1022 8.11112 16.8748C7.89454 16.6475 8.01978 16.3718 8.27026 15.8205C8.89021 14.4559 10.3268 13.5 12 13.5Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
-            </svg> <br> <span style="color: ` + thumbColor + `">Unhappy</span>`;
-        } else if (value == 3) {
-            emoji.innerHTML =
-                `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100" height="100" color="` +
-                thumbColor + `" fill="` + fillColor + `">
-                <circle cx="12" cy="12" r="10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                 <path d="M9 16H15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                 <path d="M7 9H9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                 <path d="M15 9H17" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg> <br> <span style="color:` + thumbColor + `">Neutral</span>`;
-        } else if (value == 4) {
+        } else if (value == 2) {
             emoji.innerHTML =
                 `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100" height="100" color="` +
                 thumbColor + `" fill="` + fillColor + `">
@@ -278,7 +237,7 @@
                 <path d="M7 9C7.20949 9.5826 7.77476 10 8.43922 10C9.10367 10 9.66894 9.5826 9.87843 9M14.1216 9C14.3311 9.5826 14.8963 10 15.5608 10C16.2252 10 16.7905 9.5826 17 9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
                 <path d="M8 15C8.91212 16.2144 10.3643 17 12 17C13.6357 17 15.0879 16.2144 16 15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg> <br> <span style="color: ` + thumbColor + `">Happy</span>`;
-        } else if (value == 5) {
+        } else if (value == 3) {
             emoji.innerHTML =
                 `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="100" height="100" color="` +
                 thumbColor + `" fill="` + fillColor + `">
@@ -288,6 +247,7 @@
                 <path d="M7 10.5C7 9.67154 7.67157 8.99997 8.5 8.99997C9.32843 8.99997 10 9.67154 10 10.5M14 10.4999C14 9.67151 14.6716 8.99994 15.5 8.99994C16.3284 8.99994 17 9.67151 17 10.4999" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" />
             </svg> <br> <span style="color: #3cb371">Very Happy</span>`;
         }
+
     }
 
     function updateSliderHealth(input) {
@@ -346,8 +306,6 @@
         }
 
     }
-
-
     // Initialize the slider with the correct thumb color
     updateSlider(document.getElementById('colorRange'));
     updateSliderHealth(document.getElementById('colorHealth'));

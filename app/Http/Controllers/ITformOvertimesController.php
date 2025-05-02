@@ -7,12 +7,14 @@ use App\Mail\Form\OvertimeFinished;
 use App\Mail\Form\OvertimeUnverified;
 use App\User;
 use Illuminate\Http\Request;
-use Datatables;
 use DateTime;
 use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Lang;
 use Illuminate\Support\Facades\Mail;
+use Yajra\Datatables\Facades\Datatables;
+use App\Http\Controllers\AllEmployesFormProgressingController;
+
 
 class ITformOvertimesController extends Controller
 {
@@ -28,6 +30,7 @@ class ITformOvertimesController extends Controller
 
     public function dataObject()
     {
+        $controller = new AllEmployesFormProgressingController();
         $data = FormOvertimes::where('app_coor', 1)->where('app_gm', 1)->where('verify_it', 0)->get();
 
         return Datatables::of($data)
@@ -47,14 +50,13 @@ class ITformOvertimesController extends Controller
                 return $return->position;
             })
             ->editColumn('vpn', '@if ($vpn === 1) {{ "Requested" }} @else {{"-"}} @endif')
-            ->editColumn('app_coor', function (FormOvertimes $form) {
-                $app_coor = app('App\Http\Controllers\AllEmployesFormProgressingController')->appCoordinator($form);
+            ->editColumn('app_coor', function (FormOvertimes $form) use ($controller) {
+                $app_coor =  $controller->appCoordinator($form);
 
                 return $app_coor;
             })
-            ->editColumn('app_gm', function (FormOvertimes $form) {
-                $app_gm = app('App\Http\Controllers\AllEmployesFormProgressingController')->appGeneralManager($form);
-
+            ->editColumn('app_gm', function (FormOvertimes $form) use ($controller) {
+                $app_gm = $controller->appGeneralManager($form);
                 return $app_gm;
             })
             ->editColumn('verify_it', '@if ($verify_it === 0) {{"Pending"}} @else {{ "Verify" }} @endif')
@@ -67,6 +69,7 @@ class ITformOvertimesController extends Controller
 
     public function modalVerifyObejct($id)
     {
+        $controller = new AllEmployesFormProgressingController();
         $form = FormOvertimes::with(['user', 'coordinator', 'generalManager'])->find($id);
 
         $startOvertime = new DateTime($form->startovertime);
@@ -84,8 +87,8 @@ class ITformOvertimesController extends Controller
             'minute' => $count_time->i
         ];
 
-        $app_coor = app('App\Http\Controllers\AllEmployesFormProgressingController')->appCoordinator($form);
-        $app_gm = app('App\Http\Controllers\AllEmployesFormProgressingController')->appGeneralManager($form);
+        $app_coor = $controller->appCoordinator($form);
+        $app_gm = $controller->appGeneralManager($form);
 
         $approvalStatus = [
             'coordinator' => $app_coor,
@@ -113,17 +116,21 @@ class ITformOvertimesController extends Controller
 
     public function indexSummary()
     {
-        return view('IT.Registration_Form.Overtimes.summary');
+        $users = User::where('active', true)->where('dept_category_id', 6)->orderBy('first_name', 'asc')->get();
+
+        return view('IT.Registration_Form.Overtimes.summary', compact(['users']));
     }
 
     public function dataSummary()
     {
-        $data = FormOvertimes::where('verify_it', 1)->orderBy('startovertime', 'desc')->limit(100)->get();
+        $controller = new AllEmployesFormProgressingController();
+        $data = FormOvertimes::where('verify_it', 1)->whereYEAR('startovertime', date('Y'))->whereMonth('startovertime', date('m'))->orderBy('startovertime', 'desc')->limit(50)->get();
 
         return Datatables::of($data)
             ->addIndexColumn()
             ->addColumn('fullname', function (FormOvertimes $form) {
                 $return = User::find($form->user_id);
+
                 return $return->getFullName();
             })
             ->addColumn('username', function (FormOvertimes $form) {
@@ -138,12 +145,12 @@ class ITformOvertimesController extends Controller
                 $return = User::find($form->user_id);
                 return $return->position;
             })
-            ->editColumn('app_coor', function (FormOvertimes $form) {
-                $app_coor = app('App\Http\Controllers\AllEmployesFormProgressingController')->appCoordinator($form);;
+            ->editColumn('app_coor', function (FormOvertimes $form) use ($controller) {
+                $app_coor =  $controller->appCoordinator($form);
                 return $app_coor;
             })
-            ->editColumn('app_gm', function (FormOvertimes $form) {
-                $app_gm = app('App\Http\Controllers\AllEmployesFormProgressingController')->appGeneralManager($form);
+            ->editColumn('app_gm', function (FormOvertimes $form) use ($controller) {
+                $app_gm = $controller->appGeneralManager($form);
                 return $app_gm;
             })
             ->editColumn('verify_it', function (FormOvertimes $form) {
@@ -167,6 +174,7 @@ class ITformOvertimesController extends Controller
 
     public function dataProgress()
     {
+        $controller = new AllEmployesFormProgressingController();
         $data = FormOvertimes::where('verify_it', 0)->orderBy('startovertime', 'dasc')->get();
 
         return Datatables::of($data)
@@ -187,12 +195,12 @@ class ITformOvertimesController extends Controller
                 $return = User::find($form->user_id);
                 return $return->position;
             })
-            ->editColumn('app_coor', function (FormOvertimes $form) {
-                $app_coor = app('App\Http\Controllers\AllEmployesFormProgressingController')->appCoordinator($form);;
+            ->editColumn('app_coor', function (FormOvertimes $form) use ($controller) {
+                $app_coor =  $controller->appCoordinator($form);
                 return $app_coor;
             })
-            ->editColumn('app_gm', function (FormOvertimes $form) {
-                $app_gm = app('App\Http\Controllers\AllEmployesFormProgressingController')->appGeneralManager($form);
+            ->editColumn('app_gm', function (FormOvertimes $form) use ($controller) {
+                $app_gm = $controller->appGeneralManager($form);
                 return $app_gm;
             })
             ->addColumn('actions', function (FormOvertimes $form) {
@@ -205,6 +213,7 @@ class ITformOvertimesController extends Controller
 
     public function modalProgressing($id)
     {
+        $controller = new AllEmployesFormProgressingController();
         $form = FormOvertimes::with(['user', 'coordinator', 'generalManager'])->find($id);
 
         $startOvertime = new DateTime($form->startovertime);
@@ -222,8 +231,8 @@ class ITformOvertimesController extends Controller
             'minute' => $count_time->i
         ];
 
-        $app_coor = app('App\Http\Controllers\AllEmployesFormProgressingController')->appCoordinator($form);
-        $app_gm = app('App\Http\Controllers\AllEmployesFormProgressingController')->appGeneralManager($form);
+        $app_coor =  $controller->appCoordinator($form);
+        $app_gm = $controller->appGeneralManager($form);
 
         $approvalStatus = [
             'coordinator' => $app_coor,
@@ -231,5 +240,29 @@ class ITformOvertimesController extends Controller
         ];
 
         return view('IT.Registration_Form.Overtimes.progressing.modal', compact(['form', 'duration', 'approvalStatus']));
+    }
+
+    public function filterEmployes(Request $request)
+    {
+        $data = [
+            'user_id'   => $request->input('employee'),
+            'start'     => $request->input('start'),
+            'end'       => $request->input('end')
+        ];
+
+        $query = FormOvertimes::where('user_id', $data['user_id'])->get();
+
+        if ($query->isEmpty()) {
+            Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Data is not available']));
+            return redirect()->back();
+        }
+
+        if ($data['end'] < $data['start']) {
+            Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Please check your date']));
+            return redirect()->back();
+        }
+
+        Session::flash('message', Lang::get('messages.data_custom', ['data' => 'Data is available.']));
+        return redirect()->back();
     }
 }

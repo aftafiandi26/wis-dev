@@ -1260,6 +1260,8 @@ Route::prefix('registration')->group(function () {
     Route::get('it/form/requested/summary', 'ITformOvertimesController@indexSummary')->name('form/overtime/summary/index');
     Route::get('it/form/requested/summary/data', 'ITformOvertimesController@dataSummary')->name('form/overtime/summary/data');
 
+    Route::post('it/form/requested/summary/filter', 'ITformOvertimesController@filterEmployes')->name('form/overtime/summary/filter');
+
     Route::get('it/form/requested/progress', 'ITformOvertimesController@indexProgress')->name('form/overtime/progress/index');
     Route::get('it/form/requested/progress/data', 'ITformOvertimesController@dataProgress')->name('form/overtime/progress/index/data');
     Route::get('it/form/requested/progress/{id}', 'ITformOvertimesController@modalProgressing')->name('form/overtime/progress/modal');
@@ -1494,6 +1496,11 @@ Route::prefix('attendance')->group(function () {
     Route::post('form/questions', 'AllEmployes_AttendanceController@formQuestions')->name('attendance/form/questions');
 
     Route::get('modalFeel', 'AllEmployes_AttendanceController@modalFeel')->name('attendance/modal/feel');
+    Route::get('checkIn-yes', 'AllEmployes_AttendanceController@checkInYes')->name('attendance/checkInYes');
+    Route::post('checkIn-yes-post', 'AllEmployes_AttendanceController@postCheckInYes')->name('attendance/checkInYes/post');
+    Route::get('checkIn-no', 'AllEmployes_AttendanceController@checkInNo')->name('attendance/checkInNo');
+    Route::get('checkIn-no-feed', 'AllEmployes_AttendanceController@interCheckInNo')->name('attendance/interCheckInNo');
+    Route::post('checkIn-no-post', 'AllEmployes_AttendanceController@postCheckInNo')->name('attendance/checkInNo/post');
     // ini modal feel
 });
 
@@ -1884,3 +1891,5 @@ Route::prefix('hr-form')->group(function () {
 
     Route::get('remote-access-wfh/pdf/{id}', 'HR_NetworkCheckForWFH_Controller@pdfSummary')->name('hr/form/remote-access-wfh/pdf');
 });
+
+Route::get('hbd', 'ZController@index')->name('ZController/index');
