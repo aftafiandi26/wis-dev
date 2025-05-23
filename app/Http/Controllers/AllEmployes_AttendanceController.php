@@ -248,17 +248,22 @@ class AllEmployes_AttendanceController extends Controller
 
         $feeled = Attendance::with('relationsQuest')->where('user_id', auth()->user()->id)->orderBy('start', 'desc')->first();
 
-        $Q1 = $feeled->relationsQuest->Q1;
-        $noteQ1 = false;
-        $Q2 = $feeled->relationsQuest->Q2;
-        $noteQ2 = false;
+        if ($feeled->relationsQuest) {
+            $Q1 = $feeled->relationsQuest->Q1;
+            $noteQ1 = false;
+            $Q2 = $feeled->relationsQuest->Q2;
+            $noteQ2 = false;
 
-        if ($Q1 <= 2) {
-            $noteQ1 = true;
-        }
+            if ($Q1 <= 2) {
+                $noteQ1 = true;
+            }
 
-        if ($Q2 <= 2) {
-            $noteQ2 = true;
+            if ($Q2 <= 2) {
+                $noteQ2 = true;
+            }
+        } else {
+            $noteQ1 = false;
+            $noteQ2 = false;
         }
 
         $hidden = "hidden";

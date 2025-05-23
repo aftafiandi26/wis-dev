@@ -547,7 +547,7 @@ class LeaveController extends Controller
         foreach ($pm_category as $value)
             $pmm[$value->email] = $value->first_name . ' ' . $value->last_name;
 
-        $level_hrd =  User::where('level_hrd', '=', 'Senior Pipeline')->where('dept_category_id', 6)->where('active', 1)->get();
+        $level_hrd =  User::where('level_hrd', '=', 'Senior Pipeline')->where('active', 1)->get();
         foreach ($level_hrd as $value)
             $level[$value->email] =  $value->first_name . ' ' . $value->last_name;
 
@@ -1817,6 +1817,70 @@ class LeaveController extends Controller
             $date_ap_hd = date("Y-m-d");
             $ap_gm = 1;
             $date_ap_gm = date("Y-m-d");
+        } elseif (auth::user()->dept_category_id === 10) {
+            if (auth::user()->hd === 1) {
+
+                $ap_pipeline = 1;
+                $date_ap_pipeline = date("Y-m-d");
+                $ap_spv = 1;
+                $date_ap_spv = date("Y-m-d");
+                $ap_koor = 1;
+                $date_ap_koor = date("Y-m-d");
+                $ap_pm = 1;
+                $date_ap_pm = date("Y-m-d");
+                // $ap_producer = 1;
+                // $date_producer  = date("Y-m-d");
+                $ap_hd = 1;
+                $date_ap_hd = date("Y-m-d");
+                $email_pm = $emailPM;
+                $email_producer = $emailProducer;
+            } else {
+                $ap_koor = 1;
+                $date_ap_koor = date("Y-m-d");
+                $ap_pipeline = 1;
+                $date_ap_pipeline = date("Y-m-d");
+                $ap_spv = 1;
+                $date_ap_spv = date("Y-m-d");
+                $ap_pm = 1;
+                $date_ap_pm = date("Y-m-d");
+                $ap_producer = 1;
+                $date_producer  = date("Y-m-d");
+                $ap_gm = 1;
+                $date_ap_gm = date("Y-m-d");
+                $email_pm = $emailPM;
+            }
+        } elseif (auth::user()->dept_category_id === 11) {
+            if (auth::user()->hd === 1) {
+
+                $ap_pipeline = 1;
+                $date_ap_pipeline = date("Y-m-d");
+                $ap_spv = 1;
+                $date_ap_spv = date("Y-m-d");
+                $ap_koor = 1;
+                $date_ap_koor = date("Y-m-d");
+                $ap_pm = 1;
+                $date_ap_pm = date("Y-m-d");
+                // $ap_producer = 1;
+                // $date_producer  = date("Y-m-d");
+                $ap_hd = 1;
+                $date_ap_hd = date("Y-m-d");
+                $email_pm = $emailPM;
+                $email_producer = $emailProducer;
+            } else {
+                $ap_koor = 1;
+                $date_ap_koor = date("Y-m-d");
+                $ap_pipeline = 1;
+                $date_ap_pipeline = date("Y-m-d");
+                $ap_spv = 1;
+                $date_ap_spv = date("Y-m-d");
+                $ap_pm = 1;
+                $date_ap_pm = date("Y-m-d");
+                $ap_producer = 1;
+                $date_producer  = date("Y-m-d");
+                $ap_gm = 1;
+                $date_ap_gm = date("Y-m-d");
+                $email_pm = $emailPM;
+            }
         }
 
 
@@ -2110,8 +2174,8 @@ class LeaveController extends Controller
             'reason_leave'              => $data['reason_leave'],
             'r_departure'               => $data['r_departure'],
             'r_after_leaving'           => $data['r_after_leaving'],
-            'plan_leave'                => $request->input('rencana'),
-            'agreement'                 => $request->input('accept'),
+            // 'plan_leave'                => $request->input('rencana'),
+            // 'agreement'                 => $request->input('accept'),
             'resendmail'                => 2,
         ];
 

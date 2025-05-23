@@ -1024,9 +1024,15 @@ Route::prefix('Pipeline')->group(function () {
         Route::get('availability/scrapped/data', 'PipelineWorkstationsAvailability@dataScrapped')->name('pipeline/workstations/availability/scrapped/data');
         Route::get('availability/scrapped/notes/{id}', 'PipelineWorkstationsAvailability@scrappedNoted')->name('pipeline/workstations/availability/scrapped/notes');
     });
+
+    // HOD Pipelin
+    Route::get('leave/hd/pipeline', 'HD_PipelineApporvalController@index')->name('leave/hd/pipeline');
+    Route::get('leave/hd/pipeline/data', 'HD_PipelineApporvalController@dataTables')->name('leave/hd/pipeline/data');
+    Route::get('leave/hd/pipeline/{data}', 'HD_PipelineApporvalController@modalApproval')->name('leave/hd/pipeline/id');
+    Route::get('leave/hd/pipeline/approval/{id}', 'HD_PipelineApporvalController@approval')->name('leave/hd/pipeline/approval');
 });
 
-Route::prefix('pipeline-it')->group(function () {
+Route::prefix('pt-it')->group(function () {
     Route::get('form-list', 'IT_Pipeline_ApprovalLeaveController@index')->name('manager/pipeline-it/form-list/index');
     Route::get('form-list/it/data', 'IT_Pipeline_ApprovalLeaveController@dataApprovalIT')->name('manager/pipeline-it/form-list/it/data');
     Route::get('form-list/pipeline/data', 'IT_Pipeline_ApprovalLeaveController@dataApprovalPipeline')->name('manager/pipeline-it/form-list/pipeline/data');
@@ -1689,6 +1695,14 @@ Route::prefix('head-of-approval')->group(function () {
     Route::get('approval/{id}', 'DeptApprovedHODController@approval')->name('head-of-approval/approval');
     Route::get('approval/post/{id}', 'DeptApprovedHODController@approvalPost')->name('head-of-approval/approval/post');
     Route::get('disapproval/post/{id}', 'DeptApprovedHODController@disapprovalPost')->name('head-of-approval/disapproval/post');
+});
+
+Route::prefix('head-of-department')->group(function () {
+    Route::get('attendance-summary', 'HeadDepartmentAttendanceController@index')->name('hod/attendance/summary');
+    Route::get('attendance-summary/data', 'HeadDepartmentAttendanceController@dataTables')->name('hod/attendance/summary/data');
+    Route::post('attendance-summary/form', 'HeadDepartmentAttendanceController@form')->name('hod/attendance/summary/form');
+    Route::get('attendance-summary/{id}/{start}/{end}', 'HeadDepartmentAttendanceController@index1')->name('hod/attendance/summary/find');
+    Route::get('attendance-summary/data/{id}/{start}/{end}', 'HeadDepartmentAttendanceController@dataTables2')->name('hod/attendance/summary/data1');
 });
 
 //ROute Head of Department Production ( Phill )

@@ -235,15 +235,23 @@
 @push('js')
     <script>
         $(document).ready(function() {
-            window.setTimeout("waktu()", 1000);
-
             function waktu() {
-                var waktu = new Date();
-                setTimeout("waktu()", 1000);
-                document.getElementById("jam").innerHTML = waktu.getHours();
-                document.getElementById("menit").innerHTML = waktu.getMinutes();
-                document.getElementById("detik").innerHTML = waktu.getSeconds();
+                const now = new Date();
+                let jam = now.getHours();
+                let menit = now.getMinutes();
+                let detik = now.getSeconds();
+
+                jam = jam < 10 ? "0" + jam : jam;
+                menit = menit < 10 ? "0" + menit : menit;
+                detik = detik < 10 ? "0" + detik : detik;
+
+                document.getElementById("jam").textContent = jam;
+                document.getElementById("menit").textContent = menit;
+                document.getElementById("detik").textContent = detik;
             }
+
+            setInterval(waktu, 1000);
+            waktu();
 
             function setCookie(name, value, daysToExpire) {
                 var expires = "";

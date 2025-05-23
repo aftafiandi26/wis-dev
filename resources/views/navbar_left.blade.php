@@ -160,12 +160,12 @@
                             class="fa fa-fw fa fa-genderless"></i> Summary Verified </a>
                 </li>
             @endif
-            @if (Auth::user()->level_hrd === 'Senior Pipeline')
+            {{-- @if (Auth::user()->level_hrd === 'Senior Pipeline')
                 <li>
                     <a class="{!! $c16 or '' !!}" href="{!! URL::route('manager/pipeline-it/form-list/index') !!}"><i
                             class="fa fa-fw fa fa-genderless"></i> Leave Approval <i>(Pipeline)</i> </a>
                 </li>
-            @endif
+            @endif --}}
             @if (Auth::user()->level_hrd === 'Senior Technical')
                 <li>
                     <a class="{!! $c61 or '' !!}" href="{!! URL::route('PipeLineTechnicalIndexApproval') !!}"><i
@@ -218,11 +218,30 @@
                 </ul>
             </li>
         @endif
-        <li>
-            <a class="{!! $c30001 or '' !!}" href="{!! URL::route('attendance/index') !!}"><i
-                    class="fa fa-fw fa fa fa-bar-chart"></i> Attendance
-            </a>
-        </li>
+        @if (auth()->user()->hd == false && auth()->user()->gm == false)
+            <li>
+                <a class="{!! $c30001 or '' !!}" href="{!! URL::route('attendance/index') !!}"><i
+                        class="fa fa-fw fa fa fa-bar-chart"></i> Attendance
+                </a>
+            </li>
+        @endif
+        @if (auth()->user()->hd == true || auth()->user()->gm == true)
+            <li>
+                <a class="{!! $c30001 or '' !!}" href=""><i class="fa fa-fw fa fa-soundcloud"></i>
+                    Attendance<span class="fa arrow"></span></a>
+                <ul class="nav nav-second-level {!! $c30001 or '' !!}">
+                    <li>
+                        <a class="{!! $c30002 or '' !!}" href="{{ route('attendance/index') }}"><i
+                                class="fa fa-fw fa fa-genderless"></i> Attendance </a>
+                    </li>
+                    <li>
+                        <a class="{!! $c30002 or '' !!}" href="{{ route('hod/attendance/summary') }}"><i
+                                class="fa fa-fw fa fa-genderless"></i> Summary </a>
+                    </li>
+                </ul>
+            </li>
+        @endif
+
         @if (auth::user()->dept_category_id === 3)
             <li>
                 <a class="{!! $c3 or '' !!}" href=""><i class="fa fa-fw fa fa-soundcloud"></i> Public
@@ -330,7 +349,8 @@
                     <ul class="nav nav-second-level {!! $c1u or '' !!}">
 
                         <li>
-                            <a class="{!! $c3 or '' !!}" href="#"><i class="fa fa-fw fa fa-wpforms"></i>
+                            <a class="{!! $c3 or '' !!}" href="#"><i
+                                    class="fa fa-fw fa fa-wpforms"></i>
                                 IT Request Form<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level {!! $c1u or '' !!}">
                                 <li>

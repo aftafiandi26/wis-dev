@@ -29,7 +29,14 @@ class GM_WeekendsController extends Controller
 
     public function datatablesAllowance()
     {
-        $query = SendingDataWorkingWeekend::where('ap_producer', true)->where('allowance', false)->whereIn('approved', [false, 2])->get();
+        $query = SendingDataWorkingWeekend::where('ap_producer', true)->where('allowance', false)->whereIn('approved', [false, 2])
+            ->whereExists(function ($query) {
+                $query->select(\DB::raw(1))
+                    ->from('working_on_weekends')
+                    ->whereColumn('working_on_weekends.status', 'sending_data_working_weekends.status')
+                    ->where('working_on_weekends.extra', 'allowance');
+            })
+            ->get();
 
         return Datatables::of($query)
             ->addIndexColumn()
@@ -67,7 +74,14 @@ class GM_WeekendsController extends Controller
 
     public function datatablesExdo()
     {
-        $query = SendingDataWorkingWeekend::where('ap_producer', true)->where('exdo', false)->whereIn('approved', [false, 2])->get();
+        $query = SendingDataWorkingWeekend::where('ap_producer', true)->where('exdo', false)->whereIn('approved', [false, 2])
+            ->whereExists(function ($query) {
+                $query->select(\DB::raw(1))
+                    ->from('working_on_weekends')
+                    ->whereColumn('working_on_weekends.status', 'sending_data_working_weekends.status')
+                    ->where('working_on_weekends.extra', 'exdo');
+            })
+            ->get();
 
         return Datatables::of($query)
             ->addIndexColumn()
@@ -105,7 +119,13 @@ class GM_WeekendsController extends Controller
 
     public function datatablesCatchUp()
     {
-        $query = SendingDataWorkingWeekend::where('ap_producer', true)->where('catchup', false)->whereIn('approved', [false])->get();
+        $query = SendingDataWorkingWeekend::where('ap_producer', true)->where('catchup', false)->whereIn('approved', [false])
+            ->whereExists(function ($query) {
+                $query->select(\DB::raw(1))
+                    ->from('working_on_weekends')
+                    ->whereColumn('working_on_weekends.status', 'sending_data_working_weekends.status')
+                    ->where('working_on_weekends.extra', 'catch up');
+            })->get();
 
         return Datatables::of($query)
             ->addIndexColumn()

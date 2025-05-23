@@ -7,6 +7,7 @@ use App\Http\Middleware\AccessForWeekend2;
 use App\Http\Middleware\AccessOvertimeRemote;
 use App\Http\Middleware\AttendnaceAccess;
 use App\Http\Middleware\AuthProductions;
+use App\Http\Middleware\AuthProductionTechnology;
 use Illuminate\Foundation\Http\Kernel as HttpKernel;
 
 class Kernel extends HttpKernel
@@ -78,6 +79,7 @@ class Kernel extends HttpKernel
         'it' => \App\Http\Middleware\AuthIT::class,
         'programmer' => \App\Http\Middleware\AuthProgrammer::class,
         'pipeline'  => \App\Http\Middleware\AuthPipeline::class,
+        'pipeline2'  => \App\Http\Middleware\AuthPipelines::class,
         'pipelineTechnical' => \App\Http\Middleware\AuthPipelineTechnical::class,
         'pipelineTechnology' => \App\Http\Middleware\AuthPipelineTechnology::class,
         'hd_production'  => \App\Http\Middleware\AuthHDProduction::class,
@@ -93,5 +95,9 @@ class Kernel extends HttpKernel
         'Saturday'  => AccessForWeekend::class,
         'Sunday'    => AccessForWeekend2::class,
         'attendance' => AttendnaceAccess::class,
+
+        'prodTech' => AuthProductionTechnology::class,
+
+
     ];
 }

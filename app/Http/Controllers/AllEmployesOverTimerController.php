@@ -123,8 +123,8 @@ class AllEmployesOverTimerController extends Controller
         $startOvertime = new DateTime($request->input('startOvertime'));
         $endOvertime = new DateTime($request->input('endOvertime'));
         $count_time = $endOvertime->diff($startOvertime);
-
-        // dd($startOvertime->format('D'));
+        $today = new DateTime();
+        $today = $today->modify('+3 days');
 
         if ($startOvertime->format('D') != 'Sat' && $startOvertime->format('D') != "Sun") {
             if ($startOvertime->format('H') < 23 && $startOvertime->format('H') > 7) {
@@ -137,8 +137,6 @@ class AllEmployesOverTimerController extends Controller
                 return redirect()->route('form/overtime/index');
             }
         }
-
-        dd($startOvertime->format('D'));
 
         if ($count_time->invert === 0) {
             Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, Please check your time and date !!']));
@@ -161,6 +159,11 @@ class AllEmployesOverTimerController extends Controller
         }
 
         $gm = User::find(69);
+
+        if ($startOvertime->format('Y-m-d') > $today->format('Y-m-d')) {
+            Session::flash('getError', Lang::get('messages.data_custom', ['data' => 'Sorry, Input is due later than 3 days from today']));
+            return redirect()->route('form/overtime/index');
+        }
 
         $data = [
             'user_id'           => auth()->user()->id,
@@ -185,9 +188,7 @@ class AllEmployesOverTimerController extends Controller
                 ->withInput();
         } else {
             FormOvertimes::create($data);
-
-            $this->sendMails();
-
+            // $this->sendMails();
             Session::flash('success', Lang::get('messages.data_custom', ['data' => 'Form successfully created, please contact your leader to apprval']));
             return redirect()->route('form/progressing/index');
         }

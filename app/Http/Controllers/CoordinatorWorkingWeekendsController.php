@@ -73,29 +73,16 @@ class CoordinatorWorkingWeekendsController extends Controller
 
         foreach ($users as $key => $user) {
             $eoc = $user->end_date;
-
             if (empty($user->end_date)) {
-                $eoc = Carbon::now()->addMonth();
+                $eoc = Carbon::now()->addMonth(2);
             }
 
             if ($eoc <= $limitEoc) {
-                $eocUser[] = $user->getFullName();
+                // $eocUser[] = $user->getFullName();
+                $eocUser[] = $user->id;
             }
         }
-
-        // dd($eocUser, $ape = Carbon::now()->addMonth());
-
         $eocUser = json_encode($eocUser);
-
-
-        // if ($now->format('N') == 4 and $now->format('H') >= 16) {
-        //     return redirect()->route('coordinator/working/weekends/form/not-accessed');
-        // }
-        // if ($now->format('N') > 4) {
-        //     return redirect()->route('coordinator/working/weekends/form/not-accessed');
-        // }
-        // dd($hods);
-
         return view('all_employee.Form.weekends.form', compact(['users', 'workings', 'producers', 'eocUser', 'anggarda', 'hods']));
     }
 

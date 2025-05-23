@@ -2,11 +2,11 @@
 
 namespace App\Http\Middleware;
 
-use App\User;
 use Closure;
 use Illuminate\Support\Facades\Lang;
+use Illuminate\Support\Facades\Redirect;
 
-class AuthPipelineTechnology
+class AuthProductionTechnology
 {
     /**
      * Handle an incoming request.
@@ -17,10 +17,11 @@ class AuthPipelineTechnology
      */
     public function handle($request, Closure $next)
     {
-        $user = User::where('active', 1)->where('id', auth()->user()->id)->first();
-        if ($user) {
+        if (auth()->user()->dept_category_id == 10) {
+            # code...
             return $next($request);
         }
-        return redirect()->route('index')->with('getError', Lang::get('messages.no_access'));
+
+        return Redirect::route('index')->with('getError', Lang::get('messages.no_access'));
     }
 }

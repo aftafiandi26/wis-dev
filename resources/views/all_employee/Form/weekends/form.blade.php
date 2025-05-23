@@ -222,7 +222,7 @@
                         <div class="col-lg-6">
                             <p id="note"><span>*</span>Please send before Thursday 04:00 PM WIB on Weekday.</p>
                         </div>
-                        <div class="col-lg-6">
+                        <div class="col-lg-6 mb-5">
                             @if ($workings)
                                 <button class="btn btn-sm btn-default pull-right" id="push" data-toggle="modal"
                                     data-target="#modalPusher">Submit</button>
@@ -351,6 +351,10 @@
                                             @foreach ($hods as $hod)
                                                 <option value="{{ $hod->id }}">{{ $hod->getFullName() }}</option>
                                             @endforeach
+                                            @if (auth()->user()->dept_category_id === 1)
+                                                <option value="{{ $anggarda->id }}">{{ $anggarda->getFullName() }}
+                                                </option>
+                                            @endif
 
                                         </select>
                                     @endif
@@ -440,7 +444,8 @@
 
             });
 
-            var redNames = '{{ $eocUser }}';
+            var redNames = "{{ $eocUser }}";
+            var redNamesArray = redNames.split(',').map(Number);
 
             $("select#user1").select2({
                 placeholder: "Select a employee",
@@ -449,21 +454,18 @@
                     if (!data.id) {
                         return data.text;
                     }
-
-                    var $result = $('<span></span>');
-                    $result.text(data.text);
-                    if (redNames.includes(data.text)) {
-                        $result.addClass('disabled-option');
+                    var result = $('<span></span>');
+                    result.text(data.text);
+                    if (redNamesArray.includes(Number(data.id))) {
+                        result.addClass('disabled-option');
                     }
-
-                    return $result;
+                    return result;
                 }
             }).on('select2:select', function(e) {
-                var selectedText = e.params.data.text;
-                var $container = $('#select2-user1-container').text();
-
-                if (redNames.includes(selectedText)) {
-                    window.alert($container + " contract period will end soon, please note this");
+                var selectedId = Number(e.params.data.id);
+                var container = $('#select2-user1-container').text();
+                if (redNamesArray.includes(selectedId)) {
+                    window.alert(container + " contract period will end soon, please note this");
                 }
             });
 

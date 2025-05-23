@@ -1,7 +1,7 @@
 @extends('layout')
 
 @section('title')
-    Leave - Pipeline & IT
+    Leave - Pipeline
 @stop
 
 @section('top')
@@ -14,7 +14,7 @@
 @section('navbar')
     @include('navbar_top')
     @include('navbar_left', [
-        'c61' => 'active',
+        'c16' => 'active',
     ])
 @stop
 
@@ -27,7 +27,7 @@
 
     <div class="row">
         <div class="col-lg-12">
-            <table class="table table-striped table-hover table-condensed table-bordered" width="100%" id="tablesIT">
+            <table class="table table-striped table-hover table-condensed table-bordered" width="100%" id="tables">
                 <thead>
                     <tr>
                         <th>No</th>
@@ -64,37 +64,10 @@
     <script>
         $(document).ready(function() {
 
-            // $('#tables').DataTable({
-            //     processing: true,
-            //     responsive: true,
-            //     ajax: "{{ route('manager/pipeline-it/form-list/pipeline/data') }}",
-            //     columns: [{
-            //         data: 'DT_Row_Index',
-            //         orderable: false,
-            //         searchable: false
-            //     }, {
-            //         data: 'leave_date'
-            //     }, {
-            //         data: 'request_nik'
-            //     }, {
-            //         data: 'request_by'
-            //     }, {
-            //         data: 'leave_category_id'
-            //     }, {
-            //         data: 'request_dept_category_name'
-            //     }, {
-            //         data: 'total_day'
-            //     }, {
-            //         data: 'actions',
-            //         orderable: false,
-            //         searchable: false
-            //     }]
-            // });
-
-            $('#tablesIT').DataTable({
+            $('table#tables').DataTable({
                 processing: true,
                 responsive: true,
-                ajax: "{{ route('manager/pipeline-it/form-list/it/data') }}",
+                ajax: "{{ route('leave/hd/pipeline/data') }}",
                 columns: [{
                     data: 'DT_Row_Index',
                     orderable: false,
@@ -121,16 +94,7 @@
             $(document).on('click', '#tables tr td a[id="actions"]', function(e) {
                 var id = $(this).attr('data-role');
 
-                $.ajax({
-                    url: id,
-                    success: function(e) {
-                        $("#modal-content").html(e);
-                    }
-                });
-            });
-
-            $(document).on('click', '#tablesIT tr td a[id="actions"]', function(e) {
-                var id = $(this).attr('data-role');
+                console.log(id);
 
                 $.ajax({
                     url: id,

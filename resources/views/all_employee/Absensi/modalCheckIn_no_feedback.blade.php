@@ -65,7 +65,7 @@
                 <div class="col-lg-4">
                     <input type="hidden" name="bitFeel" value="{{ $bitFeel }}">
                     <textarea name="textArea" id="textArea" cols="30" rows="5" class="form-control"
-                        placeholder="Please tell me.." required></textarea>
+                        placeholder="Please tell me.." required minlength="10"></textarea>
                 </div>
                 <div class="col-lg-4"></div>
             </div>
