@@ -1228,8 +1228,10 @@
                     class="fa arrow"></span></a>
             <ul class="nav nav-second-level {!! $c1u or '' !!}">
                 <li>
-                    <a class="{!! $c1 or '' !!}" href="{{ route('guided') }}" style="color: red;"><i
+                    <a class="{!! $c1 or '' !!}" href="{{ route('guided') }}"><i
                             class="fa fa-fw fa fa-genderless"></i> Booklet</a>
+                    <a class="{!! $c1 or '' !!}" href="{{ route('esignature') }}"><i
+                            class="fa fa-fw fa fa-genderless"></i> IFW Mail Signature</a>
                     <a class="{!! $c1 or '' !!}" href="{{ route('guideline/induction') }}"><i
                             class="fa fa-fw fa fa-genderless"></i> Induction</a>
                     <a class="{!! $c1 or '' !!}" href="{{ route('guideline/orginazation') }}"><i

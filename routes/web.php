@@ -1907,3 +1907,6 @@ Route::prefix('hr-form')->group(function () {
 });
 
 Route::get('hbd', 'ZController@index')->name('ZController/index');
+
+Route::get('esignature', 'EmailSignatureController@index')->name('esignature');
+Route::get('esignature/layout', 'EmailSignatureController@lay')->name('esignature/layout');
