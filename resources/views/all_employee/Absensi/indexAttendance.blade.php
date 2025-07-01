@@ -310,8 +310,6 @@
 
             let url = "{{ route('attendance/datatables') }}";
 
-            console.log(url);
-
             $('table#tablesWork').DataTable({
                 "columnDefs": [{
                     className: "never",

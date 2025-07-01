@@ -33,7 +33,14 @@ class CoordinatorWorkingWeekendsController extends Controller
 
     public function form()
     {
-        $users = User::where('active', 1)->where('dept_category_id', auth()->user()->dept_category_id)->where('gm', false)->where('hd', false)->whereNotIn('nik', ["", "123456789"])->orderBy('first_name', 'asc')->get();
+        $deptID = [auth()->user()->dept_category_id];
+
+        if (auth()->user()->dept_category_id === 6) {
+            $deptID = [6, 10];
+        }
+
+        $users = User::where('active', 1)->whereIn('dept_category_id', $deptID)->where('gm', false)->where('hd', false)->whereNotIn('nik', ["", "123456789"])->orderBy('first_name', 'asc')->get();
+
 
         $tableWorkings = Log_WorkingWeekends::where('coor_id', auth()->user()->id)->get();
 

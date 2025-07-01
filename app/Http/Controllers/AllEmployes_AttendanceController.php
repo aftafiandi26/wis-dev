@@ -207,12 +207,21 @@ class AllEmployes_AttendanceController extends Controller
 
     public function feels($object)
     {
+        // $array = [
+        //     '1' => 'Distressed',
+        //     '2' => 'Unhappy',
+        //     '3' => 'Neutral',
+        //     '4' => 'Happy',
+        //     '5' => 'Very Happy'
+        // ];
+        // update 18-06-2025
+
         $array = [
-            '1' => 'Distressed',
-            '2' => 'Unhappy',
+            '1' => 'Very Unpleasant',
+            '2' => 'Unpleasant',
             '3' => 'Neutral',
-            '4' => 'Happy',
-            '5' => 'Very Happy'
+            '4' => 'Pleasant',
+            '5' => 'Very Pleasant'
         ];
 
         // Memeriksa apakah $object ada dalam array dan mengembalikan nilainya
@@ -225,10 +234,19 @@ class AllEmployes_AttendanceController extends Controller
 
     public function health($object)
     {
+        // $array = [
+        //     1 => "Severely Unhealthy",
+        //     2 => "Not Feeling Well",
+        //     3 => "Healthy"
+        // ];
+        // update 18-06-2025
+
         $array = [
-            1 => "Severely Unhealthy",
-            2 => "Not Feeling Well",
-            3 => "Healthy"
+            1 => "Very Poor",
+            2 => "Poor",
+            3 => "Good",
+            4 => "Very Good",
+            5 => "Excellent"
         ];
 
         if (array_key_exists($object, $array)) {

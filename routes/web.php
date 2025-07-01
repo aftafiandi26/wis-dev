@@ -1774,6 +1774,7 @@ Route::prefix('dev')->group(function () {
         Route::get('reset/data', 'programmer\\AttendanceController@dataResetIndex')->name('dev/attendance/reset/data');
         Route::get('reset/edit/{id}', 'programmer\\AttendanceController@editResetIndex')->name('dev/attendance/reset/edit');
         Route::post('reset/update/{id}', 'programmer\\AttendanceController@updateResetIndex')->name('dev/attendance/reset/update');
+        Route::get('reset/att/{id}', 'programmer\\AttendanceController@reseted')->name('dev/attendance/reset/att');
     });
 
     Route::get('exdo-expired', 'programmer\\ExdoExpiredCutController@exdoExpired')->name('dev/exdo/expired');
